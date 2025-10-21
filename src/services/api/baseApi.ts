@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { authActions } from "../../features/auth/authSlice";
 
 const API_BASE =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api/v1";
+  import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api/v1";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_BASE,
@@ -26,7 +26,7 @@ const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
   let result = await baseQuery(args, api, extraOptions);
   if (result?.error?.status === 401) {
     const refreshResult = await baseQuery(
-      { url: "/auth/refresh", method: "POST" },
+      { url: "/api/v1/auth/refresh", method: "POST" },
       api,
       extraOptions
     );
