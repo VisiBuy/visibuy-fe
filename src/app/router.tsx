@@ -1,5 +1,5 @@
 import React from "react";
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createHashRouter, Navigate } from "react-router-dom";
 import App from "./App";
 import LoginPage from "../pages/LoginPage";
 import SignUpPage from "../pages/SignUpPage";
@@ -10,7 +10,7 @@ import UsersPage from "../pages/Users/UsersPage";
 import Error401 from "../pages/ErrorPages/401";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
     element: <App />,
     children: [

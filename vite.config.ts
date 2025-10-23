@@ -16,8 +16,9 @@ export default defineConfig(({ mode }) => {
       treeShaking: true,
     },
     server: {
-    port: 5174
-  }
+      port: 5174,
+    },
+    // 👇 Add this line
+    base: isProd ? "/visibuy-fe/" : "/",
   };
 });
- 
