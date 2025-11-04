@@ -6,12 +6,13 @@ import DashboardPage from "../pages/Dashboard/DashboardPage";
 import UsersPage from "../pages/Users/UsersPage";
 import Error401 from "../pages/ErrorPages/401";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
+import LoginScreen from "@/shared/components/auth/LoginScreen";
 
 export const router = createBrowserRouter([
   {
     element: <App />,
     children: [
-      { path: "/login", element: <LoginPage /> },
+      { path: "/login", element: <LoginScreen /> },
       {
         element: <ProtectedRoute />,
         children: [{ index: true, element: <DashboardPage /> }],
