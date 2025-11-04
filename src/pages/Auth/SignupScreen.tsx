@@ -102,7 +102,7 @@ const SignupScreen = () => {
 
   const handleTabChange = (key: string) => {
     if (key === "vendor") {
-      navigate("/register/vendor");
+      navigate("/signup");
     } else {
       setActiveTab(key);
     }
@@ -283,7 +283,7 @@ const SignupScreen = () => {
                   },
                   {
                     pattern: /^[+]?[\d\s\-()]+$/,
-                    message: "Please enter a valid phone number!",
+message: "Please enter a valid phone number (e.g. +2348012345678)."
                   },
                 ]}
               >
