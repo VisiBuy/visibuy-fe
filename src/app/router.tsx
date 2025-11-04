@@ -7,12 +7,14 @@ import UsersPage from "../pages/Users/UsersPage";
 import Error401 from "../pages/ErrorPages/401";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
 import LoginScreen from "@/shared/components/auth/LoginScreen";
+import SignupScreen from "@/shared/components/auth/SignupScreen";
 
 export const router = createBrowserRouter([
   {
     element: <App />,
     children: [
-      { path: "/login", element: <LoginScreen /> },
+        { path: "/login", element: <LoginScreen /> },
+      { path: "/signup", element: <SignupScreen /> }, 
       {
         element: <ProtectedRoute />,
         children: [{ index: true, element: <DashboardPage /> }],

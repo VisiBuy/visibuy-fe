@@ -1,9 +1,9 @@
+// SignupScreen.tsx
 import React from 'react';
 import { 
   Form, 
   Input, 
   Button, 
-  Checkbox,
   message,
   Spin
 } from 'antd';
@@ -11,35 +11,43 @@ import {
   EyeInvisibleOutlined, 
   EyeTwoTone,
   MailOutlined,
-  LoadingOutlined
+  PhoneOutlined,
+  LoadingOutlined,
 } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../../../public/images/VisiBuy-White Colored 1.svg';
 import lock from '../../../public/icons/lock.svg';
-import { useLoginMutation } from '@/features/auth/authApi';
+import { useRegisterMutation } from '@/features/auth/authApi';
 
-interface LoginFormValues {
+interface SignupFormValues {
   email: string;
+  phone: string;
   password: string;
-  remember: boolean;
+  confirmPassword: string;
 }
 
-const LoginScreen = () => {
-  const [login, { isLoading }] = useLoginMutation();
+const SignupScreen = () => {
+  const [register, { isLoading }] = useRegisterMutation();
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const onFinish = async (values: LoginFormValues) => {
+  const onFinish = async (values: SignupFormValues) => {
+    if (values.password !== values.confirmPassword) {
+      message.error('Passwords do not match!');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      const result = await login({ 
+      const result = await register({ 
         email: values.email, 
+        phone: values.phone,
         password: values.password 
       }).unwrap();
       
       message.success({
-        content: 'Login successful! Redirecting...',
+        content: 'Account created successfully! Redirecting...',
         duration: 2,
         className: 'custom-success-message',
         style: {
@@ -48,12 +56,12 @@ const LoginScreen = () => {
       });
       
       setTimeout(() => {
-        navigate('/');
+        navigate('/login');
       }, 1500);
       
     } catch (err: any) {
       message.error({
-        content: err?.data?.message || 'Login failed. Please try again.',
+        content: err?.data?.message || 'Registration failed. Please try again.',
         duration: 3,
         className: 'custom-error-message',
         style: {
@@ -77,11 +85,12 @@ const LoginScreen = () => {
 
   return (
     <div className="min-h-screen flex transition-all duration-300 ease-in-out">
+      {/* Loading Overlay */}
       {isSubmitting && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300">
           <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center space-y-4 transform scale-105 transition-transform duration-300">
             <Spin indicator={loadingIcon} size="large" />
-            <p className="text-gray-700 font-semibold animate-pulse">Signing you in...</p>
+            <p className="text-gray-700 font-semibold animate-pulse">Creating your account...</p>
           </div>
         </div>
       )}
@@ -99,7 +108,7 @@ const LoginScreen = () => {
           />
           <div className="flex justify-center items-center">
             <h4 className='text-xl text-white font-semibold animate-pulse-slow'>
-              Login
+              Create Account
             </h4>
           </div>
         </div>
@@ -114,17 +123,16 @@ const LoginScreen = () => {
 
           <div className="mb-8 text-center animate-fade-in-up">
            <h2 className="text-4xl font-semibold text-gray-900 mb-2 transform hover:scale-105 transition-transform duration-300 tracking-[1%]">
-  Welcome back!
-</h2>
-
+              Create your account.
+            </h2>
             <p className="text-gray-600 text-base font-[400] animate-pulse-slow">
-              Enter your details to sign in to your account
+             Shop with certainty using VisiBuy.
             </p>
           </div>
 
           <Form
             form={form}
-            name="login"
+            name="signup"
             onFinish={onFinish}
             layout="vertical"
             size="large"
@@ -134,13 +142,13 @@ const LoginScreen = () => {
               name="email"
               label={
                 <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Email or Phone Number
+                  Organization Email *
                 </span>
               }
               rules={[
                 {
                   required: true,
-                  message: 'Please input your email or phone number!',
+                  message: 'Please input your organization email!',
                 },
                 {
                   type: 'email',
@@ -150,7 +158,33 @@ const LoginScreen = () => {
             >
               <Input
                 suffix={<MailOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />}
-                placeholder="Enter your email or phone number"
+                placeholder="Enter your organization email"
+                className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                disabled={isLoading}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="phone"
+              label={
+                <span className="text-gray-700 font-medium transition-colors duration-300">
+                  Phone Number *
+                </span>
+              }
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your phone number!',
+                },
+                {
+                  pattern: /^[+]?[\d\s\-()]+$/,
+                  message: 'Please enter a valid phone number!',
+                },
+              ]}
+            >
+              <Input
+                suffix={<PhoneOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />}
+                placeholder="Enter your phone number"
                 className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isLoading}
               />
@@ -160,7 +194,7 @@ const LoginScreen = () => {
               name="password"
               label={
                 <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Password
+                  Password *
                 </span>
               }
               rules={[
@@ -186,15 +220,38 @@ const LoginScreen = () => {
               />
             </Form.Item>
 
-            <Form.Item>
-              <Form.Item name="remember" valuePropName="checked" noStyle>
-                <Checkbox 
-                  className="text-gray-600 transition-colors duration-300 hover:text-[#007AFF]"
-                  disabled={isLoading}
-                >
-                  Remember me
-                </Checkbox>
-              </Form.Item>
+            <Form.Item
+              name="confirmPassword"
+              label={
+                <span className="text-gray-700 font-medium transition-colors duration-300">
+                  Confirm Password *
+                </span>
+              }
+              rules={[
+                {
+                  required: true,
+                  message: 'Please confirm your password!',
+                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue('password') === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('Passwords do not match!'));
+                  },
+                }),
+              ]}
+            >
+              <Input.Password
+                placeholder="Confirm your password"
+                iconRender={(visible) =>
+                  visible ? 
+                    <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" /> : 
+                    <EyeInvisibleOutlined className="transition-colors duration-300 hover:text-[#007AFF]" />
+                }
+                className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                disabled={isLoading}
+              />
             </Form.Item>
 
             <Form.Item>
@@ -207,31 +264,23 @@ const LoginScreen = () => {
                 disabled={isLoading}
                 icon={isLoading ? <LoadingOutlined spin /> : null}
               >
-                {isLoading ? 'Signing In...' : 'Sign In'}
+                {isLoading ? 'Creating Account...' : 'Create Account'}
               </Button>
             </Form.Item>
 
-          <div className="text-center space-y-3 animate-fade-in-up">
-  <div>
-    <span className="text-gray-600 transition-colors duration-300">
-      Don't have an account?{' '}
-      <Link 
-        to="/signup"
-        className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300 transform hover:scale-105 inline-block"
-      >
-        Sign up
-      </Link>
-    </span>
-  </div>
-  <div>
-    <Link 
-      to="/forgot-password" // You can add this route later if needed
-      className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300 transform hover:scale-105 inline-block"
-    >
-      Forgot password?
-    </Link>
-  </div>
-</div>
+            <div className="text-center space-y-3 animate-fade-in-up">
+              <div>
+                <span className="text-gray-600 transition-colors duration-300">
+                  Already have an account?{' '}
+                <Link 
+                        to="/login"
+                    className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300 transform hover:scale-105 inline-block"
+                  >
+                    Sign in
+                  </Link>
+                </span>
+              </div>
+            </div>
           </Form>
         </div>
       </div>
@@ -239,4 +288,6 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+export default SignupScreen;
+
+

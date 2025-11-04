@@ -17,6 +17,15 @@ export const authApi = baseApi.injectEndpoints({
         } catch {}
       },
     }),
+
+    register: build.mutation<any, { email: string; phone: string; password: string }>({
+      query: (credentials) => ({
+        url: '/auth/signup', 
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
+
     logout: build.mutation<void, void>({
       query: () => ({ url: '/auth/logout', method: 'POST' }),
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
@@ -27,10 +36,17 @@ export const authApi = baseApi.injectEndpoints({
         }
       },
     }),
+
+    // 🔁 REFRESH TOKEN
     refresh: build.mutation<any, void>({
       query: () => ({ url: '/auth/refresh', method: 'POST' }),
     }),
   }),
 });
 
-export const { useLoginMutation, useLogoutMutation, useRefreshMutation } = authApi;
+export const { 
+  useLoginMutation, 
+  useRegisterMutation,  
+  useLogoutMutation, 
+  useRefreshMutation 
+} = authApi;
