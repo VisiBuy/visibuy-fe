@@ -14,8 +14,8 @@ import {
   LoadingOutlined
 } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
-import Logo from '../../../public/images/VisiBuy-White Colored 1.svg';
-import lock from '../../../public/icons/lock.svg';
+import Logo from '../../public/images/VisiBuy-White Colored 1.svg';
+import lock from '../../public/icons/lock.svg';
 import { useLoginMutation } from '@/features/auth/authApi';
 
 interface LoginFormValues {

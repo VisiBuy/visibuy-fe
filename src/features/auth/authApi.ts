@@ -1,3 +1,4 @@
+// features/auth/authApi.ts
 import { baseApi } from '../../services/api/baseApi';
 import { authActions } from './authSlice';
 
@@ -18,12 +19,19 @@ export const authApi = baseApi.injectEndpoints({
       },
     }),
 
-    register: build.mutation<any, { email: string; phone: string; password: string }>({
+    register: build.mutation<any, { name: string; email: string; phone: string; password: string }>({
       query: (credentials) => ({
-        url: '/auth/signup', 
+        url: '/auth/register', 
         method: 'POST',
         body: credentials,
       }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          const { accessToken, user, permissions, roles } = data;
+          dispatch(authActions.setCredentials({ accessToken, user, permissions, roles }));
+        } catch {}
+      },
     }),
 
     logout: build.mutation<void, void>({
@@ -37,7 +45,6 @@ export const authApi = baseApi.injectEndpoints({
       },
     }),
 
-    // 🔁 REFRESH TOKEN
     refresh: build.mutation<any, void>({
       query: () => ({ url: '/auth/refresh', method: 'POST' }),
     }),

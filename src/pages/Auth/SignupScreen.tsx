@@ -7,14 +7,16 @@ import {
   MailOutlined,
   PhoneOutlined,
   LoadingOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
-import Logo from "../../../public/images/VisiBuy-White Colored 1.svg";
-import lock from "../../../public/icons/lock.svg";
+import Logo from "../../public/images/VisiBuy-White Colored 1.svg";
+import lock from "../../public/icons/lock.svg";
 import { useRegisterMutation } from "@/features/auth/authApi";
 import type { TabsProps } from "antd";
 
 interface SignupFormValues {
+  name: string;
   email: string;
   phone: string;
   password: string;
@@ -28,45 +30,46 @@ const SignupScreen = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = React.useState("user");
 
-  const onFinish = async (values: SignupFormValues) => {
-    if (values.password !== values.confirmPassword) {
-      message.error("Passwords do not match!");
-      return;
-    }
+const onFinish = async (values: SignupFormValues) => {
+  if (values.password !== values.confirmPassword) {
+    message.error("Passwords do not match!");
+    return;
+  }
 
-    setIsSubmitting(true);
-    try {
-      const result = await register({
-        email: values.email,
-        phone: values.phone,
-        password: values.password,
-      }).unwrap();
+  setIsSubmitting(true);
+  try {
+    await register({
+      name: values.name,
+      email: values.email,
+      phone: values.phone,
+      password: values.password,
+    } as any).unwrap(); // Add 'as any' here
 
-      message.success({
-        content: "Account created successfully! Redirecting...",
-        duration: 2,
-        className: "custom-success-message",
-        style: {
-          marginTop: "20vh",
-        },
-      });
+    message.success({
+      content: `Welcome ${values.name}! Account created successfully. Redirecting...`,
+      duration: 3,
+      className: "custom-success-message",
+      style: {
+        marginTop: "20vh",
+      },
+    });
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 1500);
-    } catch (err: any) {
-      message.error({
-        content: err?.data?.message || "Registration failed. Please try again.",
-        duration: 3,
-        className: "custom-error-message",
-        style: {
-          marginTop: "20vh",
-        },
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
+  } catch (err: any) {
+    message.error({
+      content: err?.data?.message || "Registration failed. Please try again.",
+      duration: 3,
+      className: "custom-error-message",
+      style: {
+        marginTop: "20vh",
+      },
+    });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const loadingIcon = (
     <LoadingOutlined
@@ -82,7 +85,7 @@ const SignupScreen = () => {
     {
       key: "user",
       label: (
-        <span className="text-gray-700 border-gray-100  bg-[#F4F9FF] font-[400] text-sm">
+        <span className="text-gray-700 border-gray-100 bg-[#F4F9FF] font-[400] text-sm">
           Sign up as User
         </span>
       ),
@@ -161,166 +164,206 @@ const SignupScreen = () => {
             />
           </div>
 
-          <Form
-            form={form}
-            name="signup"
-            onFinish={onFinish}
-            layout="vertical"
-            size="large"
-            className="space-y-6"
-          >
-            <Form.Item
-              name="email"
-              label={
-                <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Organization Email *
-                </span>
-              }
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your organization email!",
-                },
-                {
-                  type: "email",
-                  message: "Please enter a valid email address!",
-                },
-              ]}
+          {activeTab === "user" ? (
+            <Form
+              form={form}
+              name="signup"
+              onFinish={onFinish}
+              layout="vertical"
+              size="large"
+              className="space-y-6"
             >
-              <Input
-                suffix={
-                  <MailOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
+              {/* Name Input */}
+              <Form.Item
+                name="name"
+                label={
+                  <span className="text-gray-700 font-medium transition-colors duration-300">
+                    Full Name *
+                  </span>
                 }
-                placeholder="Enter your organization email"
-                className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
-                disabled={isLoading}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="phone"
-              label={
-                <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Phone Number *
-                </span>
-              }
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your phone number!",
-                },
-                {
-                  pattern: /^[+]?[\d\s\-()]+$/,
-                  message: "Please enter a valid phone number!",
-                },
-              ]}
-            >
-              <Input
-                suffix={
-                  <PhoneOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
-                }
-                placeholder="Enter your phone number"
-                className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
-                disabled={isLoading}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="password"
-              label={
-                <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Password *
-                </span>
-              }
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your password!",
-                },
-                {
-                  min: 6,
-                  message: "Password must be at least 6 characters!",
-                },
-              ]}
-            >
-              <Input.Password
-                placeholder="Enter your password"
-                iconRender={(visible) =>
-                  visible ? (
-                    <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" />
-                  ) : (
-                    <EyeInvisibleOutlined className="transition-colors duration-300 hover:text-[#007AFF]" />
-                  )
-                }
-                className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
-                disabled={isLoading}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="confirmPassword"
-              label={
-                <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Confirm Password *
-                </span>
-              }
-              rules={[
-                {
-                  required: true,
-                  message: "Please confirm your password!",
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(new Error("Passwords do not match!"));
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your full name!",
                   },
-                }),
-              ]}
-            >
-              <Input.Password
-                placeholder="Confirm your password"
-                iconRender={(visible) =>
-                  visible ? (
-                    <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" />
-                  ) : (
-                    <EyeInvisibleOutlined className="transition-colors duration-300 hover:text-[#007AFF]" />
-                  )
-                }
-                className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
-                disabled={isLoading}
-              />
-            </Form.Item>
-
-            <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={isLoading}
-                block
-                className="h-12 rounded-lg bg-[#28A745] border-[#28A745] hover:bg-green-600 hover:border-green-600 text-lg font-semibold transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                disabled={isLoading}
-                icon={isLoading ? <LoadingOutlined spin /> : null}
+                  {
+                    min: 2,
+                    message: "Name must be at least 2 characters!",
+                  },
+                ]}
               >
-                {isLoading ? "Creating Account..." : "Create Account"}
-              </Button>
-            </Form.Item>
+                <Input
+                  suffix={
+                    <UserOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
+                  }
+                  placeholder="Enter your full name"
+                  className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                  disabled={isLoading}
+                />
+              </Form.Item>
 
-            <div className="text-center space-y-3 animate-fade-in-up">
-              <div>
-                <span className="text-gray-600 transition-colors duration-300">
-                  Already have an account?{" "}
-                  <Link
-                    to="/login"
-                    className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300 transform hover:scale-105 inline-block"
-                  >
-                    Sign in
-                  </Link>
-                </span>
+              <Form.Item
+                name="email"
+                label={
+                  <span className="text-gray-700 font-medium transition-colors duration-300">
+                    Organization Email *
+                  </span>
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your organization email!",
+                  },
+                  {
+                    type: "email",
+                    message: "Please enter a valid email address!",
+                  },
+                ]}
+              >
+                <Input
+                  suffix={
+                    <MailOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
+                  }
+                  placeholder="Enter your organization email"
+                  className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                  disabled={isLoading}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="phone"
+                label={
+                  <span className="text-gray-700 font-medium transition-colors duration-300">
+                    Phone Number *
+                  </span>
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your phone number!",
+                  },
+                  {
+                    pattern: /^[+]?[\d\s\-()]+$/,
+                    message: "Please enter a valid phone number!",
+                  },
+                ]}
+              >
+                <Input
+                  suffix={
+                    <PhoneOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
+                  }
+                  placeholder="Enter your phone number"
+                  className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                  disabled={isLoading}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="password"
+                label={
+                  <span className="text-gray-700 font-medium transition-colors duration-300">
+                    Password *
+                  </span>
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: "Please input your password!",
+                  },
+                  {
+                    min: 6,
+                    message: "Password must be at least 6 characters!",
+                  },
+                ]}
+              >
+                <Input.Password
+                  placeholder="Enter your password"
+                  iconRender={(visible) =>
+                    visible ? (
+                      <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" />
+                    ) : (
+                      <EyeInvisibleOutlined className="transition-colors duration-300 hover:text-[#007AFF]" />
+                    )
+                  }
+                  className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                  disabled={isLoading}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="confirmPassword"
+                label={
+                  <span className="text-gray-700 font-medium transition-colors duration-300">
+                    Confirm Password *
+                  </span>
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: "Please confirm your password!",
+                  },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue("password") === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(new Error("Passwords do not match!"));
+                    },
+                  }),
+                ]}
+              >
+                <Input.Password
+                  placeholder="Confirm your password"
+                  iconRender={(visible) =>
+                    visible ? (
+                      <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" />
+                    ) : (
+                      <EyeInvisibleOutlined className="transition-colors duration-300 hover:text-[#007AFF]" />
+                    )
+                  }
+                  className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                  disabled={isLoading}
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={isLoading}
+                  block
+                  className="h-12 rounded-lg bg-[#28A745] border-[#28A745] hover:bg-green-600 hover:border-green-600 text-lg font-semibold transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  disabled={isLoading}
+                  icon={isLoading ? <LoadingOutlined spin /> : null}
+                >
+                  {isLoading ? "Creating Account..." : "Create Account"}
+                </Button>
+              </Form.Item>
+            </Form>
+          ) : (
+            <div className="text-center py-12 animate-fade-in-up">
+              <div className="text-gray-500 text-lg mb-4">
+                Vendor registration coming soon!
               </div>
+              <p className="text-gray-400">
+                We're working on vendor registration features.
+              </p>
             </div>
-          </Form>
+          )}
+
+          <div className="text-center space-y-3 animate-fade-in-up">
+            <div>
+              <span className="text-gray-600 transition-colors duration-300">
+                Already have an account?{" "}
+                <Link
+                  to="/login"
+                  className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300 transform hover:scale-105 inline-block"
+                >
+                  Sign in
+                </Link>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

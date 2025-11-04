@@ -9,6 +9,7 @@ import { ProtectedRoute } from "../shared/components/ProtectedRoute";
 import LoginScreen from "@/pages/Auth/LoginScreen";
 import SignupScreen from "@/pages/Auth/SignupScreen";
 
+
 export const router = createBrowserRouter([
   {
     element: <App />,
