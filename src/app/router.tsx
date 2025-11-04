@@ -6,8 +6,8 @@ import DashboardPage from "../pages/Dashboard/DashboardPage";
 import UsersPage from "../pages/Users/UsersPage";
 import Error401 from "../pages/ErrorPages/401";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
-import LoginScreen from "@/shared/components/auth/LoginScreen";
-import SignupScreen from "@/shared/components/auth/SignupScreen";
+import LoginScreen from "@/pages/Auth/LoginScreen";
+import SignupScreen from "@/pages/Auth/SignupScreen";
 
 export const router = createBrowserRouter([
   {
