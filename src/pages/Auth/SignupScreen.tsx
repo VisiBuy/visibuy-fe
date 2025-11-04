@@ -1,6 +1,6 @@
 // SignupScreen.tsx
 import React, { useState } from "react";
-import { Form, Input, Button, message, Spin, Tabs } from "antd";
+import { Form, Input, Button, message, Spin, Tabs, notification } from "antd";
 import {
   EyeInvisibleOutlined,
   EyeTwoTone,
@@ -8,6 +8,8 @@ import {
   PhoneOutlined,
   LoadingOutlined,
   UserOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../public/images/VisiBuy-White Colored 1.svg";
@@ -30,46 +32,81 @@ const SignupScreen = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = React.useState("user");
 
-const onFinish = async (values: SignupFormValues) => {
-  if (values.password !== values.confirmPassword) {
-    message.error("Passwords do not match!");
-    return;
-  }
+  // Configure notification placement
+  const [api, contextHolder] = notification.useNotification();
 
-  setIsSubmitting(true);
-  try {
-    await register({
-      name: values.name,
-      email: values.email,
-      phone: values.phone,
-      password: values.password,
-    } as any).unwrap(); // Add 'as any' here
-
-    message.success({
-      content: `Welcome ${values.name}! Account created successfully. Redirecting...`,
-      duration: 3,
-      className: "custom-success-message",
+  const showSuccessNotification = (name: string) => {
+    api.success({
+      message: (
+        <span className="font-semibold text-green-900">Welcome aboard!</span>
+      ),
+      description: `Welcome ${name}! Your account has been created successfully. Redirecting...`,
+      placement: 'topRight',
+      icon: <CheckCircleOutlined className="text-green-500" />,
+      className: "custom-success-notification",
       style: {
-        marginTop: "20vh",
+        background: "#f6ffed",
+        border: "1px solid #b7eb8f",
+        borderRadius: "8px",
+        boxShadow: "0 4px 12px rgba(82, 196, 26, 0.2)",
       },
-    });
-
-    setTimeout(() => {
-      navigate("/");
-    }, 2000);
-  } catch (err: any) {
-    message.error({
-      content: err?.data?.message || "Registration failed. Please try again.",
       duration: 3,
-      className: "custom-error-message",
-      style: {
-        marginTop: "20vh",
-      },
     });
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+  };
+
+  const showErrorNotification = (errorMessage: string) => {
+    api.error({
+      message: (
+        <span className="font-semibold text-red-900">Registration Failed</span>
+      ),
+      description: errorMessage,
+      placement: 'topRight',
+      icon: <CloseCircleOutlined className="text-red-500" />,
+      className: "custom-error-notification",
+      style: {
+        background: "#fff2f0",
+        border: "1px solid #ffccc7",
+        borderRadius: "8px",
+        boxShadow: "0 4px 12px rgba(255, 77, 79, 0.2)",
+      },
+      duration: 4,
+    });
+  };
+
+  const onFinish = async (values: SignupFormValues) => {
+    if (values.password !== values.confirmPassword) {
+      showErrorNotification("Passwords do not match. Please try again.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await register({
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        password: values.password,
+      } as any).unwrap();
+
+      showSuccessNotification(values.name);
+
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    } catch (err: any) {
+      showErrorNotification(err?.data?.message || "Registration failed. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleTabChange = (key: string) => {
+    if (key === "vendor") {
+      navigate("/register/vendor");
+    } else {
+      setActiveTab(key);
+    }
+  };
 
   const loadingIcon = (
     <LoadingOutlined
@@ -104,6 +141,8 @@ const onFinish = async (values: SignupFormValues) => {
 
   return (
     <div className="min-h-screen flex transition-all duration-300 ease-in-out">
+      {contextHolder}
+      
       {/* Loading Overlay */}
       {isSubmitting && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300">
@@ -158,7 +197,7 @@ const onFinish = async (values: SignupFormValues) => {
             <Tabs
               type="card"
               activeKey={activeTab}
-              onChange={setActiveTab}
+              onChange={handleTabChange}
               items={tabItems}
               className="[&_.ant-tabs-nav-list]:justify-center [&_.ant-tabs-tab]:!m-0 [&_.ant-tabs-tab]:!px-6 [&_.ant-tabs-tab-btn]:!text-gray-700 [&_.ant-tabs-tab]:hover:!bg-[#f5f9ff] [&_.ant-tabs-card]:!border-none [&_.ant-tabs-nav]:!border-none [&_.ant-tabs-nav-wrap]:!border-none"
             />
@@ -332,7 +371,7 @@ const onFinish = async (values: SignupFormValues) => {
                   htmlType="submit"
                   loading={isLoading}
                   block
-                  className="h-12 rounded-lg bg-[#28A745] border-[#28A745] hover:bg-green-600 hover:border-green-600 text-lg font-semibold transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="h-12 rounded-lg bg-[#28A745] border-[#28A745] hover:bg-green-600 hover:border-green-600 text-base font-[400] transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   disabled={isLoading}
                   icon={isLoading ? <LoadingOutlined spin /> : null}
                 >
@@ -340,16 +379,7 @@ const onFinish = async (values: SignupFormValues) => {
                 </Button>
               </Form.Item>
             </Form>
-          ) : (
-            <div className="text-center py-12 animate-fade-in-up">
-              <div className="text-gray-500 text-lg mb-4">
-                Vendor registration coming soon!
-              </div>
-              <p className="text-gray-400">
-                We're working on vendor registration features.
-              </p>
-            </div>
-          )}
+          ) : null}
 
           <div className="text-center space-y-3 animate-fade-in-up">
             <div>
