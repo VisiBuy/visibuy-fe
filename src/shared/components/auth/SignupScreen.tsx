@@ -1,23 +1,18 @@
 // SignupScreen.tsx
-import React from 'react';
-import { 
-  Form, 
-  Input, 
-  Button, 
-  message,
-  Spin
-} from 'antd';
-import { 
-  EyeInvisibleOutlined, 
+import React, { useState } from "react";
+import { Form, Input, Button, message, Spin, Tabs } from "antd";
+import {
+  EyeInvisibleOutlined,
   EyeTwoTone,
   MailOutlined,
   PhoneOutlined,
   LoadingOutlined,
-} from '@ant-design/icons';
-import { Link, useNavigate } from 'react-router-dom';
-import Logo from '../../../public/images/VisiBuy-White Colored 1.svg';
-import lock from '../../../public/icons/lock.svg';
-import { useRegisterMutation } from '@/features/auth/authApi';
+} from "@ant-design/icons";
+import { Link, useNavigate } from "react-router-dom";
+import Logo from "../../../public/images/VisiBuy-White Colored 1.svg";
+import lock from "../../../public/icons/lock.svg";
+import { useRegisterMutation } from "@/features/auth/authApi";
+import type { TabsProps } from "antd";
 
 interface SignupFormValues {
   email: string;
@@ -30,43 +25,43 @@ const SignupScreen = () => {
   const [register, { isLoading }] = useRegisterMutation();
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = React.useState("user");
 
   const onFinish = async (values: SignupFormValues) => {
     if (values.password !== values.confirmPassword) {
-      message.error('Passwords do not match!');
+      message.error("Passwords do not match!");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const result = await register({ 
-        email: values.email, 
+      const result = await register({
+        email: values.email,
         phone: values.phone,
-        password: values.password 
+        password: values.password,
       }).unwrap();
-      
+
       message.success({
-        content: 'Account created successfully! Redirecting...',
+        content: "Account created successfully! Redirecting...",
         duration: 2,
-        className: 'custom-success-message',
+        className: "custom-success-message",
         style: {
-          marginTop: '20vh',
-        }
+          marginTop: "20vh",
+        },
       });
-      
+
       setTimeout(() => {
-        navigate('/login');
+        navigate("/login");
       }, 1500);
-      
     } catch (err: any) {
       message.error({
-        content: err?.data?.message || 'Registration failed. Please try again.',
+        content: err?.data?.message || "Registration failed. Please try again.",
         duration: 3,
-        className: 'custom-error-message',
+        className: "custom-error-message",
         style: {
-          marginTop: '20vh',
-        }
+          marginTop: "20vh",
+        },
       });
     } finally {
       setIsSubmitting(false);
@@ -74,14 +69,35 @@ const SignupScreen = () => {
   };
 
   const loadingIcon = (
-    <LoadingOutlined 
-      style={{ 
+    <LoadingOutlined
+      style={{
         fontSize: 24,
-        color: '#28A745'
-      }} 
-      spin 
+        color: "#28A745",
+      }}
+      spin
     />
   );
+
+  const tabItems: TabsProps["items"] = [
+    {
+      key: "user",
+      label: (
+        <span className="text-gray-700 border-gray-100  bg-[#F4F9FF] font-[400] text-sm">
+          Sign up as User
+        </span>
+      ),
+      children: null,
+    },
+    {
+      key: "vendor",
+      label: (
+        <span className="text-gray-700 bg-[#F4F9FF] border-gray-100 font-[400] text-sm tracking-[1%]">
+          Sign up as Vendor
+        </span>
+      ),
+      children: null,
+    },
+  ];
 
   return (
     <div className="min-h-screen flex transition-all duration-300 ease-in-out">
@@ -90,7 +106,9 @@ const SignupScreen = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300">
           <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center space-y-4 transform scale-105 transition-transform duration-300">
             <Spin indicator={loadingIcon} size="large" />
-            <p className="text-gray-700 font-semibold animate-pulse">Creating your account...</p>
+            <p className="text-gray-700 font-semibold animate-pulse">
+              Creating your account...
+            </p>
           </div>
         </div>
       )}
@@ -101,14 +119,14 @@ const SignupScreen = () => {
         </div>
 
         <div className="flex gap-2 mt-20 items-center animate-fade-in-up">
-          <img 
-            src={lock} 
-            alt="lock" 
-            className='w-[51px] h-[51px] transform hover:scale-110 transition-transform duration-300'
+          <img
+            src={lock}
+            alt="lock"
+            className="w-[51px] h-[51px] transform hover:scale-110 transition-transform duration-300"
           />
           <div className="flex justify-center items-center">
-            <h4 className='text-xl text-white font-semibold animate-pulse-slow'>
-              Create Account
+            <h4 className="text-xl text-white font-semibold animate-pulse-slow">
+              Sign Up
             </h4>
           </div>
         </div>
@@ -116,18 +134,31 @@ const SignupScreen = () => {
 
       <div className="w-full md:w-3/5 p-8 bg-white flex items-center justify-center animate-fade-in">
         <div className="w-full max-w-md border border-[#E3E3E3] rounded-2xl shadow-xl p-8 transform hover:shadow-2xl transition-all duration-500 ease-in-out bg-white">
-          
           <div className="md:hidden flex items-center space-x-2 text-[#007AFF] mb-8 justify-center animate-bounce-in">
-            <img src={Logo} alt="logo" className="h-8 transform hover:scale-110 transition-transform duration-300" />
+            <img
+              src={Logo}
+              alt="logo"
+              className="h-8 transform hover:scale-110 transition-transform duration-300"
+            />
           </div>
 
           <div className="mb-8 text-center animate-fade-in-up">
-           <h2 className="text-4xl font-semibold text-gray-900 mb-2 transform hover:scale-105 transition-transform duration-300 tracking-[1%]">
+            <h2 className="text-4xl font-semibold text-gray-900 mb-2 transform hover:scale-105 transition-transform duration-300 tracking-[1%]">
               Create your account.
             </h2>
             <p className="text-gray-600 text-base font-[400] animate-pulse-slow">
-             Shop with certainty using VisiBuy.
+              Shop with certainty using VisiBuy.
             </p>
+          </div>
+
+          <div className="flex justify-center mb-6 animate-fade-in-up">
+            <Tabs
+              type="card"
+              activeKey={activeTab}
+              onChange={setActiveTab}
+              items={tabItems}
+              className="[&_.ant-tabs-nav-list]:justify-center [&_.ant-tabs-tab]:!m-0 [&_.ant-tabs-tab]:!px-6 [&_.ant-tabs-tab-btn]:!text-gray-700 [&_.ant-tabs-tab]:hover:!bg-[#f5f9ff] [&_.ant-tabs-card]:!border-none [&_.ant-tabs-nav]:!border-none [&_.ant-tabs-nav-wrap]:!border-none"
+            />
           </div>
 
           <Form
@@ -148,16 +179,18 @@ const SignupScreen = () => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your organization email!',
+                  message: "Please input your organization email!",
                 },
                 {
-                  type: 'email',
-                  message: 'Please enter a valid email address!',
+                  type: "email",
+                  message: "Please enter a valid email address!",
                 },
               ]}
             >
               <Input
-                suffix={<MailOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />}
+                suffix={
+                  <MailOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
+                }
                 placeholder="Enter your organization email"
                 className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isLoading}
@@ -174,16 +207,18 @@ const SignupScreen = () => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your phone number!',
+                  message: "Please input your phone number!",
                 },
                 {
                   pattern: /^[+]?[\d\s\-()]+$/,
-                  message: 'Please enter a valid phone number!',
+                  message: "Please enter a valid phone number!",
                 },
               ]}
             >
               <Input
-                suffix={<PhoneOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />}
+                suffix={
+                  <PhoneOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
+                }
                 placeholder="Enter your phone number"
                 className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isLoading}
@@ -200,20 +235,22 @@ const SignupScreen = () => {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your password!',
+                  message: "Please input your password!",
                 },
                 {
                   min: 6,
-                  message: 'Password must be at least 6 characters!',
+                  message: "Password must be at least 6 characters!",
                 },
               ]}
             >
               <Input.Password
                 placeholder="Enter your password"
                 iconRender={(visible) =>
-                  visible ? 
-                    <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" /> : 
+                  visible ? (
+                    <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" />
+                  ) : (
                     <EyeInvisibleOutlined className="transition-colors duration-300 hover:text-[#007AFF]" />
+                  )
                 }
                 className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isLoading}
@@ -230,14 +267,14 @@ const SignupScreen = () => {
               rules={[
                 {
                   required: true,
-                  message: 'Please confirm your password!',
+                  message: "Please confirm your password!",
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
-                    if (!value || getFieldValue('password') === value) {
+                    if (!value || getFieldValue("password") === value) {
                       return Promise.resolve();
                     }
-                    return Promise.reject(new Error('Passwords do not match!'));
+                    return Promise.reject(new Error("Passwords do not match!"));
                   },
                 }),
               ]}
@@ -245,9 +282,11 @@ const SignupScreen = () => {
               <Input.Password
                 placeholder="Confirm your password"
                 iconRender={(visible) =>
-                  visible ? 
-                    <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" /> : 
+                  visible ? (
+                    <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" />
+                  ) : (
                     <EyeInvisibleOutlined className="transition-colors duration-300 hover:text-[#007AFF]" />
+                  )
                 }
                 className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isLoading}
@@ -264,16 +303,16 @@ const SignupScreen = () => {
                 disabled={isLoading}
                 icon={isLoading ? <LoadingOutlined spin /> : null}
               >
-                {isLoading ? 'Creating Account...' : 'Create Account'}
+                {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
             </Form.Item>
 
             <div className="text-center space-y-3 animate-fade-in-up">
               <div>
                 <span className="text-gray-600 transition-colors duration-300">
-                  Already have an account?{' '}
-                <Link 
-                        to="/login"
+                  Already have an account?{" "}
+                  <Link
+                    to="/login"
                     className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300 transform hover:scale-105 inline-block"
                   >
                     Sign in
@@ -289,5 +328,3 @@ const SignupScreen = () => {
 };
 
 export default SignupScreen;
-
-
