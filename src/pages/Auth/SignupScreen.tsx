@@ -381,7 +381,7 @@ message: "Please enter a valid phone number (e.g. +2348012345678)."
             </Form>
           ) : null}
 
-          <div className="text-center space-y-3 animate-fade-in-up">
+          <div className="text-center text-sm space-y-3 animate-fade-in-up">
             <div>
               <span className="text-gray-600 transition-colors duration-300">
                 Already have an account?{" "}

@@ -244,7 +244,7 @@ const LoginScreen = () => {
               </Button>
             </Form.Item>
 
-            <div className="text-center space-y-3 animate-fade-in-up">
+            <div className="text-center text-sm space-y-3 animate-fade-in-up">
               <div>
                 <span className="text-gray-600 transition-colors duration-300">
                   Don't have an account?{" "}
