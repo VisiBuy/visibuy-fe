@@ -12,20 +12,15 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../public/images/VisiBuy-White Colored 1.svg";
 import lock from "../../public/icons/lock.svg";
 import { useLoginMutation } from "@/features/auth/authApi";
+import { LoginFormValues } from "@/types/types";
 
-interface LoginFormValues {
-  email: string;
-  password: string;
-  remember: boolean;
-}
+
 
 const LoginScreen = () => {
   const [login, { isLoading }] = useLoginMutation();
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Configure notification placement
   const [api, contextHolder] = notification.useNotification();
 
   const showSuccessNotification = () => {

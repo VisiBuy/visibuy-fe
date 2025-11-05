@@ -10,17 +10,14 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../public/images/VisiBuy-White Colored 1.svg";
 import lock from "../../public/icons/lock.svg";
+import { ForgotPasswordFormValues } from "@/types/types";
 
-interface ForgotPasswordFormValues {
-  email: string;
-}
+
 
 const ForgotPasswordScreen = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Configure notification placement
   const [api, contextHolder] = notification.useNotification();
 
   const showSuccessNotification = () => {
@@ -62,7 +59,6 @@ const ForgotPasswordScreen = () => {
   const onFinish = async (values: ForgotPasswordFormValues) => {
     setIsSubmitting(true);
     try {
-      // Simulate API call - replace with your actual forgot password API
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       showSuccessNotification();
