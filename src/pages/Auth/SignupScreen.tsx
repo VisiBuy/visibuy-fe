@@ -118,7 +118,7 @@ const SignupScreen = () => {
 
       <div className="hidden md:flex md:w-2/5 bg-[#007AFF] flex-col p-10 py-20 px-14 transition-all duration-500 ease-out fixed left-0 top-0 h-full overflow-y-auto">
         <div className="flex items-center space-x-2 text-white transform hover:scale-105 transition-transform duration-300">
-          <img src={Logo} alt="logo" className="transition-all duration-300" />
+          <img src={Logo} alt="logo" className="transition-all duration-300" draggable='false' />
         </div>
 
         <div className="flex gap-2 mt-20 items-center animate-fade-in-up">
@@ -126,6 +126,7 @@ const SignupScreen = () => {
             src={lock}
             alt="lock"
             className="w-[51px] h-[51px] transform hover:scale-110 transition-transform duration-300"
+          draggable='false'
           />
           <div className="flex justify-center items-center">
             <h4 className="text-xl text-white font-semibold animate-pulse-slow">
