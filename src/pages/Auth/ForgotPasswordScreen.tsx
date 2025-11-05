@@ -175,7 +175,7 @@ const ForgotPasswordScreen = () => {
                   <MailOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
                 }
                 placeholder="Enter your email address"
-                className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                className="rounded-lg transition-all duration-300 h-[51px] hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isSubmitting}
               />
             </Form.Item>

@@ -236,7 +236,7 @@ const SignupScreen = () => {
                     <UserOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
                   }
                   placeholder="Enter your full name"
-                  className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                  className="rounded-lg transition-all duration-300 h-[51px] hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                   disabled={isLoading}
                 />
               </Form.Item>
@@ -264,7 +264,7 @@ const SignupScreen = () => {
                     <MailOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
                   }
                   placeholder="Enter your organization email"
-                  className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                  className="rounded-lg transition-all h-[51px] duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                   disabled={isLoading}
                 />
               </Form.Item>
@@ -292,7 +292,7 @@ message: "Please enter a valid phone number (e.g. +2348012345678)."
                     <PhoneOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
                   }
                   placeholder="Enter your phone number"
-                  className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                  className="rounded-lg transition-all h-[51px] duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                   disabled={isLoading}
                 />
               </Form.Item>
@@ -324,7 +324,7 @@ message: "Please enter a valid phone number (e.g. +2348012345678)."
                       <EyeInvisibleOutlined className="transition-colors duration-300 hover:text-[#007AFF]" />
                     )
                   }
-                  className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                  className="rounded-lg transition-all h-[51px] duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                   disabled={isLoading}
                 />
               </Form.Item>
@@ -360,7 +360,7 @@ message: "Please enter a valid phone number (e.g. +2348012345678)."
                       <EyeInvisibleOutlined className="transition-colors duration-300 hover:text-[#007AFF]" />
                     )
                   }
-                  className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                  className="rounded-lg transition-all h-[51px] duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                   disabled={isLoading}
                 />
               </Form.Item>

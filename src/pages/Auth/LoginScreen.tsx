@@ -182,7 +182,7 @@ const LoginScreen = () => {
                   <MailOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
                 }
                 placeholder="Enter your email or phone number"
-                className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                className="rounded-lg transition-all duration-300 h-[51px] hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isLoading}
               />
             </Form.Item>
@@ -214,7 +214,7 @@ const LoginScreen = () => {
                     <EyeInvisibleOutlined className="transition-colors duration-300 hover:text-[#007AFF]" />
                   )
                 }
-                className="rounded-lg transition-all duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                className="rounded-lg transition-all duration-300 h-[51px] hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isLoading}
               />
             </Form.Item>
