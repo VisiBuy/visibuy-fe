@@ -16,7 +16,7 @@ import Sidebar from "./Sidebar";
 
 const { TextArea } = Input;
 
-const OnboardingLayout: React.FC = () => {
+const OnboardingLayout = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [form] = Form.useForm();
 
@@ -31,7 +31,7 @@ const OnboardingLayout: React.FC = () => {
   };
 
   const handleSubmit = (values: any) => {
-    console.log("✅ Submitted values:", values);
+    console.log(" Submitted values:", values);
     message.success("Information saved successfully!");
   };
 

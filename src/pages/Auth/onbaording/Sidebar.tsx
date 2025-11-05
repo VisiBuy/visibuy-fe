@@ -6,11 +6,9 @@ import {
   ShoppingCartOutlined,
 } from "@ant-design/icons";
 import clsx from "clsx";
+import { SidebarProps } from "@/types/types";
 
-interface SidebarProps {
-  currentStep: number;
-  setCurrentStep: (index: number) => void;
-}
+
 
 const sidebarItems = [
   { title: "Personal Information", icon: <UserOutlined /> },

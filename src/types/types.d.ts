@@ -17,3 +17,8 @@ export interface LoginFormValues {
 export interface ForgotPasswordFormValues {
   email: string;
 }
+
+export interface SidebarProps {
+  currentStep: number;
+  setCurrentStep: (index: number) => void;
+}
