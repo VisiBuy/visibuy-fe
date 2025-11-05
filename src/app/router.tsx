@@ -8,6 +8,8 @@ import Error401 from "../pages/ErrorPages/401";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
 import LoginScreen from "@/pages/Auth/LoginScreen";
 import SignupScreen from "@/pages/Auth/SignupScreen";
+import OnboardingPage from "@/pages/Auth/onbaording/OnboardingPage";
+import ForgotPasswordScreen from "@/pages/Auth/ForgotPasswordScreen";
 
 
 export const router = createBrowserRouter([
@@ -16,6 +18,8 @@ export const router = createBrowserRouter([
     children: [
         { path: "/login", element: <LoginScreen /> },
       { path: "/signup", element: <SignupScreen /> }, 
+            { path: "/reset-password", element: <ForgotPasswordScreen /> }, 
+
       {
         element: <ProtectedRoute />,
         children: [{ index: true, element: <DashboardPage /> }],

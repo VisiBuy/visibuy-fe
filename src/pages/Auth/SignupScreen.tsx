@@ -175,7 +175,7 @@ const SignupScreen = () => {
       </div>
 
       <div className="w-full md:w-3/5 p-8 bg-white flex items-center justify-center animate-fade-in">
-        <div className="w-full max-w-md border border-[#E3E3E3] rounded-2xl shadow-xl p-8 transform hover:shadow-2xl transition-all duration-500 ease-in-out bg-white">
+        <div className="w-full max-w-[496px] transform transition-all duration-500 ease-in-out bg-white">
           <div className="md:hidden flex items-center space-x-2 text-[#007AFF] mb-8 justify-center animate-bounce-in">
             <img
               src={Logo}
@@ -185,10 +185,10 @@ const SignupScreen = () => {
           </div>
 
           <div className="mb-8 text-center animate-fade-in-up">
-            <h2 className="text-4xl font-semibold text-gray-900 mb-2 transform hover:scale-105 transition-transform duration-300 tracking-[1%]">
+            <h2 className="text-3xl font-semibold text-gray-900 mb-2 transform hover:scale-105 transition-transform duration-300 tracking-[1%]">
               Create your account.
             </h2>
-            <p className="text-gray-600 text-base font-[400] animate-pulse-slow">
+            <p className="text-gray-600 text-sm font-[400] animate-pulse-slow">
               Shop with certainty using VisiBuy.
             </p>
           </div>
@@ -210,7 +210,7 @@ const SignupScreen = () => {
               onFinish={onFinish}
               layout="vertical"
               size="large"
-              className="space-y-6"
+              className="space-y-6 border border-[#E3E3E3] rounded-2xl shadow-sm p-8 hover:shadow-sm"
             >
               {/* Name Input */}
               <Form.Item
