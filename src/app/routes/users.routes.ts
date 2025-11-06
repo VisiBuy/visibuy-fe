@@ -15,6 +15,5 @@ export const usersRoutes: RouteConfig[] = [
       showInNav: true,
       icon: "users",
     },
-    
   }),
 ];
