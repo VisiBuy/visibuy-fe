@@ -20,8 +20,8 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
   },
   children: [
     createLazyRoute({
-      path: "", // Relative to basePath
-      lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create VerificationsListPage
+      path: "verification-list", 
+      lazy: () => import("../../pages/Verifications/VerificationListPage"), // Implemented VerificationsListPage
       meta: {
         title: "Verifications",
         breadcrumb: "Verifications",
