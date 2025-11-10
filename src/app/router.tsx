@@ -6,7 +6,15 @@ import DashboardPage from "../pages/Dashboard/DashboardPage";
 import UsersPage from "../pages/Users/UsersPage";
 import Error401 from "../pages/ErrorPages/401";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
+
+// ⚙️ Settings Pages (added)
 import SettingsPage from "../pages/Settings/SettingsPage";
+import ProfilePage from "../pages/Settings/ProfilePage";
+import SecurityPage from "../pages/Settings/SecurityPage";
+import NotificationsPage from "../pages/Settings/NotificationsPage"; // ✅ corrected name
+import PaymentPage from "../pages/Settings/PaymentPage";
+import ApiPage from "../pages/Settings/ApiPage";
+import HelpPage from "../pages/Settings/HelpPage";
 
 export const router = createBrowserRouter([
   {
@@ -24,9 +32,18 @@ export const router = createBrowserRouter([
         children: [{ path: "/users", element: <UsersPage /> }],
       },
 
+      // ✅ Settings routes (added cleanly here)
       {
         element: <ProtectedRoute />,
-        children: [{ path: "/settings", element: <SettingsPage /> }],
+        children: [
+          { path: "/settings", element: <SettingsPage /> },
+          { path: "/settings/profile", element: <ProfilePage /> },
+          { path: "/settings/security", element: <SecurityPage /> },
+          { path: "/settings/notifications", element: <NotificationsPage /> },
+          { path: "/settings/payment", element: <PaymentPage /> },
+          { path: "/settings/api", element: <ApiPage /> },
+          { path: "/settings/help", element: <HelpPage /> },
+        ],
       },
 
       { path: "/error/401", element: <Error401 /> },

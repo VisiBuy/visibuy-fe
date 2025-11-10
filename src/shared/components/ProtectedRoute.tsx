@@ -1,12 +1,3 @@
-import React from "react";
-import { Outlet } from "react-router-dom";
-
-export const ProtectedRoute: React.FC = () => {
-  // TEMP: Allow access without login while building pages
-  return <Outlet />;
-};
-
-
 // import React from "react";
 // import { Navigate, Outlet } from "react-router-dom";
 // import { useAppSelector } from "../../app/hooks";
@@ -32,3 +23,10 @@ export const ProtectedRoute: React.FC = () => {
 
 //   return <Outlet />;
 // };
+import React from "react";
+import { Outlet } from "react-router-dom";
+
+export const ProtectedRoute: React.FC = () => {
+  // TEMPORARY BYPASS: disable authentication for development
+  return <Outlet />;
+};
