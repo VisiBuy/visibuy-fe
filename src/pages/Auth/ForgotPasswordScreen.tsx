@@ -145,8 +145,8 @@ const ForgotPasswordScreen = () => {
               <p className="text-gray-800 font-semibold mb-6">{userEmail}</p>
               
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <p className="text-blue-800 text-sm">
-                  📧 <strong>Click the link in the email</strong> to set a new password for your account.
+                <p className="text-[#007AFF] text-sm">
+                <strong>Click the link in the email</strong> to set a new password for your account.
                 </p>
               </div>
 
