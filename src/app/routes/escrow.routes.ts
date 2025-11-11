@@ -24,6 +24,7 @@ export const escrowRoutes: RouteConfig[] = createRouteGroup({
       meta: {
         title: "Escrows",
         breadcrumb: "Escrows",
+        showInNav: true,
       },
     }),
     createPermissionRoute({
@@ -33,7 +34,7 @@ export const escrowRoutes: RouteConfig[] = createRouteGroup({
       meta: {
         title: "Escrow Details",
         breadcrumb: "Details",
-        
+        showInNav: false,
       },
     }),
   ],
