@@ -87,6 +87,10 @@ export interface VerificationDto {
   expiresAt?: ISODateString | null;
 }
 
+export interface ProductCardProps {
+  verification: VerificationDto;
+}
+
 export interface CreateVerificationRequest {
   productTitle: string;
   description: string;

@@ -254,7 +254,7 @@ const LoginScreen = () => {
               </div>
               <div>
                 <Link
-                  to="/reset-password"
+                  to="/forgot-password"
                   className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300 transform hover:scale-105 inline-block"
                 >
                   Forgot password?

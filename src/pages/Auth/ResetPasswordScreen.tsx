@@ -1,33 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Spin, notification } from "antd";
 import {
-  MailOutlined,
   LoadingOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  LockOutlined,
+  EyeInvisibleOutlined,
+  EyeTwoTone,
 } from "@ant-design/icons";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Logo from "../../public/images/VisiBuy-White Colored 1.svg";
 import lock from "../../public/icons/lock.svg";
-import { ForgotPasswordFormValues } from "@/types/types";
-import { useForgotPasswordMutation } from "@/features/auth/authApi";
+import { useResetPasswordMutation, useVerifyResetTokenMutation } from "@/features/auth/authApi";
 
-const ForgotPasswordScreen = () => {
+const ResetPasswordScreen = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [resetEmailSent, setResetEmailSent] = useState(false);
-  const [userEmail, setUserEmail] = useState("");
+  const [isVerifying, setIsVerifying] = useState(true);
+  const [tokenValid, setTokenValid] = useState(false);
   const [api, contextHolder] = notification.useNotification();
   
-  const [forgotPassword] = useForgotPasswordMutation();
+  const token = searchParams.get('token');
+  
+  const [verifyResetToken] = useVerifyResetTokenMutation();
+  const [resetPassword] = useResetPasswordMutation();
 
-  const showSuccessNotification = (email: string) => {
+  useEffect(() => {
+    const verifyToken = async () => {
+      if (!token) {
+        setTokenValid(false);
+        setIsVerifying(false);
+        showErrorNotification("Invalid or missing reset token");
+        return;
+      }
+
+      try {
+        await verifyResetToken({ token }).unwrap();
+        setTokenValid(true);
+      } catch (err: any) {
+        setTokenValid(false);
+        showErrorNotification(err?.data?.message || "Invalid or expired reset token");
+      } finally {
+        setIsVerifying(false);
+      }
+    };
+
+    verifyToken();
+  }, [token]);
+
+  const showSuccessNotification = () => {
     api.success({
       message: (
-        <span className="font-semibold text-green-900">Reset Link Sent!</span>
+        <span className="font-semibold text-green-900">Password Reset Successfully!</span>
       ),
-      description: `Password reset instructions have been sent to ${email}. Check your email and click the link to reset your password.`,
+      description: "Your password has been reset successfully. Redirecting to login...",
       placement: "topRight",
       icon: <CheckCircleOutlined className="text-green-500" />,
       className: "custom-success-notification",
@@ -37,7 +65,7 @@ const ForgotPasswordScreen = () => {
         borderRadius: "8px",
         boxShadow: "0 4px 12px rgba(82, 196, 26, 0.2)",
       },
-      duration: 8,
+      duration: 5,
     });
   };
 
@@ -54,36 +82,32 @@ const ForgotPasswordScreen = () => {
         borderRadius: "8px",
         boxShadow: "0 4px 12px rgba(255, 77, 79, 0.2)",
       },
-      duration: 6,
+      duration: 4,
     });
   };
 
-  const onFinish = async (values: ForgotPasswordFormValues) => {
+  const onFinish = async (values: { newPassword: string; confirmPassword: string }) => {
+    if (!token) return;
+
     setIsSubmitting(true);
     try {
-      const response = await forgotPassword({
-        email: values.email
+      await resetPassword({
+        token,
+        newPassword: values.newPassword,
+        confirmPassword: values.confirmPassword
       }).unwrap();
 
-      setUserEmail(values.email);
-      setResetEmailSent(true);
-      showSuccessNotification(values.email);
+      showSuccessNotification();
 
-      console.log('Reset password response:', response);
-
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
     } catch (err: any) {
       const errorMessage = err?.data?.message || 
-                          err?.error || 
-                          "Failed to send reset link. Please try again.";
+                          "Failed to reset password. Please try again.";
       showErrorNotification(errorMessage);
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const handleResendLink = () => {
-    if (userEmail) {
-      onFinish({ email: userEmail });
     }
   };
 
@@ -97,89 +121,37 @@ const ForgotPasswordScreen = () => {
     />
   );
 
-  // Success State - After email is sent
-  if (resetEmailSent) {
+  if (isVerifying) {
     return (
-      <div className="min-h-screen flex transition-all duration-300 ease-in-out">
-        {contextHolder}
-
-        <div className="hidden md:flex md:w-2/5 bg-[#007AFF] flex-col p-10 py-20 px-14 transition-all duration-500 ease-out">
-          <div className="flex items-center space-x-2 text-white transform hover:scale-105 transition-transform duration-300">
-            <img src={Logo} alt="logo" className="transition-all duration-300" draggable='false'/>
-          </div>
-
-          <div className="flex gap-2 mt-20 items-center animate-fade-in-up">
-            <img
-              src={lock}
-              alt="lock"
-              draggable='false'
-              className="w-[51px] h-[51px] transform hover:scale-110 transition-transform duration-300"
-            />
-            <div className="flex justify-center items-center">
-              <h4 className="text-xl text-white font-semibold animate-pulse-slow">
-                Check Your Email
-              </h4>
-            </div>
-          </div>
-        </div>
-
-        <div className="w-full md:w-3/5 p-8 bg-white flex items-center justify-center animate-fade-in">
-          <div className="w-full max-w-[496px] transform transition-all duration-500 ease-in-out bg-white">
-            <div className="md:hidden flex items-center space-x-2 text-[#007AFF] mb-8 justify-center animate-bounce-in">
-              <img
-                src={Logo}
-                alt="logo"
-                className="h-8 transform hover:scale-110 transition-transform duration-300"
-              />
-            </div>
-
-            <div className="mb-8 text-center animate-fade-in-up">
-              <CheckCircleOutlined className="text-green-500 text-5xl mb-4" />
-              <h2 className="text-3xl font-semibold text-gray-900 mb-2 transform hover:scale-105 transition-transform duration-300 tracking-[1%]">
-                Check Your Email
-              </h2>
-
-              <p className="text-gray-600 text-sm font-[400] mb-4">
-                We've sent a password reset link to:
-              </p>
-              <p className="text-gray-800 font-semibold mb-6">{userEmail}</p>
-              
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <p className="text-blue-800 text-sm">
-                  📧 <strong>Click the link in the email</strong> to set a new password for your account.
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <p className="text-gray-500 text-xs">
-                  Didn't receive the email? Check your spam folder or
-                </p>
-                <Button
-                  type="link"
-                  onClick={handleResendLink}
-                  loading={isSubmitting}
-                  className="text-[#007AFF] hover:text-blue-700 font-medium"
-                >
-                  {isSubmitting ? "Sending..." : "Resend reset link"}
-                </Button>
-              </div>
-            </div>
-
-            <div className="text-center">
-              <Link
-                to="/login"
-                className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300"
-              >
-                ← Back to Sign In
-              </Link>
-            </div>
-          </div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center space-y-4">
+          <Spin indicator={loadingIcon} size="large" />
+          <p className="text-gray-700 font-semibold animate-pulse">
+            Verifying reset token...
+          </p>
         </div>
       </div>
     );
   }
 
-  // Original Form State
+  if (!tokenValid) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-md">
+          <CloseCircleOutlined className="text-red-500 text-4xl mb-4" />
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">Invalid Token</h2>
+          <p className="text-gray-600 mb-6">The reset link is invalid or has expired.</p>
+          <Link 
+            to="/forgot-password" 
+            className="text-[#007AFF] hover:text-blue-700 font-medium text-lg transition-colors duration-300"
+          >
+            Request a new reset link
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex transition-all duration-300 ease-in-out">
       {contextHolder}
@@ -189,7 +161,7 @@ const ForgotPasswordScreen = () => {
           <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center space-y-4 transform scale-105 transition-transform duration-300">
             <Spin indicator={loadingIcon} size="large" />
             <p className="text-gray-700 font-semibold animate-pulse">
-              Sending reset link...
+              Resetting password...
             </p>
           </div>
         </div>
@@ -209,7 +181,7 @@ const ForgotPasswordScreen = () => {
           />
           <div className="flex justify-center items-center">
             <h4 className="text-xl text-white font-semibold animate-pulse-slow">
-              Reset Password
+              Set New Password
             </h4>
           </div>
         </div>
@@ -227,47 +199,86 @@ const ForgotPasswordScreen = () => {
 
           <div className="mb-8 text-center animate-fade-in-up">
             <h2 className="text-3xl font-semibold text-gray-900 mb-2 transform hover:scale-105 transition-transform duration-300 tracking-[1%]">
-              Forgot password?
+              Set New Password
             </h2>
 
             <p className="text-gray-600 text-sm font-[400] animate-pulse-slow">
-              Enter your registered email address and we'll send you a password reset link.
+              Create a new secure password for your account. Make sure it's strong and unique.
             </p>
           </div>
 
           <Form
             form={form}
-            name="forgotPassword"
+            name="resetPassword"
             onFinish={onFinish}
             layout="vertical"
             size="large"
             className="space-y-6 border border-[#E3E3E3] rounded-2xl shadow-sm p-8 hover:shadow-sm"
           >
             <Form.Item
-              name="email"
+              name="newPassword"
               label={
                 <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Email Address
+                  New Password
                 </span>
               }
               rules={[
                 {
                   required: true,
-                  message: "Please input your email address!",
+                  message: "Please input your new password!",
                 },
                 {
-                  type: "email",
-                  message: "Please enter a valid email address!",
+                  min: 8,
+                  message: "Password must be at least 8 characters!",
+                },
+                {
+                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+                  message: "Password must include uppercase, lowercase, number, and special character!",
                 },
               ]}
             >
-              <Input
-                suffix={
-                  <MailOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
+              <Input.Password
+                prefix={
+                  <LockOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
                 }
-                placeholder="Enter your email address"
+                placeholder="Enter your new password"
                 className="rounded-lg transition-all duration-300 h-[51px] hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isSubmitting}
+                iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="confirmPassword"
+              label={
+                <span className="text-gray-700 font-medium transition-colors duration-300">
+                  Confirm New Password
+                </span>
+              }
+              dependencies={['newPassword']}
+              rules={[
+                {
+                  required: true,
+                  message: "Please confirm your new password!",
+                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue('newPassword') === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(new Error('The two passwords do not match!'));
+                  },
+                }),
+              ]}
+            >
+              <Input.Password
+                prefix={
+                  <LockOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
+                }
+                placeholder="Confirm your new password"
+                className="rounded-lg transition-all duration-300 h-[51px] hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                disabled={isSubmitting}
+                iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
               />
             </Form.Item>
 
@@ -281,14 +292,14 @@ const ForgotPasswordScreen = () => {
                 disabled={isSubmitting}
                 icon={isSubmitting ? <LoadingOutlined spin /> : null}
               >
-                {isSubmitting ? "Sending..." : "Send Reset Link"}
+                {isSubmitting ? "Resetting..." : "Reset Password"}
               </Button>
             </Form.Item>
 
             <div className="text-center text-sm space-y-3 animate-fade-in-up">
               <div>
                 <span className="text-gray-600 transition-colors duration-300">
-                  Back to{" "}
+                  Remember your password?{" "}
                   <Link
                     to="/login"
                     className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300 transform hover:scale-105 inline-block"
@@ -299,10 +310,17 @@ const ForgotPasswordScreen = () => {
               </div>
             </div>
           </Form>
+
+          <div className="mt-6 text-center">
+            <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg border border-gray-200">
+              <LockOutlined className="mr-1" />
+              Password must be at least 8 characters with uppercase, lowercase, number, and special character
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default ForgotPasswordScreen;
+export default ResetPasswordScreen;
