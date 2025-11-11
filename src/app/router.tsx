@@ -17,6 +17,10 @@ export const router = createBrowserRouter([
         children: [{ index: true, element: <DashboardPage /> }],
       },
       {
+        path: "/",
+        element: <DashboardPage />,
+      },
+      {
         element: <ProtectedRoute requiredPermissions={["VIEW_USERS"]} />,
         children: [{ path: "/users", element: <UsersPage /> }],
       },
