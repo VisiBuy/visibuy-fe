@@ -6,14 +6,6 @@ import { ROUTES } from "./routes/constants";
 import { ProtectedLayout } from "../shared/layout/ProtectedLayout";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
 
-// ⚙️ Settings Pages (added)
-import SettingsPage from "../pages/Settings/SettingsPage";
-import ProfilePage from "../pages/Settings/ProfilePage";
-import SecurityPage from "../pages/Settings/SecurityPage";
-import NotificationsPage from "../pages/Settings/NotificationsPage";
-import PaymentPage from "../pages/Settings/PaymentPage";
-import ApiPage from "../pages/Settings/ApiPage";
-import HelpPage from "../pages/Settings/HelpPage";
 
 /**
  * Main application router
@@ -56,20 +48,9 @@ export const router = createBrowserRouter([
             })
           ),
 
-          // ✅ Settings routes
-          {
-            element: <ProtectedRoute />,
-            children: [
-              { path: "settings", element: <SettingsPage /> },
-              { path: "settings/profile", element: <ProfilePage /> },
-              { path: "settings/security", element: <SecurityPage /> },
-              { path: "settings/notifications", element: <NotificationsPage /> },
-              { path: "settings/payment", element: <PaymentPage /> },
-              { path: "settings/api", element: <ApiPage /> },
-              { path: "settings/help", element: <HelpPage /> },
-            ],
-          },
-        ],
+          
+          
+        ],   
       },
 
       // Root redirect
@@ -81,7 +62,7 @@ export const router = createBrowserRouter([
       // 404 catch-all
       {
         path: "*",
-        element: <Navigate to={ROUTES.DASHBOARD} replace />,
+        element: <Navigate to={ROUTES.ERROR.NOT_FOUND} replace />,
       },
     ],
   },

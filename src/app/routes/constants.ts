@@ -52,7 +52,13 @@ export const ROUTES = {
 
   // Settings
   SETTINGS: {
+    ROOT: "/settings",
     PROFILE: "/settings/profile",
+    SECURITY: "/settings/security",
+    NOTIFICATIONS: "/settings/notifications",
+    PAYMENT: "/settings/payment",
+    API: "/settings/api",
+    HELP: "/settings/help",
     API_KEYS: "/settings/api-keys",
   },
 

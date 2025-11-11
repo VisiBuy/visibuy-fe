@@ -87,13 +87,13 @@ export function useNavigationItems(): NavigationItem[] {
     });
 
     const navItems = extractNavItems(protectedRoutes);
-
+    return navItems;
     // Sort items by order (if specified) or alphabetically
-    return navItems.sort((a, b) => {
-      const orderA = a.meta?.title?.toLowerCase() || "";
-      const orderB = b.meta?.title?.toLowerCase() || "";
-      return orderA.localeCompare(orderB);
-    });
+    // return navItems.sort((a, b) => {
+    //   const orderA = a.meta?.title?.toLowerCase() || "";
+    //   const orderB = b.meta?.title?.toLowerCase() || "";
+    //   return orderA.localeCompare(orderB);
+    // });
   }, [userPermissions]);
 }
 
