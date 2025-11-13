@@ -232,7 +232,7 @@ const ResetPasswordScreen = () => {
                   message: "Password must be at least 8 characters!",
                 },
                 {
-                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/,
                   message: "Password must include uppercase, lowercase, number, and special character!",
                 },
               ]}
