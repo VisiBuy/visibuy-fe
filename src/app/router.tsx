@@ -7,29 +7,18 @@ import { ProtectedLayout } from "../shared/layout/ProtectedLayout";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
 import LoginScreen from "@/pages/Auth/LoginScreen";
 import SignupScreen from "@/pages/Auth/SignupScreen";
-import OnboardingPage from "@/pages/Auth/onbaording/OnboardingPage";
 import ForgotPasswordScreen from "@/pages/Auth/ForgotPasswordScreen";
 import ResetPasswordScreen from "@/pages/Auth/ResetPasswordScreen";
 
-
-
-/**
- * Main application router
- *
- * Combines auto-generated routes from src/app/routes
- * and manual routes for Settings and error pages.
- */
 export const router = createBrowserRouter([
   {
     element: <App />,
     children: [
-        { path: "/login", element: <LoginScreen /> },
-      { path: "/signup", element: <SignupScreen /> }, 
-            { path: "/forgot-password", element: <ForgotPasswordScreen /> }, 
-                        { path: "/reset-password", element: <ResetPasswordScreen /> }, 
+      { path: "/login", element: <LoginScreen /> },
+      { path: "/signup", element: <SignupScreen /> },
+      { path: "/forgot-password", element: <ForgotPasswordScreen /> },
+      { path: "/auth/reset-password", element: <ResetPasswordScreen /> },
 
-
-      // Public routes (auth, error pages) - no sidebar
       ...toRouteObjects(
         allRoutes.filter((route) => {
           const path = route.path;
@@ -59,10 +48,7 @@ export const router = createBrowserRouter([
               );
             })
           ),
-
-          
-          
-        ],   
+        ],
       },
 
       // Root redirect
