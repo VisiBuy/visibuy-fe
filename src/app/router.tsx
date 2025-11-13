@@ -4,13 +4,14 @@ import App from "./App";
 import { allRoutes, toRouteObjects } from "./routes";
 import { ROUTES } from "./routes/constants";
 import { ProtectedLayout } from "../shared/layout/ProtectedLayout";
+import { ProtectedRoute } from "../shared/components/ProtectedRoute";
+
 
 /**
  * Main application router
  *
- * This router is built from modular route configurations defined in
- * src/app/routes/. Routes are automatically converted to React Router
- * RouteObjects with proper protection, lazy loading, and metadata.
+ * Combines auto-generated routes from src/app/routes
+ * and manual routes for Settings and error pages.
  */
 export const router = createBrowserRouter([
   {
@@ -46,7 +47,10 @@ export const router = createBrowserRouter([
               );
             })
           ),
-        ],
+
+          
+          
+        ],   
       },
 
       // Root redirect
@@ -55,10 +59,10 @@ export const router = createBrowserRouter([
         element: <Navigate to={ROUTES.DASHBOARD} replace />,
       },
 
-      // 404 catch-all - must be last
+      // 404 catch-all
       {
         path: "*",
-        element: <Navigate to={ROUTES.DASHBOARD} replace />,
+        element: <Navigate to={ROUTES.ERROR.NOT_FOUND} replace />,
       },
     ],
   },

@@ -11,6 +11,7 @@ import { verificationRoutes } from "./verifications.routes";
 import { mediaRoutes } from "./media.routes";
 import { escrowRoutes } from "./escrow.routes";
 import { apiKeysRoutes } from "./apiKeys.routes";
+import { settingsRoutes } from "./settings.routes";
 import { errorRoutes } from "./error.routes";
 
 /**
@@ -24,12 +25,13 @@ export const allRoutes: RouteConfig[] = [
   ...errorRoutes,
 
   // Protected routes (order: specific to general)
-  ...verificationRoutes,
-  ...mediaRoutes,
-  ...escrowRoutes,
-  ...apiKeysRoutes,
-  ...usersRoutes,
   ...dashboardRoutes, // Dashboard should be last as it's often a catch-all
+  ...verificationRoutes,
+  ...apiKeysRoutes,
+  ...mediaRoutes,
+  ...settingsRoutes,
+  ...escrowRoutes,
+  ...usersRoutes,
 ];
 
 // Re-export types and utilities for convenience
@@ -45,4 +47,5 @@ export { verificationRoutes } from "./verifications.routes";
 export { mediaRoutes } from "./media.routes";
 export { escrowRoutes } from "./escrow.routes";
 export { apiKeysRoutes } from "./apiKeys.routes";
+export { settingsRoutes } from "./settings.routes";
 export { errorRoutes } from "./error.routes";
