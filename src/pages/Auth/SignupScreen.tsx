@@ -9,14 +9,13 @@ import {
   UserOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  LockOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../public/images/VisiBuy-White Colored 1.svg";
 import lock from "../../public/icons/lock.svg";
 import { useRegisterMutation } from "@/features/auth/authApi";
 import { SignupFormValues } from "@/types/types";
-
-
 
 const SignupScreen = () => {
   const [register, { isLoading }] = useRegisterMutation();
@@ -260,12 +259,19 @@ const SignupScreen = () => {
                   message: "Please input your password!",
                 },
                 {
-                  min: 6,
-                  message: "Password must be at least 6 characters!",
+                  min: 8,
+                  message: "Password must be at least 8 characters!",
+                },
+                {
+                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"|,.<>/?~])[A-Za-z\d!@#$%^&*()_+\-=[\]{};':"|,.<>/?~]{8,}$/,
+                  message: "Password must include uppercase, lowercase, number, and special character!",
                 },
               ]}
             >
               <Input.Password
+                prefix={
+                  <LockOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
+                }
                 placeholder="Enter your password"
                 iconRender={(visible) =>
                   visible ? (
@@ -302,6 +308,9 @@ const SignupScreen = () => {
               ]}
             >
               <Input.Password
+                prefix={
+                  <LockOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
+                }
                 placeholder="Confirm your password"
                 iconRender={(visible) =>
                   visible ? (
@@ -343,6 +352,17 @@ const SignupScreen = () => {
               </span>
             </div>
           </div>
+
+          <div className="mt-6 text-center">
+  <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg border border-gray-200">
+    <LockOutlined className="mr-1" />
+    Password must be at least 8 characters with uppercase, lowercase, number, and special character
+    <span className="block text-gray-400 text-[10px] mt-1">
+      (e.g., ! @ # $ % ^ & * ( ) _ + - = [ ] {'{'} {'}'} ; ' : " | , . &lt; &gt; / ? ~)
+    </span>
+  </div>
+</div>
+
         </div>
       </div>
     </div>
