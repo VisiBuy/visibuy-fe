@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Form, Input, Button, Checkbox, Spin, notification } from "antd";
 import {
   EyeInvisibleOutlined,
@@ -7,6 +7,7 @@ import {
   LoadingOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  LockOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../public/images/VisiBuy-White Colored 1.svg";
@@ -14,13 +15,11 @@ import lock from "../../public/icons/lock.svg";
 import { useLoginMutation } from "@/features/auth/authApi";
 import { LoginFormValues } from "@/types/types";
 
-
-
 const LoginScreen = () => {
   const [login, { isLoading }] = useLoginMutation();
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [api, contextHolder] = notification.useNotification();
 
   const showSuccessNotification = () => {
@@ -38,7 +37,7 @@ const LoginScreen = () => {
         borderRadius: "8px",
         boxShadow: "0 4px 12px rgba(82, 196, 26, 0.2)",
       },
-      duration: 2,
+      duration: 3,
     });
   };
 
@@ -59,10 +58,9 @@ const LoginScreen = () => {
     });
   };
 
-  const onFinish = async (values: LoginFormValues) => {
-    setIsSubmitting(true);
+  const onFinish = async (values: LoginFormValues & { remember?: boolean }) => {
     try {
-      const result = await login({
+      await login({
         email: values.email,
         password: values.password,
       }).unwrap();
@@ -71,15 +69,32 @@ const LoginScreen = () => {
 
       setTimeout(() => {
         navigate("/");
-      }, 1500);
+      }, 2000);
     } catch (err: any) {
-      showErrorNotification(
-        err?.data?.message ||
-          "Login failed. Please check your credentials and try again."
-      );
-    } finally {
-      setIsSubmitting(false);
+      let message = "Login failed. Please check your credentials and try again.";
+      if (err?.data?.message) {
+        message = err.data.message;
+      } else if (err?.status === 401) {
+        message = "Invalid email/phone or password. Please try again.";
+      } else if (err?.status === 429) {
+        message = "Too many failed attempts. Please try again later.";
+      } else if (err?.status >= 500) {
+        message = "Server error. Please try again later.";
+      }
+      showErrorNotification(message);
     }
+  };
+
+  const validateEmailOrPhone = (rule: any, value: string): Promise<void> => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[+]?[\d\s\-()]+$/;
+    if (!value) {
+      return Promise.reject(new Error("Please input your email or phone number!"));
+    }
+    if (!emailRegex.test(value) && !phoneRegex.test(value)) {
+      return Promise.reject(new Error("Please enter a valid email address or phone number!"));
+    }
+    return Promise.resolve();
   };
 
   const loadingIcon = (
@@ -96,7 +111,7 @@ const LoginScreen = () => {
     <div className="min-h-screen flex transition-all duration-300 ease-in-out">
       {contextHolder}
 
-      {isSubmitting && (
+      {isLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300">
           <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center space-y-4 transform scale-105 transition-transform duration-300">
             <Spin indicator={loadingIcon} size="large" />
@@ -107,7 +122,7 @@ const LoginScreen = () => {
         </div>
       )}
 
-      <div className="hidden md:flex md:w-2/5 bg-[#007AFF] flex-col p-10 py-20 px-14 transition-all duration-500 ease-out">
+      <div className="hidden md:flex md:w-2/5 bg-[#007AFF] flex-col p-10 py-20 px-14 transition-all duration-500 ease-out fixed left-0 top-0 h-full overflow-y-auto">
         <div className="flex items-center space-x-2 text-white transform hover:scale-105 transition-transform duration-300">
           <img src={Logo} alt="logo" className="transition-all duration-300" draggable='false' />
         </div>
@@ -117,7 +132,7 @@ const LoginScreen = () => {
             src={lock}
             alt="lock"
             className="w-[51px] h-[51px] transform hover:scale-110 transition-transform duration-300"
-          draggable='false'
+            draggable='false'
           />
           <div className="flex justify-center items-center">
             <h4 className="text-xl text-white font-semibold animate-pulse-slow">
@@ -127,7 +142,7 @@ const LoginScreen = () => {
         </div>
       </div>
 
-      <div className="w-full md:w-3/5 p-8 bg-white flex items-center justify-center animate-fade-in">
+      <div className="w-full md:w-3/5 p-8 bg-white flex items-center justify-center animate-fade-in md:ml-[40%]">
         <div className="w-full max-w-[496px] transform transition-all duration-500 ease-in-out bg-white">
           <div className="md:hidden flex items-center space-x-2 text-[#007AFF] mb-8 justify-center animate-bounce-in">
             <img
@@ -159,17 +174,13 @@ const LoginScreen = () => {
               name="email"
               label={
                 <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Email or Phone Number
+                  Email or Phone Number *
                 </span>
               }
               rules={[
                 {
                   required: true,
                   message: "Please input your email or phone number!",
-                },
-                {
-                  type: "email",
-                  message: "Please enter a valid email address!",
                 },
               ]}
             >
@@ -178,6 +189,7 @@ const LoginScreen = () => {
                   <MailOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
                 }
                 placeholder="Enter your email or phone number"
+                autoComplete="email"
                 className="rounded-lg transition-all duration-300 h-[51px] hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isLoading}
               />
@@ -187,7 +199,7 @@ const LoginScreen = () => {
               name="password"
               label={
                 <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Password
+                  Password *
                 </span>
               }
               rules={[
@@ -196,13 +208,17 @@ const LoginScreen = () => {
                   message: "Please input your password!",
                 },
                 {
-                  min: 6,
-                  message: "Password must be at least 6 characters!",
+                  min: 8,
+                  message: "Password must be at least 8 characters!",
                 },
               ]}
             >
               <Input.Password
+                prefix={
+                  <LockOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
+                }
                 placeholder="Enter your password"
+                autoComplete="current-password"
                 iconRender={(visible) =>
                   visible ? (
                     <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" />
@@ -240,7 +256,7 @@ const LoginScreen = () => {
               </Button>
             </Form.Item>
 
-            <div className="text-center text-sm space-y-3 animate-fade-in-up">
+            <div className="text-center text-sm space-y-3 animate-fade-in-up mt-6">
               <div>
                 <span className="text-gray-600 transition-colors duration-300">
                   Don't have an account?{" "}
