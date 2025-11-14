@@ -68,7 +68,6 @@ const ForgotPasswordScreen = () => {
       showSuccessNotification(values.email);
 
     } catch (err: any) {
-      // Enhanced error mapping
       let errorMessage = "Failed to send reset link. Please try again.";
       if (err?.data?.message) {
         errorMessage = err.data.message;
@@ -98,7 +97,6 @@ const ForgotPasswordScreen = () => {
     />
   );
 
-  // Success State - After email is sent
   if (resetEmailSent) {
     return (
       <div className="min-h-screen flex transition-all duration-300 ease-in-out">

@@ -101,7 +101,6 @@ const ResetPasswordScreen = () => {
         navigate("/login");
       }, 2000);
     } catch (err: any) {
-      // Enhanced error mapping
       let errorMessage = "Failed to reset password. Please try again.";
       if (err?.data?.message) {
         errorMessage = err.data.message;
