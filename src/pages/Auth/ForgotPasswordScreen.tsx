@@ -15,12 +15,11 @@ import { useForgotPasswordMutation } from "@/features/auth/authApi";
 const ForgotPasswordScreen = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [api, contextHolder] = notification.useNotification();
   
-  const [forgotPassword] = useForgotPasswordMutation();
+  const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
 
   const showSuccessNotification = (email: string) => {
     api.success({
@@ -37,7 +36,7 @@ const ForgotPasswordScreen = () => {
         borderRadius: "8px",
         boxShadow: "0 4px 12px rgba(82, 196, 26, 0.2)",
       },
-      duration: 8,
+      duration: 5,
     });
   };
 
@@ -54,14 +53,13 @@ const ForgotPasswordScreen = () => {
         borderRadius: "8px",
         boxShadow: "0 4px 12px rgba(255, 77, 79, 0.2)",
       },
-      duration: 6,
+      duration: 4,
     });
   };
 
   const onFinish = async (values: ForgotPasswordFormValues) => {
-    setIsSubmitting(true);
     try {
-      const response = await forgotPassword({
+      await forgotPassword({
         email: values.email
       }).unwrap();
 
@@ -69,20 +67,23 @@ const ForgotPasswordScreen = () => {
       setResetEmailSent(true);
       showSuccessNotification(values.email);
 
-      console.log('Reset password response:', response);
-
     } catch (err: any) {
-      const errorMessage = err?.data?.message || 
-                          err?.error || 
-                          "Failed to send reset link. Please try again.";
+      // Enhanced error mapping
+      let errorMessage = "Failed to send reset link. Please try again.";
+      if (err?.data?.message) {
+        errorMessage = err.data.message;
+      } else if (err?.status === 404) {
+        errorMessage = "No account found with that email. Please check and try again.";
+      } else if (err?.status >= 500) {
+        errorMessage = "Server error. Please try again later.";
+      }
       showErrorNotification(errorMessage);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   const handleResendLink = () => {
     if (userEmail) {
+      form.setFieldsValue({ email: userEmail });
       onFinish({ email: userEmail });
     }
   };
@@ -103,7 +104,7 @@ const ForgotPasswordScreen = () => {
       <div className="min-h-screen flex transition-all duration-300 ease-in-out">
         {contextHolder}
 
-        <div className="hidden md:flex md:w-2/5 bg-[#007AFF] flex-col p-10 py-20 px-14 transition-all duration-500 ease-out">
+        <div className="hidden md:flex md:w-2/5 bg-[#007AFF] flex-col p-10 py-20 px-14 transition-all duration-500 ease-out fixed left-0 top-0 h-full overflow-y-auto">
           <div className="flex items-center space-x-2 text-white transform hover:scale-105 transition-transform duration-300">
             <img src={Logo} alt="logo" className="transition-all duration-300" draggable='false'/>
           </div>
@@ -123,7 +124,7 @@ const ForgotPasswordScreen = () => {
           </div>
         </div>
 
-        <div className="w-full md:w-3/5 p-8 bg-white flex items-center justify-center animate-fade-in">
+        <div className="w-full md:w-3/5 p-8 bg-white flex items-center justify-center animate-fade-in md:ml-[40%]">
           <div className="w-full max-w-[496px] transform transition-all duration-500 ease-in-out bg-white">
             <div className="md:hidden flex items-center space-x-2 text-[#007AFF] mb-8 justify-center animate-bounce-in">
               <img
@@ -157,10 +158,11 @@ const ForgotPasswordScreen = () => {
                 <Button
                   type="link"
                   onClick={handleResendLink}
-                  loading={isSubmitting}
+                  loading={isLoading}
                   className="text-[#007AFF] hover:text-blue-700 font-medium"
+                  disabled={!userEmail}
                 >
-                  {isSubmitting ? "Sending..." : "Resend reset link"}
+                  {isLoading ? "Sending..." : "Resend reset link"}
                 </Button>
               </div>
             </div>
@@ -184,7 +186,7 @@ const ForgotPasswordScreen = () => {
     <div className="min-h-screen flex transition-all duration-300 ease-in-out">
       {contextHolder}
 
-      {isSubmitting && (
+      {isLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300">
           <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center space-y-4 transform scale-105 transition-transform duration-300">
             <Spin indicator={loadingIcon} size="large" />
@@ -195,7 +197,7 @@ const ForgotPasswordScreen = () => {
         </div>
       )}
 
-      <div className="hidden md:flex md:w-2/5 bg-[#007AFF] flex-col p-10 py-20 px-14 transition-all duration-500 ease-out">
+      <div className="hidden md:flex md:w-2/5 bg-[#007AFF] flex-col p-10 py-20 px-14 transition-all duration-500 ease-out fixed left-0 top-0 h-full overflow-y-auto">
         <div className="flex items-center space-x-2 text-white transform hover:scale-105 transition-transform duration-300">
           <img src={Logo} alt="logo" className="transition-all duration-300" draggable='false'/>
         </div>
@@ -215,7 +217,7 @@ const ForgotPasswordScreen = () => {
         </div>
       </div>
 
-      <div className="w-full md:w-3/5 p-8 bg-white flex items-center justify-center animate-fade-in">
+      <div className="w-full md:w-3/5 p-8 bg-white flex items-center justify-center animate-fade-in md:ml-[40%]">
         <div className="w-full max-w-[496px] transform transition-all duration-500 ease-in-out bg-white">
           <div className="md:hidden flex items-center space-x-2 text-[#007AFF] mb-8 justify-center animate-bounce-in">
             <img
@@ -247,7 +249,7 @@ const ForgotPasswordScreen = () => {
               name="email"
               label={
                 <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Email Address
+                  Email Address *
                 </span>
               }
               rules={[
@@ -266,8 +268,9 @@ const ForgotPasswordScreen = () => {
                   <MailOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
                 }
                 placeholder="Enter your email address"
+                autoComplete="email"
                 className="rounded-lg transition-all duration-300 h-[51px] hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
-                disabled={isSubmitting}
+                disabled={isLoading}
               />
             </Form.Item>
 
@@ -275,17 +278,17 @@ const ForgotPasswordScreen = () => {
               <Button
                 type="primary"
                 htmlType="submit"
-                loading={isSubmitting}
+                loading={isLoading}
                 block
                 className="h-12 rounded-lg bg-[#28A745] border-[#28A745] hover:bg-green-600 hover:border-green-600 text-base font-[400] transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                disabled={isSubmitting}
-                icon={isSubmitting ? <LoadingOutlined spin /> : null}
+                disabled={isLoading}
+                icon={isLoading ? <LoadingOutlined spin /> : null}
               >
-                {isSubmitting ? "Sending..." : "Send Reset Link"}
+                {isLoading ? "Sending..." : "Send Reset Link"}
               </Button>
             </Form.Item>
 
-            <div className="text-center text-sm space-y-3 animate-fade-in-up">
+            <div className="text-center text-sm space-y-3 animate-fade-in-up mt-6">
               <div>
                 <span className="text-gray-600 transition-colors duration-300">
                   Back to{" "}
