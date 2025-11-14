@@ -17,7 +17,6 @@ const ResetPasswordScreen = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [form] = Form.useForm();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVerifying, setIsVerifying] = useState(true);
   const [tokenValid, setTokenValid] = useState(false);
   const [api, contextHolder] = notification.useNotification();
@@ -25,7 +24,7 @@ const ResetPasswordScreen = () => {
   const token = searchParams.get('token');
   
   const [verifyResetToken] = useVerifyResetTokenMutation();
-  const [resetPassword] = useResetPasswordMutation();
+  const [resetPassword, { isLoading: isResetLoading }] = useResetPasswordMutation();
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -48,7 +47,7 @@ const ResetPasswordScreen = () => {
     };
 
     verifyToken();
-  }, [token]);
+  }, [token, verifyResetToken]);
 
   const showSuccessNotification = () => {
     api.success({
@@ -65,7 +64,7 @@ const ResetPasswordScreen = () => {
         borderRadius: "8px",
         boxShadow: "0 4px 12px rgba(82, 196, 26, 0.2)",
       },
-      duration: 5,
+      duration: 3,
     });
   };
 
@@ -89,7 +88,6 @@ const ResetPasswordScreen = () => {
   const onFinish = async (values: { newPassword: string; confirmPassword: string }) => {
     if (!token) return;
 
-    setIsSubmitting(true);
     try {
       await resetPassword({
         token,
@@ -101,13 +99,20 @@ const ResetPasswordScreen = () => {
 
       setTimeout(() => {
         navigate("/login");
-      }, 3000);
+      }, 2000);
     } catch (err: any) {
-      const errorMessage = err?.data?.message || 
-                          "Failed to reset password. Please try again.";
+      // Enhanced error mapping
+      let errorMessage = "Failed to reset password. Please try again.";
+      if (err?.data?.message) {
+        errorMessage = err.data.message;
+      } else if (err?.status === 400) {
+        errorMessage = "Invalid token or passwords do not match.";
+      } else if (err?.status === 401) {
+        errorMessage = "Token expired. Please request a new reset link.";
+      } else if (err?.status >= 500) {
+        errorMessage = "Server error. Please try again later.";
+      }
       showErrorNotification(errorMessage);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -156,7 +161,7 @@ const ResetPasswordScreen = () => {
     <div className="min-h-screen flex transition-all duration-300 ease-in-out">
       {contextHolder}
 
-      {isSubmitting && (
+      {isResetLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300">
           <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center space-y-4 transform scale-105 transition-transform duration-300">
             <Spin indicator={loadingIcon} size="large" />
@@ -167,7 +172,7 @@ const ResetPasswordScreen = () => {
         </div>
       )}
 
-      <div className="hidden md:flex md:w-2/5 bg-[#007AFF] flex-col p-10 py-20 px-14 transition-all duration-500 ease-out">
+      <div className="hidden md:flex md:w-2/5 bg-[#007AFF] flex-col p-10 py-20 px-14 transition-all duration-500 ease-out fixed left-0 top-0 h-full overflow-y-auto">
         <div className="flex items-center space-x-2 text-white transform hover:scale-105 transition-transform duration-300">
           <img src={Logo} alt="logo" className="transition-all duration-300" draggable='false'/>
         </div>
@@ -187,7 +192,7 @@ const ResetPasswordScreen = () => {
         </div>
       </div>
 
-      <div className="w-full md:w-3/5 p-8 bg-white flex items-center justify-center animate-fade-in">
+      <div className="w-full md:w-3/5 p-8 bg-white flex items-center justify-center animate-fade-in md:ml-[40%]">
         <div className="w-full max-w-[496px] transform transition-all duration-500 ease-in-out bg-white">
           <div className="md:hidden flex items-center space-x-2 text-[#007AFF] mb-8 justify-center animate-bounce-in">
             <img
@@ -219,7 +224,7 @@ const ResetPasswordScreen = () => {
               name="newPassword"
               label={
                 <span className="text-gray-700 font-medium transition-colors duration-300">
-                  New Password
+                  New Password *
                 </span>
               }
               rules={[
@@ -231,10 +236,6 @@ const ResetPasswordScreen = () => {
                   min: 8,
                   message: "Password must be at least 8 characters!",
                 },
-                {
-                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`])[A-Za-z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/,
-                  message: "Password must include uppercase, lowercase, number, and special character!",
-                },
               ]}
             >
               <Input.Password
@@ -242,9 +243,16 @@ const ResetPasswordScreen = () => {
                   <LockOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
                 }
                 placeholder="Enter your new password"
+                autoComplete="new-password"
                 className="rounded-lg transition-all duration-300 h-[51px] hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
-                disabled={isSubmitting}
-                iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                disabled={isResetLoading}
+                iconRender={(visible) =>
+                  visible ? (
+                    <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" />
+                  ) : (
+                    <EyeInvisibleOutlined className="transition-colors duration-300 hover:text-[#007AFF]" />
+                  )
+                }
               />
             </Form.Item>
 
@@ -252,7 +260,7 @@ const ResetPasswordScreen = () => {
               name="confirmPassword"
               label={
                 <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Confirm New Password
+                  Confirm New Password *
                 </span>
               }
               dependencies={['newPassword']}
@@ -276,9 +284,16 @@ const ResetPasswordScreen = () => {
                   <LockOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
                 }
                 placeholder="Confirm your new password"
+                autoComplete="new-password"
                 className="rounded-lg transition-all duration-300 h-[51px] hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
-                disabled={isSubmitting}
-                iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                disabled={isResetLoading}
+                iconRender={(visible) =>
+                  visible ? (
+                    <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" />
+                  ) : (
+                    <EyeInvisibleOutlined className="transition-colors duration-300 hover:text-[#007AFF]" />
+                  )
+                }
               />
             </Form.Item>
 
@@ -286,17 +301,17 @@ const ResetPasswordScreen = () => {
               <Button
                 type="primary"
                 htmlType="submit"
-                loading={isSubmitting}
+                loading={isResetLoading}
                 block
                 className="h-12 rounded-lg bg-[#28A745] border-[#28A745] hover:bg-green-600 hover:border-green-600 text-base font-[400] transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                disabled={isSubmitting}
-                icon={isSubmitting ? <LoadingOutlined spin /> : null}
+                disabled={isResetLoading}
+                icon={isResetLoading ? <LoadingOutlined spin /> : null}
               >
-                {isSubmitting ? "Resetting..." : "Reset Password"}
+                {isResetLoading ? "Resetting..." : "Reset Password"}
               </Button>
             </Form.Item>
 
-            <div className="text-center text-sm space-y-3 animate-fade-in-up">
+            <div className="text-center text-sm space-y-3 animate-fade-in-up mt-6">
               <div>
                 <span className="text-gray-600 transition-colors duration-300">
                   Remember your password?{" "}
@@ -314,7 +329,7 @@ const ResetPasswordScreen = () => {
           <div className="mt-6 text-center">
             <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg border border-gray-200">
               <LockOutlined className="mr-1" />
-              Password must be at least 8 characters with uppercase, lowercase, number, and special character
+              Password must be at least 8 characters long.
             </div>
           </div>
         </div>
