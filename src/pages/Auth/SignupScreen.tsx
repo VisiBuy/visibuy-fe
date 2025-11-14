@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Input, Button, message, Spin, notification } from "antd";
+import { Form, Input, Button, message, Spin, notification, Checkbox } from "antd";
 import {
   EyeInvisibleOutlined,
   EyeTwoTone,
@@ -21,7 +21,6 @@ const SignupScreen = () => {
   const [register, { isLoading }] = useRegisterMutation();
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -64,12 +63,6 @@ const SignupScreen = () => {
   };
 
   const onFinish = async (values: SignupFormValues) => {
-    if (values.password !== values.confirmPassword) {
-      showErrorNotification("Passwords do not match. Please try again.");
-      return;
-    }
-
-    setIsSubmitting(true);
     try {
       await register({
         name: values.name,
@@ -84,9 +77,15 @@ const SignupScreen = () => {
         navigate("/");
       }, 2000);
     } catch (err: any) {
-      showErrorNotification(err?.data?.message || "Registration failed. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      let message = "Registration failed. Please try again.";
+      if (err?.data?.message) {
+        message = err.data.message;
+      } else if (err?.status === 409) {
+        message = "Account already exists. Try signing in instead?";
+      } else if (err?.status >= 500) {
+        message = "Server error. Please try again later.";
+      }
+      showErrorNotification(message);
     }
   };
 
@@ -104,7 +103,7 @@ const SignupScreen = () => {
     <div className="min-h-screen flex transition-all duration-300 ease-in-out">
       {contextHolder}
       
-      {isSubmitting && (
+      {isLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300">
           <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center space-y-4 transform scale-105 transition-transform duration-300">
             <Spin indicator={loadingIcon} size="large" />
@@ -262,10 +261,6 @@ const SignupScreen = () => {
                   min: 8,
                   message: "Password must be at least 8 characters!",
                 },
-                {
-                  pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"|,.<>/?~])[A-Za-z\d!@#$%^&*()_+\-=[\]{};':"|,.<>/?~]{8,}$/,
-                  message: "Password must include uppercase, lowercase, number, and special character!",
-                },
               ]}
             >
               <Input.Password
@@ -273,6 +268,7 @@ const SignupScreen = () => {
                   <LockOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
                 }
                 placeholder="Enter your password"
+                autoComplete="new-password"
                 iconRender={(visible) =>
                   visible ? (
                     <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" />
@@ -292,6 +288,7 @@ const SignupScreen = () => {
                   Confirm Password *
                 </span>
               }
+              dependencies={["password"]}
               rules={[
                 {
                   required: true,
@@ -312,6 +309,7 @@ const SignupScreen = () => {
                   <LockOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
                 }
                 placeholder="Confirm your password"
+                autoComplete="new-password"
                 iconRender={(visible) =>
                   visible ? (
                     <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" />
@@ -322,6 +320,30 @@ const SignupScreen = () => {
                 className="rounded-lg transition-all h-[51px] duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isLoading}
               />
+            </Form.Item>
+
+            <Form.Item
+              name="consent"
+              valuePropName="checked"
+              rules={[
+                {
+                  required: true,
+                  type: "boolean",
+                  message: "You must agree to the terms and privacy policy.",
+                },
+              ]}
+            >
+              <Checkbox>
+                I agree to the{" "}
+                <Link to="/terms" className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300">
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link to="/privacy" className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300">
+                  Privacy Policy
+                </Link>
+                .
+              </Checkbox>
             </Form.Item>
 
             <Form.Item>
@@ -354,14 +376,11 @@ const SignupScreen = () => {
           </div>
 
           <div className="mt-6 text-center">
-  <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg border border-gray-200">
-    <LockOutlined className="mr-1" />
-    Password must be at least 8 characters with uppercase, lowercase, number, and special character
-    <span className="block text-gray-400 text-[10px] mt-1">
-      (e.g., ! @ # $ % ^ & * ( ) _ + - = [ ] {'{'} {'}'} ; ' : " | , . &lt; &gt; / ? ~)
-    </span>
-  </div>
-</div>
+            <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg border border-gray-200">
+              <LockOutlined className="mr-1" />
+              Password must be at least 8 characters long.
+            </div>
+          </div>
 
         </div>
       </div>
