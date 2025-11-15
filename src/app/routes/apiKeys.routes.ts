@@ -33,6 +33,7 @@ export const apiKeysRoutes: RouteConfig[] = createRouteGroup({
       meta: {
         title: "Create API Key",
         breadcrumb: "Create",
+        showInNav: false,
       },
     }),
     createPermissionRoute({
@@ -42,6 +43,7 @@ export const apiKeysRoutes: RouteConfig[] = createRouteGroup({
       meta: {
         title: "API Key Details",
         breadcrumb: "Details",
+        showInNav: false,
       },
     }),
   ],

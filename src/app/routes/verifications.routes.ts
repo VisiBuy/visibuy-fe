@@ -3,6 +3,7 @@ import {
   createPermissionRoute,
   createLazyRoute,
   createRouteGroup,
+  createProtectedRoute,
 } from "./builders";
 import { ROUTES } from "./constants";
 
@@ -19,9 +20,9 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
     icon: "verifications",
   },
   children: [
-    createLazyRoute({
-      path: "", // Relative to basePath
-      lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create VerificationsListPage
+    createProtectedRoute({
+      path: "verification-list", 
+      lazy: () => import("../../pages/Verifications/VerificationListPage"), // Implemented VerificationsListPage
       meta: {
         title: "Verifications",
         breadcrumb: "Verifications",
@@ -45,6 +46,7 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
       meta: {
         title: "Verification Details",
         breadcrumb: "Details",
+        showInNav: false,
       },
     }),
     createPermissionRoute({
@@ -54,6 +56,7 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
       meta: {
         title: "Edit Verification",
         breadcrumb: "Edit",
+        showInNav: false,
       },
     }),
   ],

@@ -14,9 +14,7 @@ export const ROUTES = {
   // Dashboard
   DASHBOARD: "/dashboard",
 
-
-  // Seller Profile
-  SELLER_PROFILE: "/seller-profile",
+  // Users
   USERS: {
     LIST: "/users",
     CREATE: "/users/create",
@@ -24,17 +22,6 @@ export const ROUTES = {
     EDIT: (id: string) => `/users/${id}/edit`,
   },
 
-  //Seller Profile Edit
-  SELLER_PROFILE_EDIT: "/seller-profile/edit",
-  EDIT: {
-    LIST : "/users",
-    CREATE : "/users/edit",
-    DETAIL: (id: string) => `/users/${id}`,
-    EDIT : (id: string) => `/users/${id}/edit`,
-  },
-  
-  //Seller Public Profile
-  SELLER_PUBLIC_PROFILE: "/seller-profile/public",
   // Verifications
   VERIFICATIONS: {
     LIST: "/verifications",
@@ -65,7 +52,13 @@ export const ROUTES = {
 
   // Settings
   SETTINGS: {
+    ROOT: "/settings",
     PROFILE: "/settings/profile",
+    SECURITY: "/settings/security",
+    NOTIFICATIONS: "/settings/notifications",
+    PAYMENT: "/settings/payment",
+    API: "/settings/api",
+    HELP: "/settings/help",
     API_KEYS: "/settings/api-keys",
   },
 
