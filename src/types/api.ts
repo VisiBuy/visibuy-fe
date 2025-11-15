@@ -166,3 +166,12 @@ export interface ValidationErrorResponse {
   message: string | string[] | ValidationErrorItem[];
   error: string;
 }
+/* Seller Profile*/
+export interface sellerProfileDto {
+  uid : UUID,
+  firstName : string,
+  lastName : string,
+  email : string | number ,
+  tel : number,
+  bio : string
+}
