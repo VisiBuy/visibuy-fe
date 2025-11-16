@@ -62,6 +62,8 @@ export const ROUTES = {
     API_KEYS: "/settings/api-keys",
   },
 
+  NOTIFICATION: "/notification",
+
   // Error pages
   ERROR: {
     NOT_FOUND: "/404",

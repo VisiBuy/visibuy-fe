@@ -13,6 +13,7 @@ import { escrowRoutes } from "./escrow.routes";
 import { apiKeysRoutes } from "./apiKeys.routes";
 import { settingsRoutes } from "./settings.routes";
 import { errorRoutes } from "./error.routes";
+import { notificationRoutes } from "./notification.routes";
 
 /**
  * All application routes combined
@@ -32,6 +33,7 @@ export const allRoutes: RouteConfig[] = [
   ...settingsRoutes,
   ...escrowRoutes,
   ...usersRoutes,
+  ...notificationRoutes,
 ];
 
 // Re-export types and utilities for convenience
@@ -49,3 +51,4 @@ export { escrowRoutes } from "./escrow.routes";
 export { apiKeysRoutes } from "./apiKeys.routes";
 export { settingsRoutes } from "./settings.routes";
 export { errorRoutes } from "./error.routes";
+export { notificationRoutes } from "./notification.routes";
