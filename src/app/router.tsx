@@ -1,31 +1,63 @@
-import React from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "./App";
-import LoginPage from "../pages/Auth/LoginPage";
-import DashboardPage from "../pages/Dashboard/DashboardPage";
-import UsersPage from "../pages/Users/UsersPage";
-import Error401 from "../pages/ErrorPages/401";
+import { allRoutes, toRouteObjects } from "./routes";
+import { ROUTES } from "./routes/constants";
+import UsersPage from "@/pages/Users/UsersPage";
+import { ProtectedLayout } from "../shared/layout/ProtectedLayout";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
 
 export const router = createBrowserRouter([
   {
     element: <App />,
     children: [
-      { path: "/login", element: <LoginPage /> },
+      // Public routes (auth, error pages) - no sidebar
+      ...toRouteObjects(
+        allRoutes.filter((route) => {
+          const path = route.path;
+          return (
+            path === "/login" ||
+            path.startsWith("/error") ||
+            path.startsWith("/forgot-password") ||
+            path.startsWith("/reset-password") ||
+            path.startsWith("/signup")
+          );
+        })
+      ),
+
+      // Protected routes with sidebar layout
       {
-        element: <ProtectedRoute />,
-        children: [{ index: true, element: <DashboardPage /> }],
+        element: <ProtectedLayout />,
+        children: [
+          ...toRouteObjects(
+            allRoutes.filter((route) => {
+              const path = route.path;
+              return (
+                path !== "/login" &&
+                !path.startsWith("/error") &&
+                !path.startsWith("/forgot-password") &&
+                !path.startsWith("/reset-password") &&
+                !path.startsWith("/signup")
+              );
+            })
+          ),
+        ],
       },
+
+      // Root redirect
       {
         path: "/",
-        element: <DashboardPage />,
+        element: <Navigate to={ROUTES.DASHBOARD} replace />,
       },
       {
         element: <ProtectedRoute requiredPermissions={["VIEW_USERS"]} />,
         children: [{ path: "/users", element: <UsersPage /> }],
       },
-      { path: "/error/401", element: <Error401 /> },
-      { path: "*", element: <Navigate to="/" replace /> },
+
+      // 404 catch-all
+      {
+        path: "*",
+        element: <Navigate to={ROUTES.ERROR.NOT_FOUND} replace />,
+      },
     ],
   },
 ]);

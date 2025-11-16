@@ -1,16 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 import { useLogoutMutation } from '../../features/auth/authApi';
-import DashboardLayout from '@/layout/DashboardLayout';
-
 
 export default function DashboardPage() {
   const user = useAppSelector(s => s.auth.user);
-  const [logout] = useLogoutMutation();
 
   return (
-    <DashboardLayout>
     <div className="p-6">
       <header className="flex justify-between items-center mb-6">
         <h1 className="text-2xl">Visibuy Dashboard</h1>
@@ -19,11 +14,12 @@ export default function DashboardPage() {
           <button className="px-3 py-1 border" onClick={() => logout()}>Logout</button>
         </div>
       </header>
-      <nav className="mb-6">
-        <Link to="/users" className="mr-4">Users</Link>
-      </nav>
       <main>
-        <p>Welcome to the starter dashboard. Build your features here.</p>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <p className="text-gray-700 dark:text-gray-300">
+            Welcome to the starter dashboard. Build your features here.
+          </p>
+        </div>
       </main>
     </div>
     </DashboardLayout>
