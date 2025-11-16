@@ -11,6 +11,7 @@ import {
   FiX,
   FiLogOut,
   FiChevronRight,
+  FiBell 
 } from "react-icons/fi";
 
 /**
@@ -32,6 +33,7 @@ export const iconMap: Record<
   close: FiX,
   logout: FiLogOut,
   chevronRight: FiChevronRight,
+  notification: FiBell,
 };
 
 /**
