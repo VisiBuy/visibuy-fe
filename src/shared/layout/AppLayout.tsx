@@ -19,8 +19,8 @@ export const AppLayout: React.FC<{ children?: React.ReactNode }> = ({
     switch (path) {
       case "/":
         return "Dashboard";
-      case "/settings":
-        return "Settings";
+      // case "/settings":
+      //   return "Settings";
       case "/verification":
         return "Verification";
       case "/reports":
@@ -49,7 +49,7 @@ export const AppLayout: React.FC<{ children?: React.ReactNode }> = ({
 
       {/* Main Content */}
       <main className='flex-1 overflow-y-auto justify-center md:ml-64'>
-        <div className='p-0 bg-blue-600 md:h-28'>
+        <div className='p-0 bg-blue-500 md:h-28'>
           {/* Mobile menu button */}
           <div className='flex md:hidden bg-blue-600 mb-4 h-14 p-0 items-center justify-between'>
             <button
