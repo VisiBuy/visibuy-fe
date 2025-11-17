@@ -15,7 +15,7 @@ export const dashboardRoutes: RouteConfig[] = [
     path: ROUTES.DASHBOARD,
     lazy: () => import("../../pages/Dashboard/DashboardPage"),
     meta: {
-      title: "Dashboard",
+      title: "Home",
       showInNav: true,
       icon: "dashboard",
     },

@@ -39,14 +39,14 @@ export const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
     return (
       <li>
         <button
-          type="button"
+          type='button'
           onClick={() => setExpanded((v) => !v)}
           className={`
             w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
             ${
               parentActive
-                ? "bg-blue-100 text-blue-700 font-medium dark:bg-blue-900 dark:text-blue-300"
-                : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+                ? "bg-blue-700 text-blue-700 font-medium dark:bg-blue-900 dark:text-black"
+                : "text-gray-700 hover:text-blue-300"
             }
             ${className}
           `}
@@ -54,11 +54,11 @@ export const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
           aria-expanded={expanded}
         >
           {item.icon && (
-            <span className="flex-shrink-0">
+            <span className='flex-shrink-0'>
               {renderIcon(item.icon, "w-5 h-5")}
             </span>
           )}
-          <span className="flex-1 truncate text-left">{item.label}</span>
+          <span className='flex-1 truncate text-left'>{item.label}</span>
           <span
             className={`transition-transform ${expanded ? "rotate-90" : ""}`}
           >
@@ -67,7 +67,7 @@ export const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
         </button>
 
         {expanded && (
-          <ul className="mt-1 ml-3 pl-3 border-l border-gray-200 dark:border-gray-800 space-y-1">
+          <ul className='mt-1 ml-3 pl-3 border-l border-gray-200 dark:border-gray-800 space-y-1'>
             {item.children!.map((child) => {
               const childActive =
                 location.pathname === child.path ||
@@ -96,21 +96,21 @@ export const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
           flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
           ${
             isActive || isExactMatch
-              ? "bg-blue-100 text-blue-700 font-medium dark:bg-blue-900 dark:text-blue-300"
-              : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+              ? "text-blue-700 font-bold text-xl"
+              : "text-gray-700 hover:text-blue-300 "
           }
           ${className}
         `}
         title={item.label}
       >
         {item.icon && (
-          <span className="flex-shrink-0">
+          <span className='flex-shrink-0'>
             {renderIcon(item.icon, "w-5 h-5")}
           </span>
         )}
-        <span className="flex-1 truncate">{item.label}</span>
+        <span className='flex-1 truncate'>{item.label}</span>
         {item.badge && (
-          <span className="flex-shrink-0 bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+          <span className='flex-shrink-0 bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full'>
             {item.badge}
           </span>
         )}
