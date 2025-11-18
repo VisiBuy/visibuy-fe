@@ -4,15 +4,13 @@ import {
   EyeInvisibleOutlined,
   ReloadOutlined,
   CopyOutlined,
-  BarChartOutlined,
-  ClockCircleOutlined,
 } from "@ant-design/icons";
 import { Tooltip, message } from "antd";
 import graph from "../../public/icons/graph-icon.svg";
 import mingcute from "../../public/icons/mingcute_time-line.svg";
 import copy from "../../public/icons/solar_copy-broken.svg";
 import eye from "../../public/icons/Group.svg";
-import { Eye } from "lucide-react";
+import reload from "../../public/icons/reload.svg";
 
 const API_PLACEHOLDER = "1234-5678-9012-3456";
 
@@ -33,10 +31,10 @@ export default function ApiPage(): JSX.Element {
 
   return (
     <div className="w-full min-h-screen bg-white rounded-md p-4 sm:p-6">
-      <div className="bg-gray-100 rounded-2xl shadow-md border-[#D9D9D9] p-5 mb-6">
+      <div className="bg-gray-100  p-5 mb-6">
         <h2 className="text-sm font-semibold mb-3">API Key</h2>
 
-        <div className="bg-gray-50 border border-gray-100 rounded-xl p-4">
+        <div className="bg-gray-50 border p-4 rounded-2xl shadow-md border-[#D9D9D9]">
           <div className="flex flex-col gap-3 md:flex-row md:items-center">
             <div className="bg-white border rounded-lg px-4 py-3 w-full text-sm tracking-wide text-gray-700 select-text flex items-center justify-between">
               <div className="truncate">
@@ -116,20 +114,27 @@ export default function ApiPage(): JSX.Element {
             </div>
           </div>
 
-          <button className="mt-4 bg-black text-white py-2 w-full rounded-xl flex items-center justify-center gap-2 text-sm">
-            <ReloadOutlined /> Generate New Key
+          <button className="mt-4 bg-[#000000] text-white py-2 w-full rounded-xl flex items-center justify-center gap-2 text-sm">
+            {/* <ReloadOutlined /> */}
+             <img
+                          src={reload}
+                          alt="lock"
+                          className="w-[13px] h-[13px] transform hover:scale-110 transition-transform duration-300"
+                          draggable="false"
+                        />
+             Generate New Key
           </button>
         </div>
       </div>
 
-      <div className="bg-gray-100 rounded-2xl shadow-md border-[#D9D9D9] p-5 mb-6">
+      <div className="bg-gray-100 p-5 mb-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-base font-semibold">Usage Statistics</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className=" rounded-2xlborder-[#D9D9D9] p-5 flex items-start gap-4">
-            <div className="p-3 rounded-lg bg-white">
+          <div className="p-5 flex items-start gap-4 rounded-2xl bg-white border-[#D9D9D9] shadow-md ">
+            <div className="p-3 ">
               <img
                 src={graph}
                 alt="lock"
@@ -143,14 +148,14 @@ export default function ApiPage(): JSX.Element {
             </div>
           </div>
 
-          <div className="rounded-2xl p-5 flex items-start gap-4">
-            <div className="p-3 rounded-lg bg-white">
+          <div className="rounded-2xl p-5 flex items-start gap-4 border-[#D9D9D9] shadow-md bg-white">
+            <div className="p-3">
               <img
                 src={mingcute}
                 alt="lock"
                 className="w-[39px] h-[40px] transform hover:scale-110 transition-transform duration-300"
                 draggable="false"
-              />{" "}
+              />
             </div>
             <div>
               <div className="text-xl font-bold">156ms</div>
@@ -160,7 +165,7 @@ export default function ApiPage(): JSX.Element {
         </div>
       </div>
 
-      <div className="bg-gray-100 rounded-2xl border-[#D9D9D9] shadow-md p-5 mb-6">
+      <div className="bg-gray-100 p-5 mb-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-base font-semibold">Recent Calls</h3>
           <button className="text-[#007AFF] text-base font-bold">
@@ -169,7 +174,7 @@ export default function ApiPage(): JSX.Element {
         </div>
 
         <div className="space-y-3">
-          <div className="flex justify-between items-center border rounded-xl p-4">
+          <div className="flex justify-between items-center border rounded-xl p-4 bg-white">
             <div>
               <div className="font-medium text-sm">POST /verifications</div>
               <div className="text-xs text-gray-500">October 9, 2025</div>
@@ -179,7 +184,7 @@ export default function ApiPage(): JSX.Element {
             </span>
           </div>
 
-          <div className="flex justify-between items-center border rounded-xl p-4">
+          <div className="flex justify-between items-center border rounded-xl p-4 bg-white">
             <div>
               <div className="font-medium text-sm">
                 PUT /verifications/VB-002
@@ -193,31 +198,35 @@ export default function ApiPage(): JSX.Element {
         </div>
       </div>
 
-      <div className="bg-gray-100 rounded-2xl shadow-md border-[#D9D9D9] p-5 mb-6">
-        <h3 className="text-lg font-semibold mb-4">Billing & Credits</h3>
-        <div className="mb-3 text-sm text-gray-500">Remaining Credits</div>
+      <div className="bg-gray-100  p-5 mb-6">
+        <h3 className="text-base font-semibold mb-4">Billing & Credits</h3>
+        <div className="rounded-2xl bg-white shadow-md border-[#D9D9D9] p-5">
+          <div className="mb-3 text-xs text-gray-500">Remaining Credits</div>
 
-        <div className="w-full bg-gray-200 h-3 rounded-full overflow-hidden mb-2">
-          <div className="bg-blue-500 h-full" style={{ width: "85%" }}></div>
+          <div className="w-full bg-gray-200 h-3 rounded-full overflow-hidden mb-2">
+            <div className="bg-blue-500 h-full" style={{ width: "85%" }}></div>
+          </div>
+
+          <div className="text-xs text-gray-500 mb-4">
+            85,000 / 100,000 • Next Renewal: November 1, 2025
+          </div>
+
+          <button className="bg-[#000000] text-white py-2 w-full rounded-xl text-sm">
+            Manage Billing
+          </button>
         </div>
-
-        <div className="text-xs text-gray-500 mb-4">
-          85,000 / 100,000 • Next Renewal: November 1, 2025
-        </div>
-
-        <button className="bg-black text-white py-2 w-full rounded-xl">
-          Manage Billing
-        </button>
       </div>
 
       <div className="bg-gray-100 rounded-2xl shadow-md border-[#D9D9D9] p-5">
-        <h3 className="text-lg font-semibold mb-3">API Documentation</h3>
-        <p className="text-sm text-gray-600 mb-4">
-          Check out our detailed documentation to integrate the API
-        </p>
-        <button className="bg-black text-white py-2 w-full rounded-xl">
-          View Documentation
-        </button>
+        <h3 className="text-base font-semibold mb-3">API Documentation</h3>
+        <div className="rounded-2xl shadow-md border-[#D9D9D9] p-5 bg-white">
+          <p className="text-xs text-gray-600 mb-4">
+            Check out our detailed documentation to integrate the API
+          </p>
+          <button className="bg-[#000000] text-white py-2 w-full rounded-xl text-sm">
+            View Documentation
+          </button>
+        </div>
       </div>
     </div>
   );
