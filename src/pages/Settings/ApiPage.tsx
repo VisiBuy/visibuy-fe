@@ -35,6 +35,7 @@ import {
   useDeleteApiKeyMutation,
   useRevokeApiKeyMutation,
 } from "@/features/auth/apiKeyApi";
+import { ApiKey } from "@/types/apiKey";
 
 const { Option } = Select;
 const { confirm } = Modal;
@@ -54,25 +55,9 @@ const AVAILABLE_PERMISSIONS = [
   "billing:read",
 ];
 
-// Define the API key interface based on your API response
-interface ApiKey {
-  id: string;
-  name: string;
-  key?: string;
-  permissions: {
-    read: boolean;
-    admin: boolean;
-    write: boolean;
-    delete: boolean;
-    scopes: string[];
-  };
-  revoked: boolean;
-  createdAt: string;
-  expiresAt?: string;
-  lastUsedAt?: string | null;
-}
 
-export default function ApiPage(): JSX.Element {
+
+export default function ApiPage() {
   const [visible, setVisible] = useState(false);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [isViewAllModalVisible, setIsViewAllModalVisible] = useState(false);
@@ -88,22 +73,18 @@ export default function ApiPage(): JSX.Element {
     expiresAt: "",
   });
 
-  // Fetch API keys from backend
   const { data: apiKeysResponse, isLoading, refetch } = useGetApiKeysQuery();
   const [createApiKey, { isLoading: isCreating }] = useCreateApiKeyMutation();
   const [deleteApiKey] = useDeleteApiKeyMutation();
   const [revokeApiKey] = useRevokeApiKeyMutation();
 
-  // Handle API response - fix TypeScript issues
   const apiKeys: ApiKey[] = React.useMemo(() => {
     if (!apiKeysResponse) return [];
 
-    // If the response is directly an array of API keys
     if (Array.isArray(apiKeysResponse)) {
       return apiKeysResponse;
     }
 
-    // If the response has an apiKeys property
     if (
       apiKeysResponse &&
       typeof apiKeysResponse === "object" &&
@@ -115,7 +96,6 @@ export default function ApiPage(): JSX.Element {
     return [];
   }, [apiKeysResponse]);
 
-  // Sort API keys by creation date (newest first) and get the latest one
   const sortedApiKeys = [...apiKeys].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
@@ -124,7 +104,6 @@ export default function ApiPage(): JSX.Element {
   const displayKey = latestApiKey?.key || latestApiKey?.id || "";
   const masked = "*".repeat(displayKey.length);
 
-  // Refresh API keys when component mounts
   useEffect(() => {
     refetch();
   }, [refetch]);
@@ -276,14 +255,12 @@ const handleRevoke = async (apiKeyId: string) => {
 
 const handleDelete = async (apiKeyId: string) => {
   try {
-    // Use the string ID directly - no need to convert to number
     await deleteApiKey(apiKeyId).unwrap();
     message.success("API key deleted successfully");
     refetch();
   } catch (error: any) {
     console.error("Delete API Key Error:", error);
     
-    // Show more specific error message
     if (error?.data?.message) {
       message.error(`Failed to delete API key: ${error.data.message}`);
     } else {
@@ -304,7 +281,6 @@ const handleDelete = async (apiKeyId: string) => {
 
   return (
     <div className="w-full min-h-screen bg-white rounded-md p-4 sm:p-6">
-      {/* API Key Section - Single Card with Latest Key */}
       <div className="bg-gray-100 p-5 mb-6">
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-sm font-semibold">API Key</h2>
