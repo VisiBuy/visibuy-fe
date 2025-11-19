@@ -257,31 +257,42 @@ export default function ApiPage(): JSX.Element {
     });
   };
 
-  const handleRevoke = async (apiKeyId: string) => {
-    try {
-      // Convert string ID to number if needed by your API
-      const id = parseInt(apiKeyId) || apiKeyId;
-      await revokeApiKey(id as any).unwrap();
-      message.success("API key revoked successfully");
-      refetch();
-    } catch (error) {
-      console.error("Revoke API Key Error:", error);
-      message.error("Failed to revoke API key");
-    }
-  };
 
-  const handleDelete = async (apiKeyId: string) => {
-    try {
-      // Convert string ID to number if needed by your API
-      const id = parseInt(apiKeyId) || apiKeyId;
-      await deleteApiKey(id as any).unwrap();
-      message.success("API key deleted successfully");
-      refetch();
-    } catch (error) {
-      console.error("Delete API Key Error:", error);
-      message.error("Failed to delete API key");
+const handleRevoke = async (apiKeyId: string) => {
+  try {
+    await revokeApiKey(apiKeyId).unwrap();
+    message.success("API key revoked successfully");
+    refetch();
+  } catch (error: any) {
+    console.error("Revoke API Key Error:", error);
+    
+    if (error?.data?.message) {
+      message.error(`Failed to revoke API key: ${error.data.message}`);
+    } else {
+      message.error("Failed to revoke API key. Please try again.");
     }
-  };
+  }
+};
+
+const handleDelete = async (apiKeyId: string) => {
+  try {
+    // Use the string ID directly - no need to convert to number
+    await deleteApiKey(apiKeyId).unwrap();
+    message.success("API key deleted successfully");
+    refetch();
+  } catch (error: any) {
+    console.error("Delete API Key Error:", error);
+    
+    // Show more specific error message
+    if (error?.data?.message) {
+      message.error(`Failed to delete API key: ${error.data.message}`);
+    } else {
+      message.error("Failed to delete API key. Please try again.");
+    }
+  }
+};
+
+
 
   if (isLoading) {
     return (
@@ -580,7 +591,6 @@ export default function ApiPage(): JSX.Element {
                 size="small"
               >
                 <div className="space-y-3">
-                  {/* Header */}
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="font-medium text-gray-900 text-sm">
@@ -726,7 +736,6 @@ export default function ApiPage(): JSX.Element {
         </div>
       </Modal>
 
-      {/* Rest of the sections remain the same */}
       <div className="bg-gray-100 p-5 mb-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-base font-semibold">Usage Statistics</h3>

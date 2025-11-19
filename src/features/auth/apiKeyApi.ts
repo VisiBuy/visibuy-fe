@@ -1,7 +1,7 @@
 import { baseApi } from "@/services/api/baseApi";
 
 interface ApiKey {
-  id: number;
+  id: string; 
   name: string;
   key?: string; 
   permissions: string[];
@@ -19,7 +19,7 @@ interface CreateApiKeyRequest {
 }
 
 interface CreateApiKeyResponse {
-  id: number;
+  id: string; // Changed from number to string
   name: string;
   key: string; 
   permissions: string[];
@@ -37,7 +37,7 @@ export const apiKeysApi = baseApi.injectEndpoints({
       providesTags: ['ApiKey'],
     }),
 
-    getApiKeyById: build.query<ApiKey, number>({
+    getApiKeyById: build.query<ApiKey, string>({ // Changed to string
       query: (id) => ({
         url: `/api-keys/${id}`,
         method: 'GET',
@@ -54,7 +54,7 @@ export const apiKeysApi = baseApi.injectEndpoints({
       invalidatesTags: ['ApiKey'],
     }),
 
-    deleteApiKey: build.mutation<void, number>({
+    deleteApiKey: build.mutation<void, string>({ 
       query: (id) => ({
         url: `/api-keys/${id}`,
         method: 'DELETE',
@@ -62,7 +62,7 @@ export const apiKeysApi = baseApi.injectEndpoints({
       invalidatesTags: ['ApiKey'],
     }),
 
-    revokeApiKey: build.mutation<void, number>({
+    revokeApiKey: build.mutation<void, string>({ 
       query: (id) => ({
         url: `/api-keys/${id}/revoke`,
         method: 'POST',
@@ -71,7 +71,6 @@ export const apiKeysApi = baseApi.injectEndpoints({
     }),
   }),
 });
-
 
 export const {
   useGetApiKeysQuery,
