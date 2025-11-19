@@ -8,7 +8,7 @@ import { ROUTES } from "./constants";
 export const authRoutes: RouteConfig[] = [
   createLazyRoute({
     path: ROUTES.AUTH.LOGIN,
-    lazy: () => import("../../pages/Auth/LoginPage"),
+    lazy: () => import("../../pages/Auth/LoginScreen"),
     meta: {
       title: "Login",
       showInNav: false,

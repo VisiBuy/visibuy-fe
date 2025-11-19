@@ -84,9 +84,9 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col items-center pb-16">
       {/*  Straight-Edged Navbar (Figma Accurate) */}
       <div className="w-full bg-blue-500 text-white py-4 sm:py-5 md:py-6 px-5 sm:px-6 relative flex items-center justify-center transition-all duration-300">
-        {/* Hamburger Menu */}
+        {/* Hamburger Menu - Hidden on desktop (lg and above) */}
         <button
-          className="absolute left-6 flex flex-col justify-center space-y-[4px] active:opacity-80 transition"
+          className="absolute left-6 flex flex-col justify-center space-y-[4px] active:opacity-80 transition lg:hidden"
           aria-label="Menu"
         >
           <span className="block h-[2px] w-5 bg-white rounded"></span>
@@ -99,10 +99,10 @@ export default function SettingsPage() {
       </div>
 
       {/*  Settings Container */}
-      <div className="w-full max-w-[420px] sm:max-w-[540px] md:max-w-[720px] lg:max-w-[900px] xl:max-w-[1100px] px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 py-6 sm:py-8 md:py-10 transition-all duration-300">
+      <div className="w-full max-w-[420px] sm:max-w-[540px] md:max-w-[720px] lg:max-w-[900px] xl:max-w-[1100px] px-4 sm:px-6 md:px-8 lg:px-16 xl:px-24 py-6 sm:py-8 md:py-10 transition-all duration-300">
         {settingsItems.map((section) => (
           <div key={section.section} className="space-y-3 mb-8">
-            <h2 className="text-gray-800 text-xs sm:text-sm md:text-base font-semibold uppercase tracking-wider px-1">
+            <h2 className="text-gray-800 text-xs sm:text-sm font-semibold uppercase tracking-wider px-1">
               {section.section}
             </h2>
 
@@ -133,11 +133,11 @@ export default function SettingsPage() {
                       )}
 
                       <div className="text-left leading-tight">
-                        <p className="text-gray-900 text-sm sm:text-base md:text-lg font-medium">
+                        <p className="text-gray-900 text-sm sm:text-base font-medium">
                           {label}
                         </p>
                         {subtitle && (
-                          <p className="text-gray-400 text-xs sm:text-sm md:text-base mt-0.5">
+                          <p className="text-gray-400 text-xs sm:text-sm mt-0.5">
                             {subtitle}
                           </p>
                         )}
@@ -154,12 +154,12 @@ export default function SettingsPage() {
         ))}
 
         {/*  Log Out Button */}
-        <button className="w-full bg-black text-white py-3.5 sm:py-4 md:py-5 rounded-[11.3px] font-semibold text-sm sm:text-base md:text-lg hover:bg-gray-900 active:scale-[0.99] transition-all duration-200">
+        <button className="w-full bg-black text-white py-3.5 sm:py-4 md:py-5 rounded-[11.3px] font-semibold text-sm sm:text-base hover:bg-gray-900 active:scale-[0.99] transition-all duration-200">
           Log Out
         </button>
 
         {/*  Version Label */}
-        <p className="text-center text-gray-400 text-xs sm:text-sm md:text-base mt-3">
+        <p className="text-center text-gray-400 text-xs sm:text-sm mt-3">
           VisiBuy v1.0.0
         </p>
       </div>

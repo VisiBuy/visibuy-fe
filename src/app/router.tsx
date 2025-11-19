@@ -5,12 +5,20 @@ import { ROUTES } from "./routes/constants";
 import UsersPage from "@/pages/Users/UsersPage";
 import { ProtectedLayout } from "../shared/layout/ProtectedLayout";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
+import LoginScreen from "@/pages/Auth/LoginScreen";
+import SignupScreen from "@/pages/Auth/SignupScreen";
+import ForgotPasswordScreen from "@/pages/Auth/ForgotPasswordScreen";
+import ResetPasswordScreen from "@/pages/Auth/ResetPasswordScreen";
 
 export const router = createBrowserRouter([
   {
     element: <App />,
     children: [
-      // Public routes (auth, error pages) - no sidebar
+      { path: "/login", element: <LoginScreen /> },
+      { path: "/signup", element: <SignupScreen /> },
+      { path: "/forgot-password", element: <ForgotPasswordScreen /> },
+      { path: "/auth/reset-password", element: <ResetPasswordScreen /> },
+
       ...toRouteObjects(
         allRoutes.filter((route) => {
           const path = route.path;

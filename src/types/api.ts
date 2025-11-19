@@ -26,6 +26,12 @@ export type ApiResult<T> = ApiSuccess<T> | ApiError;
 export interface LoginRequest { email: string; password: string; }
 export interface RegisterRequest { name: string; email: string; password: string; phone?: string; address?: string; }
 
+export  interface RegisterCredentials {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+}
 export interface AuthUser {
   id: UUID;
   name: string;
