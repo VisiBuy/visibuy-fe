@@ -1,8 +1,8 @@
-import React from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "./App";
 import { allRoutes, toRouteObjects } from "./routes";
 import { ROUTES } from "./routes/constants";
+import UsersPage from "@/pages/Users/UsersPage";
 import { ProtectedLayout } from "../shared/layout/ProtectedLayout";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
 import LoginScreen from "@/pages/Auth/LoginScreen";
@@ -55,6 +55,10 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <Navigate to={ROUTES.DASHBOARD} replace />,
+      },
+      {
+        element: <ProtectedRoute requiredPermissions={["VIEW_USERS"]} />,
+        children: [{ path: "/users", element: <UsersPage /> }],
       },
 
       // 404 catch-all
