@@ -24,7 +24,8 @@ import {
   Button,
   Space,
 } from "antd";
-
+import graph from "../../../public/icons/graph-icon.svg";
+import mingcute from "../../../public/icons/mingcute_time-line.svg";
 import copy from "../../../public/icons/solar_copy-broken.svg";
 import eye from "../../../public/icons/Group.svg";
 import reload from "../../../public/icons/reload.svg";

@@ -19,7 +19,7 @@ interface CreateApiKeyRequest {
 }
 
 interface CreateApiKeyResponse {
-  id: string; // Changed from number to string
+  id: string; 
   name: string;
   key: string; 
   permissions: string[];
@@ -37,7 +37,7 @@ export const apiKeysApi = baseApi.injectEndpoints({
       providesTags: ['ApiKey'],
     }),
 
-    getApiKeyById: build.query<ApiKey, string>({ // Changed to string
+    getApiKeyById: build.query<ApiKey, string>({ 
       query: (id) => ({
         url: `/api-keys/${id}`,
         method: 'GET',
