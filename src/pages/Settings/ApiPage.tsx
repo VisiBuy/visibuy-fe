@@ -7,8 +7,22 @@ import {
   CloseOutlined,
   CheckOutlined,
   ReloadOutlined,
+  EyeOutlined as ViewIcon,
+  DeleteOutlined,
+  StopOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
-import { message, Modal, Input, Select, DatePicker } from "antd";
+import {
+  message,
+  Modal,
+  Input,
+  Select,
+  DatePicker,
+  Card,
+  Tag,
+  Button,
+  Space,
+} from "antd";
 import graph from "../../public/icons/graph-icon.svg";
 import mingcute from "../../public/icons/mingcute_time-line.svg";
 import copy from "../../public/icons/solar_copy-broken.svg";
@@ -18,9 +32,12 @@ import dayjs from "dayjs";
 import {
   useCreateApiKeyMutation,
   useGetApiKeysQuery,
+  useDeleteApiKeyMutation,
+  useRevokeApiKeyMutation,
 } from "@/features/auth/apiKeyApi";
 
 const { Option } = Select;
+const { confirm } = Modal;
 
 const AVAILABLE_PERMISSIONS = [
   "verifications:read",
@@ -37,12 +54,28 @@ const AVAILABLE_PERMISSIONS = [
   "billing:read",
 ];
 
-// Remove the duplicate interface - use the one from apiKeyApi
-type ApiKey = any; // This will use the type from the API
+// Define the API key interface based on your API response
+interface ApiKey {
+  id: string;
+  name: string;
+  key?: string;
+  permissions: {
+    read: boolean;
+    admin: boolean;
+    write: boolean;
+    delete: boolean;
+    scopes: string[];
+  };
+  revoked: boolean;
+  createdAt: string;
+  expiresAt?: string;
+  lastUsedAt?: string | null;
+}
 
 export default function ApiPage(): JSX.Element {
   const [visible, setVisible] = useState(false);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
+  const [isViewAllModalVisible, setIsViewAllModalVisible] = useState(false);
   const [showNewKey, setShowNewKey] = useState(false);
   const [newlyCreatedKey, setNewlyCreatedKey] = useState("");
   const [newApiKeyData, setNewApiKeyData] = useState({
@@ -55,16 +88,43 @@ export default function ApiPage(): JSX.Element {
     expiresAt: "",
   });
 
-  const { data: apiKeysData, isLoading, refetch } = useGetApiKeysQuery();
+  // Fetch API keys from backend
+  const { data: apiKeysResponse, isLoading, refetch } = useGetApiKeysQuery();
   const [createApiKey, { isLoading: isCreating }] = useCreateApiKeyMutation();
+  const [deleteApiKey] = useDeleteApiKeyMutation();
+  const [revokeApiKey] = useRevokeApiKeyMutation();
 
-  const apiKeys: any[] = apiKeysData || [];
-  console.log({apiKeys})
+  // Handle API response - fix TypeScript issues
+  const apiKeys: ApiKey[] = React.useMemo(() => {
+    if (!apiKeysResponse) return [];
 
-  const latestApiKey = apiKeys.length > 0 ? apiKeys[0] : null;
+    // If the response is directly an array of API keys
+    if (Array.isArray(apiKeysResponse)) {
+      return apiKeysResponse;
+    }
+
+    // If the response has an apiKeys property
+    if (
+      apiKeysResponse &&
+      typeof apiKeysResponse === "object" &&
+      "apiKeys" in apiKeysResponse
+    ) {
+      return (apiKeysResponse as any).apiKeys || [];
+    }
+
+    return [];
+  }, [apiKeysResponse]);
+
+  // Sort API keys by creation date (newest first) and get the latest one
+  const sortedApiKeys = [...apiKeys].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+  const latestApiKey = sortedApiKeys[0];
+
   const displayKey = latestApiKey?.key || latestApiKey?.id || "";
   const masked = "*".repeat(displayKey.length);
 
+  // Refresh API keys when component mounts
   useEffect(() => {
     refetch();
   }, [refetch]);
@@ -72,9 +132,9 @@ export default function ApiPage(): JSX.Element {
   const handleCopy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      message.success("API key copied");
+      message.success("API key copied to clipboard");
     } catch (e) {
-      message.error("Unable to copy");
+      message.error("Unable to copy to clipboard");
     }
   };
 
@@ -97,7 +157,6 @@ export default function ApiPage(): JSX.Element {
         setShowNewKey(true);
         setIsCreateModalVisible(false);
         refetch();
-
         setNewApiKeyData({
           name: "",
           permissions: [
@@ -107,6 +166,7 @@ export default function ApiPage(): JSX.Element {
           ],
           expiresAt: "",
         });
+        message.success("API key created successfully!");
       } else {
         message.error("Failed to get new API key from response");
       }
@@ -161,6 +221,68 @@ export default function ApiPage(): JSX.Element {
     return descriptions[permission] || "No description available";
   };
 
+  const formatDate = (dateString: string) => {
+    return dayjs(dateString).format("MMM D, YYYY");
+  };
+
+  const showRevokeConfirm = (apiKey: ApiKey) => {
+    confirm({
+      title: "Are you sure you want to revoke this API key?",
+      icon: <ExclamationCircleOutlined />,
+      content: `This will permanently disable the API key "${
+        apiKey.name || apiKey.id.substring(0, 8)
+      }". Any applications using this key will stop working.`,
+      okText: "Yes, Revoke Key",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk() {
+        handleRevoke(apiKey.id);
+      },
+    });
+  };
+
+  const showDeleteConfirm = (apiKey: ApiKey) => {
+    confirm({
+      title: "Are you sure you want to delete this API key?",
+      icon: <ExclamationCircleOutlined />,
+      content: `This action cannot be undone. The API key "${
+        apiKey.name || apiKey.id.substring(0, 8)
+      }" will be permanently deleted.`,
+      okText: "Yes, Delete Key",
+      okType: "danger",
+      cancelText: "Cancel",
+      onOk() {
+        handleDelete(apiKey.id);
+      },
+    });
+  };
+
+  const handleRevoke = async (apiKeyId: string) => {
+    try {
+      // Convert string ID to number if needed by your API
+      const id = parseInt(apiKeyId) || apiKeyId;
+      await revokeApiKey(id as any).unwrap();
+      message.success("API key revoked successfully");
+      refetch();
+    } catch (error) {
+      console.error("Revoke API Key Error:", error);
+      message.error("Failed to revoke API key");
+    }
+  };
+
+  const handleDelete = async (apiKeyId: string) => {
+    try {
+      // Convert string ID to number if needed by your API
+      const id = parseInt(apiKeyId) || apiKeyId;
+      await deleteApiKey(id as any).unwrap();
+      message.success("API key deleted successfully");
+      refetch();
+    } catch (error) {
+      console.error("Delete API Key Error:", error);
+      message.error("Failed to delete API key");
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="w-full min-h-screen bg-white rounded-md p-4 sm:p-6 flex items-center justify-center">
@@ -171,9 +293,20 @@ export default function ApiPage(): JSX.Element {
 
   return (
     <div className="w-full min-h-screen bg-white rounded-md p-4 sm:p-6">
-      {/* API Key Section - Single Card */}
+      {/* API Key Section - Single Card with Latest Key */}
       <div className="bg-gray-100 p-5 mb-6">
-        <h2 className="text-sm font-semibold mb-3">API Key</h2>
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-sm font-semibold">API Key</h2>
+          {apiKeys.length > 1 && (
+            <button
+              onClick={() => setIsViewAllModalVisible(true)}
+              className="text-[#007AFF] text-sm font-medium flex items-center gap-1"
+            >
+              <ViewIcon />
+              View All ({apiKeys.length})
+            </button>
+          )}
+        </div>
 
         {latestApiKey ? (
           <div className="bg-gray-50 border p-4 rounded-2xl shadow-md border-[#D9D9D9]">
@@ -217,21 +350,16 @@ export default function ApiPage(): JSX.Element {
                     </div>
                   </div>
 
-                  {/* Mobile buttons - hidden on desktop */}
+                  {/* Mobile buttons */}
                   <div className="flex gap-2 sm:hidden">
                     <div>
                       <button
                         onClick={() => setVisible((v) => !v)}
                         className="p-2 rounded-lg hover:bg-gray-100 transition text-gray-600"
                       >
-                        {visible ? (
-                          <EyeInvisibleOutlined />
-                        ) : (
-                          <EyeOutlined />
-                        )}
+                        {visible ? <EyeInvisibleOutlined /> : <EyeOutlined />}
                       </button>
                     </div>
-
                     <div>
                       <button
                         onClick={() => handleCopy(displayKey)}
@@ -245,18 +373,20 @@ export default function ApiPage(): JSX.Element {
               </div>
             </div>
 
-            <button
-              onClick={() => setIsCreateModalVisible(true)}
-              className="mt-4 bg-[#000000] text-white py-2 w-full rounded-xl flex items-center justify-center gap-2 text-sm"
-            >
-              <img
-                src={reload}
-                alt="generate new"
-                className="w-[13px] h-[13px] transform hover:scale-110 transition-transform duration-300"
-                draggable="false"
-              />
-              Generate New Key
-            </button>
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={() => setIsCreateModalVisible(true)}
+                className="flex-1 bg-[#000000] text-white py-2 rounded-xl flex items-center justify-center gap-2 text-sm"
+              >
+                <img
+                  src={reload}
+                  alt="generate new"
+                  className="w-[13px] h-[13px] transform hover:scale-110 transition-transform duration-300"
+                  draggable="false"
+                />
+                Generate New Key
+              </button>
+            </div>
           </div>
         ) : (
           <div className="bg-gray-50 border p-4 rounded-2xl shadow-md border-[#D9D9D9]">
@@ -423,6 +553,121 @@ export default function ApiPage(): JSX.Element {
         </div>
       </Modal>
 
+      {/* View All API Keys Modal - Card Layout */}
+      <Modal
+        title={
+          <div className="flex items-center gap-2">
+            <ViewIcon />
+            <span className="text-lg font-semibold">
+              All API Keys ({apiKeys.length})
+            </span>
+          </div>
+        }
+        open={isViewAllModalVisible}
+        onCancel={() => setIsViewAllModalVisible(false)}
+        footer={null}
+        width={900}
+        closeIcon={
+          <CloseOutlined className="text-gray-500 hover:text-gray-700" />
+        }
+      >
+        <div className="py-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto">
+            {sortedApiKeys.map((apiKey) => (
+              <Card
+                key={apiKey.id}
+                className="shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+                size="small"
+              >
+                <div className="space-y-3">
+                  {/* Header */}
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-medium text-gray-900 text-sm">
+                        {apiKey.name ||
+                          `API Key ${apiKey.id.substring(0, 8)}...`}
+                      </h4>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Created {formatDate(apiKey.createdAt)}
+                      </p>
+                    </div>
+                    <Tag
+                      color={apiKey.revoked ? "red" : "green"}
+                      className="text-xs"
+                    >
+                      {apiKey.revoked ? "Revoked" : "Active"}
+                    </Tag>
+                  </div>
+
+                  {/* API Key */}
+                  <div>
+                    <p className="text-xs text-gray-600 mb-1">API Key</p>
+                    <div className="bg-gray-50 border rounded px-3 py-2">
+                      <code className="text-xs font-mono break-all">
+                        {apiKey.key || apiKey.id}
+                      </code>
+                    </div>
+                  </div>
+
+                  {/* Permissions */}
+                  <div>
+                    <p className="text-xs text-gray-600 mb-1">Permissions</p>
+                    <div className="flex flex-wrap gap-1">
+                      {apiKey.permissions.scopes.map((scope: string) => (
+                        <Tag key={scope} color="blue" className="text-xs">
+                          {scope}
+                        </Tag>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+                    <Space size="small">
+                      <Button
+                        type="link"
+                        size="small"
+                        icon={<StopOutlined />}
+                        disabled={apiKey.revoked}
+                        onClick={() => showRevokeConfirm(apiKey)}
+                        className="text-xs"
+                      >
+                        Revoke
+                      </Button>
+                      <Button
+                        type="link"
+                        size="small"
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => showDeleteConfirm(apiKey)}
+                        className="text-xs"
+                      >
+                        Delete
+                      </Button>
+                    </Space>
+                    <Button
+                      type="link"
+                      size="small"
+                      icon={<CopyOutlined />}
+                      onClick={() => handleCopy(apiKey.key || apiKey.id)}
+                      className="text-xs"
+                    >
+                      Copy
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+
+          {apiKeys.length === 0 && (
+            <div className="text-center py-8">
+              <p className="text-gray-500">No API keys found</p>
+            </div>
+          )}
+        </div>
+      </Modal>
+
       {/* Success Modal */}
       <Modal
         title={
@@ -486,14 +731,13 @@ export default function ApiPage(): JSX.Element {
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-base font-semibold">Usage Statistics</h3>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="p-5 flex items-start gap-4 rounded-2xl bg-white border-[#D9D9D9] shadow-md ">
             <div className="p-3 ">
               <img
                 src={graph}
                 alt="graph"
-                className="w-[39px] h-[40px] transform hover:scale-110 transition-transform duration-300"
+                className="w-[39px] h-[40px]"
                 draggable="false"
               />
             </div>
@@ -502,13 +746,12 @@ export default function ApiPage(): JSX.Element {
               <div className="text-xs text-gray-500 mt-1">This Month</div>
             </div>
           </div>
-
           <div className="rounded-2xl p-5 flex items-start gap-4 border-[#D9D9D9] shadow-md bg-white">
             <div className="p-3">
               <img
                 src={mingcute}
                 alt="time"
-                className="w-[39px] h-[40px] transform hover:scale-110 transition-transform duration-300"
+                className="w-[39px] h-[40px]"
                 draggable="false"
               />
             </div>
@@ -519,7 +762,6 @@ export default function ApiPage(): JSX.Element {
           </div>
         </div>
       </div>
-
       <div className="bg-gray-100 p-5 mb-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-base font-semibold">Recent Calls</h3>
@@ -583,7 +825,6 @@ export default function ApiPage(): JSX.Element {
           </button>
         </div>
       </div>
-      
     </div>
   );
 }
