@@ -1,3 +1,4 @@
+// features/auth/apiKeyApi.ts
 import { baseApi } from "@/services/api/baseApi";
 
 interface ApiKey {
@@ -25,6 +26,15 @@ interface CreateApiKeyResponse {
   permissions: string[];
   expiresAt: string;
   createdAt: string;
+}
+
+// Add Credits Balance Interface
+interface CreditsBalance {
+  balance: number;
+  totalCredits: number;
+  usedCredits: number;
+  nextRenewal?: string;
+  plan?: string;
 }
 
 export const apiKeysApi = baseApi.injectEndpoints({
@@ -69,6 +79,15 @@ export const apiKeysApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['ApiKey'],
     }),
+
+    // Add Credits Balance Endpoint
+    getCreditsBalance: build.query<CreditsBalance, void>({
+      query: () => ({
+        url: '/credits/balance',
+        method: 'GET',
+      }),
+      providesTags: ['Credits'],
+    }),
   }),
 });
 
@@ -78,4 +97,5 @@ export const {
   useCreateApiKeyMutation,
   useDeleteApiKeyMutation,
   useRevokeApiKeyMutation,
+  useGetCreditsBalanceQuery, 
 } = apiKeysApi;

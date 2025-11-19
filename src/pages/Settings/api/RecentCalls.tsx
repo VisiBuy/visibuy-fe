@@ -5,7 +5,7 @@ export default function RecentCalls() {
     <div className="bg-gray-100 p-5 mb-6 rounded-2xl">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-base font-semibold">Recent Calls</h3>
-        <button className="text-[#007AFF] text-base font-bold">
+        <button className="text-[#007AFF] text-sm font-bold">
           View All
         </button>
       </div>

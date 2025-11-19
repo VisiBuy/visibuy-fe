@@ -287,9 +287,8 @@ export default function ApiPage() {
           {apiKeys.length > 1 && (
             <button
               onClick={() => setIsViewAllModalVisible(true)}
-              className="text-[#007AFF] text-sm font-medium flex items-center gap-1"
+              className="text-[#007AFF] text-sm font-bold flex items-center gap-1"
             >
-              <ViewIcon />
               View All ({apiKeys.length})
             </button>
           )}
