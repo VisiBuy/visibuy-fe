@@ -11,6 +11,7 @@ import {
   DeleteOutlined,
   StopOutlined,
   ExclamationCircleOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
 import {
   message,
@@ -54,8 +55,6 @@ const AVAILABLE_PERMISSIONS = [
   "audit:read",
   "billing:read",
 ];
-
-
 
 export default function ApiPage() {
   const [visible, setVisible] = useState(false);
@@ -236,51 +235,50 @@ export default function ApiPage() {
     });
   };
 
+  const handleRevoke = async (apiKeyId: string) => {
+    try {
+      await revokeApiKey(apiKeyId).unwrap();
+      message.success("API key revoked successfully");
+      refetch();
+    } catch (error: any) {
+      console.error("Revoke API Key Error:", error);
 
-const handleRevoke = async (apiKeyId: string) => {
-  try {
-    await revokeApiKey(apiKeyId).unwrap();
-    message.success("API key revoked successfully");
-    refetch();
-  } catch (error: any) {
-    console.error("Revoke API Key Error:", error);
-    
-    if (error?.data?.message) {
-      message.error(`Failed to revoke API key: ${error.data.message}`);
-    } else {
-      message.error("Failed to revoke API key. Please try again.");
+      if (error?.data?.message) {
+        message.error(`Failed to revoke API key: ${error.data.message}`);
+      } else {
+        message.error("Failed to revoke API key. Please try again.");
+      }
     }
-  }
-};
+  };
 
-const handleDelete = async (apiKeyId: string) => {
-  try {
-    await deleteApiKey(apiKeyId).unwrap();
-    message.success("API key deleted successfully");
-    refetch();
-  } catch (error: any) {
-    console.error("Delete API Key Error:", error);
-    
-    if (error?.data?.message) {
-      message.error(`Failed to delete API key: ${error.data.message}`);
-    } else {
-      message.error("Failed to delete API key. Please try again.");
+  const handleDelete = async (apiKeyId: string) => {
+    try {
+      await deleteApiKey(apiKeyId).unwrap();
+      message.success("API key deleted successfully");
+      refetch();
+    } catch (error: any) {
+      console.error("Delete API Key Error:", error);
+
+      if (error?.data?.message) {
+        message.error(`Failed to delete API key: ${error.data.message}`);
+      } else {
+        message.error("Failed to delete API key. Please try again.");
+      }
     }
-  }
-};
-
-
+  };
 
   if (isLoading) {
     return (
       <div className="w-full min-h-screen bg-white rounded-md p-4 sm:p-6 flex items-center justify-center">
-        <div className="text-center">Loading API keys...</div>
+        {/* <div className="text-center">Loading API keys...</div> */}
+        <LoadingOutlined style={{ fontSize: 48 }} spin />
       </div>
     );
   }
 
   return (
     <div className="w-full min-h-screen bg-white rounded-md p-4 sm:p-6">
+      
       <div className="bg-gray-100 p-5 mb-6">
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-sm font-semibold">API Key</h2>
@@ -391,7 +389,7 @@ const handleDelete = async (apiKeyId: string) => {
         )}
       </div>
 
-      {/* Create API Key Modal */}
+      {/* Create api key Modal */}
       <Modal
         title={
           <div className="flex items-center gap-2">
@@ -540,7 +538,7 @@ const handleDelete = async (apiKeyId: string) => {
         </div>
       </Modal>
 
-      {/* View All API Keys Modal - Card Layout */}
+      {/* View created api keys Modal Card !!!  */}
       <Modal
         title={
           <div className="flex items-center gap-2">
@@ -595,7 +593,7 @@ const handleDelete = async (apiKeyId: string) => {
                     </div>
                   </div>
 
-                  {/* Permissions */}
+                  {/* Permissions c */}
                   <div>
                     <p className="text-xs text-gray-600 mb-1">Permissions</p>
                     <div className="flex flex-wrap gap-1">
@@ -654,7 +652,7 @@ const handleDelete = async (apiKeyId: string) => {
         </div>
       </Modal>
 
-      {/* Success Modal */}
+      {/* Success Modal !!*/}
       <Modal
         title={
           <div className="flex items-center gap-2 text-green-600">
@@ -712,6 +710,7 @@ const handleDelete = async (apiKeyId: string) => {
         </div>
       </Modal>
 
+      {/* Usage Statistics */}
       <div className="bg-gray-100 p-5 mb-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-base font-semibold">Usage Statistics</h3>
@@ -747,6 +746,8 @@ const handleDelete = async (apiKeyId: string) => {
           </div>
         </div>
       </div>
+
+      {/* Recent Calls */}
       <div className="bg-gray-100 p-5 mb-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-base font-semibold">Recent Calls</h3>
@@ -780,6 +781,7 @@ const handleDelete = async (apiKeyId: string) => {
         </div>
       </div>
 
+      {/* Billing & Credits */}
       <div className="bg-gray-100  p-5 mb-6">
         <h3 className="text-base font-semibold mb-4">Billing & Credits</h3>
         <div className="rounded-2xl bg-white shadow-md border-[#D9D9D9] p-5">
@@ -799,6 +801,7 @@ const handleDelete = async (apiKeyId: string) => {
         </div>
       </div>
 
+      {/* API Documentation */}
       <div className="bg-gray-100 rounded-2xl shadow-md border-[#D9D9D9] p-5">
         <h3 className="text-base font-semibold mb-3">API Documentation</h3>
         <div className="rounded-2xl shadow-md border-[#D9D9D9] p-5 bg-white">
