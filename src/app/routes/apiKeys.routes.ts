@@ -21,7 +21,7 @@ export const apiKeysRoutes: RouteConfig[] = createRouteGroup({
     createLazyRoute({
       path: "",
       // lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create ApiKeysListPage
-      lazy: () => import("../../pages/Settings/ApiPage"), 
+      lazy: () => import("../../pages/Settings/api/ApiPage"), 
 
       meta: {
         title: "API Keys",
