@@ -1,23 +1,24 @@
-import React from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "./App";
 import { allRoutes, toRouteObjects } from "./routes";
 import { ROUTES } from "./routes/constants";
+import UsersPage from "@/pages/Users/UsersPage";
 import { ProtectedLayout } from "../shared/layout/ProtectedLayout";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
+import LoginScreen from "@/pages/Auth/LoginScreen";
+import SignupScreen from "@/pages/Auth/SignupScreen";
+import ForgotPasswordScreen from "@/pages/Auth/ForgotPasswordScreen";
+import ResetPasswordScreen from "@/pages/Auth/ResetPasswordScreen";
 
-
-/**
- * Main application router
- *
- * Combines auto-generated routes from src/app/routes
- * and manual routes for Settings and error pages.
- */
 export const router = createBrowserRouter([
   {
     element: <App />,
     children: [
-      // Public routes (auth, error pages) - no sidebar
+      { path: "/login", element: <LoginScreen /> },
+      { path: "/signup", element: <SignupScreen /> },
+      { path: "/forgot-password", element: <ForgotPasswordScreen /> },
+      { path: "/auth/reset-password", element: <ResetPasswordScreen /> },
+
       ...toRouteObjects(
         allRoutes.filter((route) => {
           const path = route.path;
@@ -47,16 +48,17 @@ export const router = createBrowserRouter([
               );
             })
           ),
-
-          
-          
-        ],   
+        ],
       },
 
       // Root redirect
       {
         path: "/",
         element: <Navigate to={ROUTES.DASHBOARD} replace />,
+      },
+      {
+        element: <ProtectedRoute requiredPermissions={["VIEW_USERS"]} />,
+        children: [{ path: "/users", element: <UsersPage /> }],
       },
 
       // 404 catch-all
