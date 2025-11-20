@@ -11,6 +11,7 @@ import { verificationRoutes } from "./verifications.routes";
 import { mediaRoutes } from "./media.routes";
 import { escrowRoutes } from "./escrow.routes";
 import { apiKeysRoutes } from "./apiKeys.routes";
+import { sellerProfileRoutes } from "./sellerprofile.routes";
 import { settingsRoutes } from "./settings.routes";
 import { errorRoutes } from "./error.routes";
 
@@ -29,6 +30,7 @@ export const allRoutes: RouteConfig[] = [
   ...verificationRoutes,
   ...apiKeysRoutes,
   ...mediaRoutes,
+  ...sellerProfileRoutes,
   ...settingsRoutes,
   ...escrowRoutes,
   ...usersRoutes,
@@ -49,3 +51,4 @@ export { escrowRoutes } from "./escrow.routes";
 export { apiKeysRoutes } from "./apiKeys.routes";
 export { settingsRoutes } from "./settings.routes";
 export { errorRoutes } from "./error.routes";
+export { sellerProfileRoutes } from "./sellerprofile.routes";

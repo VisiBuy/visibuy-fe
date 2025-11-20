@@ -172,10 +172,17 @@ export interface ValidationErrorResponse {
 }
 /* Seller Profile*/
 export interface sellerProfileDto {
-  uid : UUID,
-  firstName : string,
-  lastName : string,
-  email : string | number ,
-  tel : number,
-  bio : string
+  id ?: UUID,
+  name :  string,
+  phone : string,
+  email ?: string,
+  kycStatus ?: string;
+  mfaEnabled ?: boolean,
+  createdAt ?: string,
+  badges ?: any[],
+  lastLoginAt ?:  string,
+  trustScore ?: number,
+  updatedAt ?:  string,
+  address ?: string
+  profileImage ?: string
 }
