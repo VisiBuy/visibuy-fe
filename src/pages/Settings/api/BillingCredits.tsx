@@ -4,12 +4,10 @@ import { useGetCreditsBalanceQuery } from "@/features/auth/apiKeyApi";
 export default function BillingCredits() {
   const { data: creditsData, isLoading, error } = useGetCreditsBalanceQuery();
 
-  // Format number with commas
   const formatNumber = (num: number) => {
     return num?.toLocaleString() || '0';
   };
 
-  // Calculate percentage for progress bar
   const calculatePercentage = () => {
     if (!creditsData || creditsData.totalCredits === 0) return 0;
     return (creditsData.balance / creditsData.totalCredits) * 100;
