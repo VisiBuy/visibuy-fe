@@ -37,7 +37,7 @@ export default function DashboardPage() {
 
   return (
     // <DashboardLayout>
-    <div className='space-y-6 absolute top-[20px] w-[calc(100%-16rem)] md:w-70vw p-4 md:p-8 lg:p-12'>
+    <div className='space-y-6 absolute md:top-[20px] w-100vw lg:w-[calc(100%-16rem)] md:w-70vw p-0 md:p-8 lg:p-12'>
       {/* Stats Cards */}
       <div className='grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6'>
         <StatsCard
@@ -126,7 +126,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      {/* <QuickActions /> */}
+      <QuickActions />
     </div>
     // </DashboardLayout>
   );

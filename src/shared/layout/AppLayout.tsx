@@ -23,27 +23,28 @@ export const AppLayout: React.FC<{ children?: React.ReactNode }> = ({
 
       {/* Main Content */}
       <main className='flex-1 overflow-y-auto justify-center md:ml-64'>
-        <div className='p-0 bg-blue-500 md:h-28'>
+        <div className='p-6'>
           {/* Mobile menu button */}
-          <div className='md:hidden bg-blue-600 mb-4 h-14 p-0 items-center justify-between'>
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className='md:hidden m-4 p-2 rounded-lg hover:bg-gray-50'
-              aria-label='Open sidebar'
+          {/* <div className='md:hidden bg-blue-600 mb-4 h-14 p-0 items-center justify-between'> */}
+          <button
+            onClick={() => setSidebarOpen(true)}
+            // className='md:hidden m-4 p-2 rounded-lg hover:bg-gray-50'
+            className='md:hidden mb-4 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800'
+            aria-label='Open sidebar'
+          >
+            <svg
+              className='w-6 h-6 text-white text-white'
+              fill='none'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              strokeWidth='2'
+              viewBox='0 0 24 24'
+              stroke='currentColor'
             >
-              <svg
-                className='w-6 h-6 text-white text-white'
-                fill='none'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth='2'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
-              >
-                <path d='M4 6h16M4 12h16M4 18h16'></path>
-              </svg>
-            </button>
-          </div>
+              <path d='M4 6h16M4 12h16M4 18h16'></path>
+            </svg>
+          </button>
+          {/* </div> */}
 
           {/* Page Content */}
           {children || <Outlet />}
