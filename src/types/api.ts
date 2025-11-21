@@ -176,3 +176,19 @@ export interface ValidationErrorResponse {
   message: string | string[] | ValidationErrorItem[];
   error: string;
 }
+/* Seller Profile*/
+export interface sellerProfileDto {
+  id ?: UUID,
+  name :  string,
+  phone : string,
+  email ?: string,
+  kycStatus ?: string;
+  mfaEnabled ?: boolean,
+  createdAt ?: string,
+  badges ?: any[],
+  lastLoginAt ?:  string,
+  trustScore ?: number,
+  updatedAt ?:  string,
+  address ?: string
+  profileImage ?: string
+}

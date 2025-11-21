@@ -11,6 +11,7 @@ import {
   FiX,
   FiLogOut,
   FiChevronRight,
+  FiEdit2,
 } from "react-icons/fi";
 
 /**
@@ -26,12 +27,14 @@ export const iconMap: Record<
   verifications: FiCheckCircle,
   media: FiImage,
   escrow: FiLock,
+  "seller-profile": FiUsers,
   "api-keys": FiKey,
   settings: FiSettings,
   menu: FiMenu,
   close: FiX,
   logout: FiLogOut,
   chevronRight: FiChevronRight,
+  FiEdit: FiEdit2,
 };
 
 /**
