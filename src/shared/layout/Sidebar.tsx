@@ -1,132 +1,163 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useAppSelector } from "../../app/hooks";
-import { useLogoutMutation } from "../../features/auth/authApi";
-import { useNavigationItems } from "../hooks/useNavigationItems";
+import visibuyLogo from "../../assets/visiby-logo.png";
 import { SidebarNavItem } from "./SidebarNavItem";
-import { SidebarProps } from "../types/navigation";
-import { renderIcon } from "../utils/iconMap";
-import Logo from "../../assets/logo.png";
 
-/**
- * Main sidebar navigation component
- * Responsive, collapsible sidebar with permission-based navigation items
- */
-export const Sidebar: React.FC<SidebarProps> = ({
-  isOpen: controlledIsOpen,
-  onToggle,
-  className = "",
-  showUserProfile = true,
-}) => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const user = useAppSelector((s) => s.auth.user);
-  const [logout] = useLogoutMutation();
-  const [internalIsOpen, setInternalIsOpen] = useState(false);
+export const Sidebar: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Use controlled or internal state
-  const isOpen =
-    controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
-  const toggleSidebar = onToggle || (() => setInternalIsOpen(!internalIsOpen));
+  const navLinks = [
+    {
+      name: "Home",
+      path: "/dashboard",
+      icon: <i className='fa-solid fa-house w-5'></i>,
+    },
+    {
+      name: "Verifications",
+      path: "/verifications",
+      icon: <i className='fa-solid fa-file-circle-check w-5'></i>,
+    },
+    {
+      name: "Profile",
+      path: "/profile",
+      icon: <i className='fa-solid fa-user w-5'></i>,
+    },
+    {
+      name: "Billing & Credits",
+      path: "/billing",
+      icon: <i className='fa-solid fa-credit-card w-5'></i>,
+    },
+    {
+      name: "Settings",
+      path: "/settings",
+      icon: <i className='fa-solid fa-gear w-5'></i>,
+    },
+  ];
 
-  const navItems = useNavigationItems();
-
-  // Check if a nav item is active (matches current path)
-  const isItemActive = (itemPath: string): boolean => {
-    if (location.pathname === itemPath) return true;
-    // Check if current path starts with item path (for nested routes)
-    return location.pathname.startsWith(itemPath + "/");
-  };
-
-  const handleLogout = async () => {
-    try {
-      await logout().unwrap();
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
+  const bottomLinks = [
+    {
+      name: "Payment Methods",
+      path: "/payment",
+      icon: <i className='fa-solid fa-credit-card w-5'></i>,
+    },
+    {
+      name: "Password & Security",
+      path: "/security",
+      icon: <i className='fa-solid fa-shield w-5'></i>,
+    },
+    {
+      name: "Notification",
+      path: "/notification",
+      icon: <i className='fa-regular fa-bell w-5'></i>,
+    },
+  ];
 
   return (
-    <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div
-          className='fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden'
-          onClick={toggleSidebar}
-          aria-hidden='true'
-        />
-      )}
-
-      {/* Sidebar */}
-      <aside
-        className={`
-          fixed top-0 left-0 h-full bg-white border-r border-gray-200 dark:border-gray-800
-          z-50 transition-transform duration-300 ease-in-out
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0 md:fixed md:top-0 md:left-0 md:z-50
-          w-64 flex flex-col
-          ${className}
-        `}
-      >
-        {/* Header */}
-        <div className='flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800'>
+    <div className='flex'>
+      {/* ===== Desktop Sidebar ===== */}
+      <aside className='hidden md:flex flex-col w-64 bg-white border-r shadow-sm'>
+        <div className='flex items-center justify-between px-6 py-4 border-b'>
           <div className='flex items-center gap-2'>
-            <h1 className='text-xl font-bold text-gray-900'>
-              <img src={Logo} alt='Visibuy Logo' className='h-8 w-auto' />
-            </h1>
+            <img src={visibuyLogo} alt='Visibuy' />
+            <span className='text-[10px] text-blue-600 font-semibold bg-blue-100 px-2 py-0.5 rounded'>
+              Beta
+            </span>
           </div>
-          <button
-            onClick={toggleSidebar}
-            className='md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600'
-            aria-label='Toggle sidebar'
-          >
-            {renderIcon("close", "w-5 h-5")}
-          </button>
         </div>
 
-        {/* User Profile Section */}
-        {showUserProfile && user && (
-          <div className='p-4 border-b border-gray-200 dark:border-gray-800'>
-            <div className='flex items-center gap-3'>
-              <div className='w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold'>
-                {user.email?.charAt(0).toUpperCase() || "U"}
-              </div>
-              <div className='flex-1 min-w-0'>
-                <p className='text-sm font-medium truncate'>
-                  {user.name || user.email}
-                </p>
-                <p className='text-xs text-gray-500 truncate'>{user.email}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Navigation Items */}
-        <nav className='flex-1 overflow-y-auto p-4'>
-          <ul className='space-y-1'>
-            {navItems.map((item) => (
+        {/* Nav Links */}
+        <nav className='flex-1 px-6 py-4 space-y-2 text-[15px] font-medium'>
+          <ul>
+            {navLinks.map((link) => (
               <SidebarNavItem
-                key={item.path}
-                item={item}
-                isActive={isItemActive(item.path)}
-                onClick={toggleSidebar} // Close sidebar on mobile when item clicked
+                key={link.name}
+                label={link.name}
+                path={link.path}
+                icon={link.icon}
               />
             ))}
           </ul>
         </nav>
 
-        {/* Footer / Logout */}
-        <div className='p-4 border-t border-gray-200 dark:border-gray-800'>
-          <button
-            onClick={handleLogout}
-            className='w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors'
-          >
-            {renderIcon("logout", "w-5 h-5")}
-            <span>Logout</span>
+        {/* Bottom Links */}
+        <div className='px-6 py-4 border-t text-[15px] font-medium space-y-2'>
+          <ul>
+            {bottomLinks.map((link) => (
+              <SidebarNavItem
+                key={link.name}
+                label={link.name}
+                path={link.path}
+                icon={link.icon}
+              />
+            ))}
+          </ul>
+
+          {/* Logout */}
+          <button className='flex items-center gap-3 py-2 px-3 rounded-md text-black hover:bg-red-50 w-full transition-all duration-200'>
+            <i className='fa-solid fa-right-from-bracket w-5'></i>
+            LogOut
           </button>
         </div>
       </aside>
-    </>
+
+      {/* ===== Mobile Navbar ===== */}
+      <div className='md:hidden fixed top-0 left-0 w-full bg-blue-600 text-white flex items-center justify-between px-4 py-3 z-40'>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className='flex items-center'
+        >
+          {isOpen ? (
+            <i className='fa-solid fa-xmark w-5'></i>
+          ) : (
+            <i className='fa-solid fa-bars w-5'></i>
+          )}
+        </button>
+        <h1 className='text-base font-semibold'>Dashboard</h1>
+        <div className='w-6'></div>
+      </div>
+
+      {/* Mobile Drawer */}
+      {isOpen && (
+        <div
+          className='fixed inset-0 bg-black/40 z-50 md:hidden'
+          onClick={() => setIsOpen(false)}
+        >
+          <div
+            className='absolute left-0 top-0 h-full w-64 bg-white shadow-lg p-6 flex flex-col justify-between overflow-y-auto'
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className='flex items-center justify-between mb-8'>
+              <img src={visibuyLogo} alt='Visibuy' />
+              <button onClick={() => setIsOpen(false)}>
+                <i className='fa-solid fa-xmark w-5'></i>
+              </button>
+            </div>
+
+            {/* Links */}
+            <nav className='space-y-4 flex-1'>
+              <ul>
+                {navLinks.concat(bottomLinks).map((link) => (
+                  <SidebarNavItem
+                    key={link.name}
+                    label={link.name}
+                    path={link.path}
+                    icon={link.icon}
+                    onClick={() => setIsOpen(false)}
+                  />
+                ))}
+              </ul>
+            </nav>
+
+            {/* Logout */}
+            <div className='mt-6 border-t pt-4'>
+              <button className='w-full flex items-center gap-3 px-4 py-3 rounded-lg text-black hover:bg-red-50 transition-colors'>
+                <i className='fa-solid fa-right-from-bracket w-5'></i>
+                LogOut
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };

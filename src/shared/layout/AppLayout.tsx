@@ -22,11 +22,11 @@ export const AppLayout: React.FC<{ children?: React.ReactNode }> = ({
       />
 
       {/* Main Content */}
-      <main className='flex-1 overflow-y-auto justify-center md:ml-64'>
+      <main className='flex-1 overflow-y-auto justify-center'>
         <div className='p-6'>
           {/* Mobile menu button */}
           {/* <div className='md:hidden bg-blue-600 mb-4 h-14 p-0 items-center justify-between'> */}
-          <button
+          {/* <button
             onClick={() => setSidebarOpen(true)}
             // className='md:hidden m-4 p-2 rounded-lg hover:bg-gray-50'
             className='md:hidden mb-4 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800'
@@ -43,7 +43,7 @@ export const AppLayout: React.FC<{ children?: React.ReactNode }> = ({
             >
               <path d='M4 6h16M4 12h16M4 18h16'></path>
             </svg>
-          </button>
+          </button> */}
           {/* </div> */}
 
           {/* Page Content */}
