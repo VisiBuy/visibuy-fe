@@ -17,7 +17,7 @@ export const AppLayout: React.FC<{ children?: React.ReactNode }> = ({
       {/* bg-gray-50 dark:bg-gray-950 */}
       {/* Sidebar */}
       <Sidebar
-        isOpen={sidebarOpen}
+      //  isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
       />
 
