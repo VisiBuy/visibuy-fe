@@ -18,12 +18,13 @@ export interface SalesData {
   orders: number;
 }
 
-export interface RecentOrder {
-  id: string;
-  customerName: string;
-  amount: number;
-  status: "pending" | "completed" | "cancelled";
-  createdAt: string;
+export interface Verification {
+  items: [];
+  total: number;
+  count: number;
+  hasMore: boolean;
+  offset: number;
+  limit: number;
 }
 
 export interface TopProduct {
@@ -45,9 +46,9 @@ export const dashboardApi = baseApi.injectEndpoints({
       providesTags: ["Dashboard"],
     }),
 
-    getRecentOrders: builder.query<RecentOrder[], void>({
-      query: () => "/dashboard/recent-orders",
-      providesTags: ["Dashboard"],
+    getRecentOrders: builder.query<Verification[], void>({
+      query: () => "/verifications",
+      providesTags: ["Verification"],
     }),
 
     getTopProducts: builder.query<TopProduct[], void>({

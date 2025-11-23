@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useAppSelector } from "@/app/hooks";
 import { StatsCard } from "@/shared/components/dashboard/StatsCard";
 import { SalesChart } from "@/shared/components/dashboard/SalesChart";
-import { RecentOrders } from "@/shared/components/dashboard/RecentOrders";
+import { RecentVerifications } from "@/shared/components/dashboard/RecentVerifications";
 import { QuickActions } from "@/shared/components/dashboard/QuickActions";
 import {
   useGetDashboardStatsQuery,
@@ -17,22 +17,20 @@ type Period = "7d" | "30d" | "90d";
 
 export default function DashboardPage() {
   const user = useAppSelector((s) => s.auth.user);
-  console.log(user);
-  const [selectedPeriod, setSelectedPeriod] = useState<Period>("30d");
 
+  // const [selectedPeriod, setSelectedPeriod] = useState<Period>("30d");
   const { data: stats, isLoading: statsLoading } = useGetDashboardStatsQuery();
-  console.log(stats);
-  const { data: salesData, isLoading: salesLoading } = useGetSalesDataQuery({
-    period: selectedPeriod,
-  });
+  // const { data: salesData, isLoading: salesLoading } = useGetSalesDataQuery({
+  //   period: selectedPeriod,
+  // });
   const { data: recentOrders, isLoading: ordersLoading } =
     useGetRecentOrdersQuery();
 
-  const periodOptions: { value: Period; label: string }[] = [
-    { value: "7d", label: "7 Days" },
-    { value: "30d", label: "30 Days" },
-    { value: "90d", label: "90 Days" },
-  ];
+  // const periodOptions: { value: Period; label: string }[] = [
+  //   { value: "7d", label: "7 Days" },
+  //   { value: "30d", label: "30 Days" },
+  //   { value: "90d", label: "90 Days" },
+  // ];
 
   return (
     <div className='w-full flex justify-center'>
@@ -84,7 +82,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             ) : (
-              <RecentOrders orders={recentOrders || []} />
+              <RecentVerifications verifications={recentOrders || []} />
             )}
           </div>
         </div>

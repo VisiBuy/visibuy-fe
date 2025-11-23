@@ -18,7 +18,7 @@ export const AppLayout: React.FC<{ children?: React.ReactNode }> = ({
 
       {/* Main Content */}
       <main className='flex-1 overflow-y-auto justify-center'>
-        <div className='p-6'>
+        <div className='p-0'>
           {/* Page Content */}
           {children || <Outlet />}
         </div>

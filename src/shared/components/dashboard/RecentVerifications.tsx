@@ -1,28 +1,28 @@
 import React from "react";
-import { RecentOrder } from "../../../features/dashboard/dashboardApi";
+import { Verification } from "../../../features/dashboard/dashboardApi";
 import { renderIcon } from "../../utils/iconMap";
 
-interface RecentOrdersProps {
-  orders: RecentOrder[];
+interface RecentVerificationProps {
+  verifications: Verification[];
   className?: string;
 }
 
-export const RecentOrders: React.FC<RecentOrdersProps> = ({
-  orders,
+export const RecentVerifications: React.FC<RecentVerificationProps> = ({
+  verifications,
   className = "",
 }) => {
-  const getStatusColor = (status: RecentOrder["status"]) => {
-    switch (status) {
-      case "completed":
-        return "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20";
-      case "pending":
-        return "text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20";
-      case "cancelled":
-        return "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20";
-      default:
-        return "text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/20";
-    }
-  };
+  // const getStatusColor = (status: Verification) => {
+  //   switch (status) {
+  //     case "completed":
+  //       return "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20";
+  //     case "pending":
+  //       return "text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20";
+  //     case "cancelled":
+  //       return "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20";
+  //     default:
+  //       return "text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/20";
+  //   }
+  // };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -33,7 +33,7 @@ export const RecentOrders: React.FC<RecentOrdersProps> = ({
     });
   };
 
-  if (!orders || orders.length === 0) {
+  if (!verifications || verifications.length === 0) {
     return (
       <div className={`bg-white rounded-lg shadow p-6 ${className}`}>
         <h3 className='text-lg font-semibold text-black dark:text-black mb-4'>
@@ -55,7 +55,7 @@ export const RecentOrders: React.FC<RecentOrdersProps> = ({
       </h3>
 
       <div className='space-y-3'>
-        {orders.slice(0, 5).map((order) => (
+        {/* {verifications.slice(0, 5).map((order) => (
           <div
             key={order.id}
             className='flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg'
@@ -92,13 +92,16 @@ export const RecentOrders: React.FC<RecentOrdersProps> = ({
               </span>
             </div>
           </div>
-        ))}
+        ))} */}
+        <div className='text-black dark:text-black text-center'>
+          Recent verifications will be displayed here.
+        </div>
       </div>
 
-      {orders.length > 5 && (
+      {verifications.length > 5 && (
         <div className='mt-4 pt-4 border-t border-gray-200 dark:border-gray-700'>
           <button className='w-full text-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium'>
-            View all orders →
+            View all verifications →
           </button>
         </div>
       )}
