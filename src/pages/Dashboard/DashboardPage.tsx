@@ -23,8 +23,7 @@ export default function DashboardPage() {
   // const { data: salesData, isLoading: salesLoading } = useGetSalesDataQuery({
   //   period: selectedPeriod,
   // });
-  const { data: recentOrders, isLoading: ordersLoading } =
-    useGetRecentOrdersQuery();
+  const { data, isLoading: ordersLoading } = useGetRecentOrdersQuery();
 
   // const periodOptions: { value: Period; label: string }[] = [
   //   { value: "7d", label: "7 Days" },
@@ -82,7 +81,7 @@ export default function DashboardPage() {
                 </div>
               </div>
             ) : (
-              <RecentVerifications verifications={recentOrders || []} />
+              <RecentVerifications verifications={data?.items ?? []} />
             )}
           </div>
         </div>

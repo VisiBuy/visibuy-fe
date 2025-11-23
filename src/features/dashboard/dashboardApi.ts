@@ -18,13 +18,21 @@ export interface SalesData {
   orders: number;
 }
 
-export interface Verification {
-  items: [];
+export interface VerificationResponse {
+  items: Verification[];
   total: number;
   count: number;
   hasMore: boolean;
   offset: number;
   limit: number;
+}
+
+export interface Verification {
+  id: string;
+  customerName: string;
+  createdAt: string;
+  status: string;
+  amount: number;
 }
 
 export interface TopProduct {
@@ -46,7 +54,7 @@ export const dashboardApi = baseApi.injectEndpoints({
       providesTags: ["Dashboard"],
     }),
 
-    getRecentOrders: builder.query<Verification[], void>({
+    getRecentOrders: builder.query<VerificationResponse, void>({
       query: () => "/verifications",
       providesTags: ["Verification"],
     }),
