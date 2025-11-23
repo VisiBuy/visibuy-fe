@@ -60,5 +60,6 @@ export const baseApi = createApi({
     "Role",
     "Permission",
     "Dashboard",
+    "sellerProfile",
   ],
 });
