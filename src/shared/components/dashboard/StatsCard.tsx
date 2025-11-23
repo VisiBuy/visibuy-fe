@@ -36,17 +36,11 @@ export const StatsCard: React.FC<StatsCardProps> = ({
       <div>
         <div className='md:flex gap-4 items-center'>
           <div className='p-0 bg-blue-0 dark:bg-blue-00/0 rounded-full'>
-            {/* {renderIcon(icon, "w-6 h-6 text-blue-600 dark:text-blue-400")} */}
             {icon}
           </div>
           <p className='text-2xl font-bold mt-1'>
             {typeof value === "number" ? value.toLocaleString() : value}
           </p>
-          {/*{change !== undefined && (
-            <p className={`text-sm mt-1 ${getChangeColor(change)}`}>
-              {formatChange(change)} {changeLabel || "from last month"}
-            </p>
-          )}*/}
         </div>
         <p className='text-[9px] md:text-sm font-medium '>{title}</p>
       </div>
