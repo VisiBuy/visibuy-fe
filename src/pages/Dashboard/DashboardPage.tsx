@@ -1,29 +1,94 @@
-import React from "react";
-import { useAppSelector } from "../../app/hooks";
-import { useLogoutMutation } from "../../features/auth/authApi";
+import React, { useState } from "react";
+import { useAppSelector } from "@/app/hooks";
+import { StatsCard } from "@/shared/components/dashboard/StatsCard";
+// import { SalesChart } from "@/shared/components/dashboard/SalesChart";
+import { RecentVerifications } from "@/shared/components/dashboard/RecentVerifications";
+import { QuickActions } from "@/shared/components/dashboard/QuickActions";
+import {
+  useGetDashboardStatsQuery,
+  useGetSalesDataQuery,
+  useGetRecentOrdersQuery,
+} from "@/features/dashboard/dashboardApi";
+import { FaCheckCircle } from "react-icons/fa";
+import { FaArrowTrendUp } from "react-icons/fa6";
+import { SunSolid } from "@/ui/icons/SunSolid";
+
+type Period = "7d" | "30d" | "90d";
 
 export default function DashboardPage() {
   const user = useAppSelector((s) => s.auth.user);
-  const [logout] = useLogoutMutation();
+
+  // const [selectedPeriod, setSelectedPeriod] = useState<Period>("30d");
+  const { data: stats, isLoading: statsLoading } = useGetDashboardStatsQuery();
+  // const { data: salesData, isLoading: salesLoading } = useGetSalesDataQuery({
+  //   period: selectedPeriod,
+  // });
+  const { data, isLoading: ordersLoading } = useGetRecentOrdersQuery();
+
+  // const periodOptions: { value: Period; label: string }[] = [
+  //   { value: "7d", label: "7 Days" },
+  //   { value: "30d", label: "30 Days" },
+  //   { value: "90d", label: "90 Days" },
+  // ];
 
   return (
-    <div className="p-6">
-      <header className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl">Visibuy Dashboard</h1>
+    <div className='w-full flex justify-center'>
+      <div className='space-y-6 absolute top-[60px] md:top-[20px] w-100vw lg:w-[calc(100%-16rem)] md:w-70vw p-0 md:p-8 lg:p-12 flex flex-col justify-center'>
+        {/* Stats Cards */}
+        <div className='grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6'>
+          <StatsCard
+            title='Total Verifications'
+            value={stats?.total || 0}
+            change={stats?.revenueChange}
+            icon={
+              <FaCheckCircle className='w-6 h-6 text-gray-600 dark:text-gray-400' />
+            }
+            className={statsLoading ? "animate-pulse" : ""}
+          />
+          <StatsCard
+            title='Active'
+            value={stats?.totalOrders || 0}
+            change={stats?.ordersChange}
+            icon={
+              <SunSolid className='w-6 h-6 text-gray-600 dark:text-gray-400' />
+            }
+            className={statsLoading ? "animate-pulse" : ""}
+          />
+          <StatsCard
+            title='Trust Score'
+            value={user?.trustScore || 0}
+            change={stats?.productsChange}
+            icon={
+              <FaArrowTrendUp className='w-6 h-6 text-gray-600 dark:text-gray-400' />
+            }
+            className={statsLoading ? "animate-pulse" : ""}
+          />
+        </div>
+
         <div>
-          <span className="mr-4">Hello, {user?.email || "Guest"}</span>
-          <button className="px-3 py-1 border" onClick={() => logout()}>
-            Logout
-          </button>
+          {/* Recent Orders */}
+          <div>
+            {ordersLoading ? (
+              <div className='bg-white rounded-lg shadow p-6 animate-pulse'>
+                <div className='h-8 bg-gray-200 dark:bg-gray-700 rounded mb-4'></div>
+                <div className='space-y-3'>
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className='h-16 bg-gray-200 dark:bg-gray-700 rounded'
+                    ></div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <RecentVerifications verifications={data?.items ?? []} />
+            )}
+          </div>
         </div>
-      </header>
-      <main>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <p className="text-gray-700 dark:text-gray-300">
-            Welcome to the starter dashboard. Build your features here.
-          </p>
-        </div>
-      </main>
+
+        {/* Quick Actions */}
+        <QuickActions />
+      </div>
     </div>
   );
 }
