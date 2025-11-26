@@ -21,7 +21,10 @@ interface CreateApiKeyRequest {
 interface CreateApiKeyResponse {
   id: string; 
   name: string;
-  key: string; 
+  key?: string; 
+  apiKey?: string; 
+  token?: string; 
+  secret?: string; 
   permissions: string[];
   expiresAt: string;
   createdAt: string;
