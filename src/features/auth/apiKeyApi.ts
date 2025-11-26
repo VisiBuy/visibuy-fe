@@ -1,4 +1,3 @@
-// features/auth/apiKeyApi.ts
 import { baseApi } from "@/services/api/baseApi";
 
 interface ApiKey {
@@ -86,7 +85,7 @@ export const apiKeysApi = baseApi.injectEndpoints({
         url: '/credits/balance',
         method: 'GET',
       }),
-      providesTags: ['Credits'],
+      providesTags: ['Credit'],
     }),
   }),
 });
