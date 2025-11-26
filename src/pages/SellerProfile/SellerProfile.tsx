@@ -34,8 +34,8 @@ const SellerProfile = () => {
                         <p className='font-semibold'>@{username}</p>
                     </div>
                     <div className='flex flex-col gap-2 sm:absolute sm:top-3 sm:right-3'>
-                        <Link to={ROUTES.SELLER_PROFILE_EDIT} className='w-full  rounded-xl border-black p-2 bg-black text-white sm:w-36 border-2 text-center' >Edit Profile</Link>
-                        <Link to={ROUTES.SELLER_PUBLIC_PROFILE} className='rounded-xl border-black py-1 border-2 text-center' >Public Profile</Link>
+                        <Link to={ROUTES.SELLER.PROFILE_EDIT} className='w-full  rounded-xl border-black p-2 bg-black text-white sm:w-36 border-2 text-center' >Edit Profile</Link>
+                        <Link to={ROUTES.SELLER.ROOT} className='rounded-xl border-black py-1 border-2 text-center' >Public Profile</Link>
                     </div>
                 </div>
                 <div className='flex flex-col gap-2'>
