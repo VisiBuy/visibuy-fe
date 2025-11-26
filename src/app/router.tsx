@@ -47,7 +47,7 @@ export const router = createBrowserRouter([
                 !path.startsWith("/signup")
               );
             })
-          ),
+          ), 
         ],
       },
 
@@ -55,7 +55,7 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <Navigate to={ROUTES.DASHBOARD} replace />,
-      },
+      }, 
 
       // 404 catch-all
       {
