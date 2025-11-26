@@ -47,7 +47,7 @@ export const router = createBrowserRouter([
                 !path.startsWith("/signup")
               );
             })
-          ),
+          ), 
         ],
       },
 
@@ -55,11 +55,7 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <Navigate to={ROUTES.DASHBOARD} replace />,
-      },
-      {
-        element: <ProtectedRoute requiredPermissions={["VIEW_USERS"]} />,
-        children: [{ path: "/users", element: <UsersPage /> }],
-      },
+      }, 
 
       // 404 catch-all
       {

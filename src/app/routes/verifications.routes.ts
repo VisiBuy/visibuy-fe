@@ -21,7 +21,7 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
   },
   children: [
     createProtectedRoute({
-      path: "verification-list", 
+      path: "", 
       lazy: () => import("../../pages/Verifications/VerificationListPage"), // Implemented VerificationsListPage
       meta: {
         title: "Verifications",
