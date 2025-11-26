@@ -81,23 +81,33 @@ export default function ApiPage() {
   const [deleteApiKey] = useDeleteApiKeyMutation();
   const [revokeApiKey] = useRevokeApiKeyMutation();
 
-  const apiKeys: ApiKey[] = React.useMemo(() => {
-    if (!apiKeysResponse) return [];
 
-    if (Array.isArray(apiKeysResponse)) {
-      return apiKeysResponse;
-    }
+ const apiKeys: ApiKey[] = React.useMemo(() => {
+  if (!apiKeysResponse) return [];
 
-    if (
-      apiKeysResponse &&
-      typeof apiKeysResponse === "object" &&
-      "apiKeys" in apiKeysResponse
-    ) {
-      return (apiKeysResponse as any).apiKeys || [];
-    }
+  // If it's directly an array (your current response structure)
+  if (Array.isArray(apiKeysResponse)) {
+    return apiKeysResponse.map(key => ({
+      ...key,
+      name: key.name || `API Key ${key.id.substring(0, 8)}...` // Fallback if name is missing
+    }));
+  }
 
-    return [];
-  }, [apiKeysResponse]);
+  // If it's nested under apiKeys property
+  if (
+    apiKeysResponse &&
+    typeof apiKeysResponse === "object" &&
+    "apiKeys" in apiKeysResponse
+  ) {
+    const keys = (apiKeysResponse as any).apiKeys || [];
+    return keys.map((key: any) => ({
+      ...key,
+      name: key.name || `API Key ${key.id.substring(0, 8)}...`
+    }));
+  }
+
+  return [];
+}, [apiKeysResponse]);
 
   const sortedApiKeys = [...apiKeys].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -278,6 +288,7 @@ export default function ApiPage() {
       </div>
     );
   }
+
 
   return (
     <div className="w-full min-h-screen bg-white rounded-md p-4 sm:p-6">
@@ -569,8 +580,8 @@ export default function ApiPage() {
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="font-medium text-gray-900 text-sm">
-                        {apiKey.name ||
-                          `API Key ${apiKey.id.substring(0, 8)}...`}
+                         {apiKey.name}
+
                       </h4>
                       <p className="text-xs text-gray-500 mt-1">
                         Created {formatDate(apiKey.createdAt)}
