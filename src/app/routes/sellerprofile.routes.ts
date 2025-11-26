@@ -26,8 +26,8 @@ export const sellerProfileRoutes: RouteConfig[] = [
             icon : "seller-profile",
         },
     }),
-    ({
-        path: ROUTES.SELLER_PUBLIC_PROFILE,
+    createLazyRoute({
+        path: ROUTES.SELLER.PUBLIC +"/:id",
         lazy: () => import("../../pages/SellerProfile/sellerPublicProfile"),
         meta: {
             title: "Seller Public Profile",
