@@ -26,6 +26,12 @@ export type ApiResult<T> = ApiSuccess<T> | ApiError;
 export interface LoginRequest { email: string; password: string; }
 export interface RegisterRequest { name: string; email: string; password: string; phone?: string; address?: string; }
 
+export  interface RegisterCredentials {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+}
 export interface AuthUser {
   id: UUID;
   name: string;
@@ -79,6 +85,10 @@ export interface VerificationDto {
   media: MediaItemDto[];
   createdAt: ISODateString;
   expiresAt?: ISODateString | null;
+}
+
+export interface ProductCardProps {
+  verification: VerificationDto;
 }
 
 export interface CreateVerificationRequest {
@@ -165,4 +175,20 @@ export interface ValidationErrorResponse {
   statusCode: number;
   message: string | string[] | ValidationErrorItem[];
   error: string;
+}
+/* Seller Profile*/
+export interface sellerProfileDto {
+  id ?: UUID,
+  name :  string,
+  phone : string,
+  email ?: string,
+  kycStatus ?: string;
+  mfaEnabled ?: boolean,
+  createdAt ?: string,
+  badges ?: any[],
+  lastLoginAt ?:  string,
+  trustScore ?: number,
+  updatedAt ?:  string,
+  address ?: string
+  profileImage ?: string
 }
