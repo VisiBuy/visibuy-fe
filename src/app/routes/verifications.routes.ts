@@ -21,16 +21,31 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
   },
   children: [
     createProtectedRoute({
-      path: "verification-list", 
-      lazy: () => import("../../pages/Verifications/VerificationListPage"), // Implemented VerificationsListPage
+      path: "verification-list",
+      lazy: () =>
+        import("../../pages/Verifications/VerificationListPage"),
       meta: {
         title: "Verifications",
         breadcrumb: "Verifications",
         showInNav: true,
       },
     }),
+
+    // ⭐ ADDED: KYC VERIFICATION PAGE
     createPermissionRoute({
-      path: "create", // Relative to basePath
+      path: "kyc",
+      requiredPermissions: ["verifications.read"],
+      lazy: () =>
+        import("../../pages/Verifications/KycVerificationPage"),
+      meta: {
+        title: "KYC Verification",
+        breadcrumb: "KYC",
+        showInNav: false,
+      },
+    }),
+
+    createPermissionRoute({
+      path: "create",
       requiredPermissions: ["verifications.create"],
       lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create VerificationsCreatePage
       meta: {
@@ -39,8 +54,9 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
         showInNav: false,
       },
     }),
+
     createPermissionRoute({
-      path: ":id", // Relative to basePath
+      path: ":id",
       requiredPermissions: ["verifications.read"],
       lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create VerificationsDetailPage
       meta: {
@@ -49,8 +65,9 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
         showInNav: false,
       },
     }),
+
     createPermissionRoute({
-      path: ":id/edit", // Relative to basePath
+      path: ":id/edit",
       requiredPermissions: ["verifications.update"],
       lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create VerificationsEditPage
       meta: {
