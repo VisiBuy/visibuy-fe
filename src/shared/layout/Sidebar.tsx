@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import visibuyLogo from "../../assets/visiby-logo.png";
 import { SidebarNavItem } from "./SidebarNavItem";
+import { ROUTES } from "@/app/routes/constants";
 
 export const Sidebar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,22 +14,23 @@ export const Sidebar: React.FC = () => {
     },
     {
       name: "Verifications",
-      path: "/verifications",
+      path: ROUTES.VERIFICATIONS.LIST,
       icon: <i className="fa-solid fa-file-circle-check w-5"></i>,
     },
     {
       name: "Profile",
+      path: ROUTES.SELLER.ROOT,
       path: "/seller/profile",
       icon: <i className="fa-solid fa-user w-5"></i>,
     },
     {
       name: "Billing & Credits",
-      path: "/billing",
+      path: ROUTES.BILLLING.ROOT,
       icon: <i className="fa-solid fa-credit-card w-5"></i>,
     },
     {
       name: "Settings",
-      path: "/settings",
+      path: ROUTES.SETTINGS.ROOT,
       icon: <i className="fa-solid fa-gear w-5"></i>,
     },
   ];
@@ -36,17 +38,17 @@ export const Sidebar: React.FC = () => {
   const bottomLinks = [
     {
       name: "Payment Methods",
-      path: "/payment",
+      path: ROUTES.SETTINGS.PAYMENT,
       icon: <i className="fa-solid fa-credit-card w-5"></i>,
     },
     {
       name: "Password & Security",
-      path: "/security",
+      path: ROUTES.SETTINGS.SECURITY,
       icon: <i className="fa-solid fa-shield w-5"></i>,
     },
     {
       name: "Notification",
-      path: "/notification",
+      path: ROUTES.SETTINGS.NOTIFICATIONS,
       icon: <i className="fa-regular fa-bell w-5"></i>,
     },
   ];

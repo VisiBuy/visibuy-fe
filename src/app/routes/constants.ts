@@ -42,6 +42,10 @@ export const ROUTES = {
     LIST: "/escrows",
     DETAIL: (id: string) => `/escrows/${id}`,
   },
+  
+  BILLLING:{
+    ROOT : '/billings'
+  },
 
   // API Keys
   API_KEYS: {
@@ -70,6 +74,11 @@ export const ROUTES = {
   }, 
   // Seller Public Profile
 
+/*   SELLER: {
+    ROOT: "/seller/profile",
+    PROFILE_EDIT: "/seller/profile/edit",
+    PUBLIC_PROFILE: "/seller/public/:username",
+  }, */
   // Error pages
   ERROR: {
     NOT_FOUND: "/404",
