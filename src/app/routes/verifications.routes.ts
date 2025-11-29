@@ -19,16 +19,13 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
     showInNav: true,
     icon: "verifications",
   },
+
   children: [
+    // Default Verifications List Page
     createProtectedRoute({
-<<<<<<< HEAD
-      path: "verification-list",
+      path: "",
       lazy: () =>
         import("../../pages/Verifications/VerificationListPage"),
-=======
-      path: "", 
-      lazy: () => import("../../pages/Verifications/VerificationListPage"), // Implemented VerificationsListPage
->>>>>>> develop
       meta: {
         title: "Verifications",
         breadcrumb: "Verifications",
@@ -36,7 +33,7 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
       },
     }),
 
-    // ⭐ ADDED: KYC VERIFICATION PAGE
+    // ⭐ KYC Verification Page
     createPermissionRoute({
       path: "kyc",
       requiredPermissions: ["verifications.read"],
@@ -49,10 +46,11 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
       },
     }),
 
+    // Create Verification
     createPermissionRoute({
       path: "create",
       requiredPermissions: ["verifications.create"],
-      lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create VerificationsCreatePage
+      lazy: () => import("../../pages/Users/UsersPage"), // TODO replace later
       meta: {
         title: "Create Verification",
         breadcrumb: "Create",
@@ -60,10 +58,11 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
       },
     }),
 
+    // View Verification Details
     createPermissionRoute({
       path: ":id",
       requiredPermissions: ["verifications.read"],
-      lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create VerificationsDetailPage
+      lazy: () => import("../../pages/Users/UsersPage"),
       meta: {
         title: "Verification Details",
         breadcrumb: "Details",
@@ -71,10 +70,11 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
       },
     }),
 
+    // Edit Verification
     createPermissionRoute({
       path: ":id/edit",
       requiredPermissions: ["verifications.update"],
-      lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create VerificationsEditPage
+      lazy: () => import("../../pages/Users/UsersPage"),
       meta: {
         title: "Edit Verification",
         breadcrumb: "Edit",

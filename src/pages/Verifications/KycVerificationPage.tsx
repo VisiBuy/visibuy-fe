@@ -1,139 +1,150 @@
 "use client";
+
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { ChevronLeft } from "lucide-react";
+
+// EXACT FIGMA SVG ICON
+import DocumentIcon from "../../assets/icons/line-md_document.svg";
+
+interface UploadBoxProps {
+  label: string;
+  description: string;
+  onFileSelect?: (file: File | null) => void;
+}
+
+function UploadBox({ label, description, onFileSelect }: UploadBoxProps) {
+  return (
+    <div className="w-full space-y-2">
+      {/* LABEL */}
+      <p className="text-[14px] font-medium text-[#111827]">
+        {label} <span className="text-red-500">*</span>
+      </p>
+
+      {/* UPLOAD CELL */}
+      <label
+        className="
+          block border border-gray-300 rounded-[16px]
+          px-5 py-8 cursor-pointer bg-white
+          hover:border-gray-400 transition text-center
+        "
+      >
+        <input
+          type="file"
+          className="hidden"
+          onChange={(e) => onFileSelect?.(e.target.files?.[0] ?? null)}
+        />
+
+        {/* FIGMA ICON */}
+        <img
+          src={DocumentIcon}
+          alt="upload icon"
+          className="w-[38px] h-[38px] mx-auto mb-4 opacity-70"
+        />
+
+        {/* UPLOAD TEXT */}
+        <p className="text-[14px] text-black leading-tight font-normal mb-2">
+          {description}
+        </p>
+
+        {/* FILE SIZE */}
+        <p className="text-[12px] text-gray-500">Max file size is 5MB</p>
+      </label>
+
+      {/* FIGMA FOOTER TEXT */}
+      <p className="text-[12px] text-gray-500 leading-snug">
+        Ensure to take photos in a well lit environment for easier image
+        verification.
+      </p>
+    </div>
+  );
+}
 
 export default function KycVerificationPage() {
-  return (
-    <div className="min-h-screen bg-[#F8F9FB] px-4 py-6 flex justify-center">
-      <div className="w-full max-w-md">
+  const navigate = useNavigate();
 
-        {/* ----------------------------- */}
-        {/*         HEADER (Figma)        */}
-        {/* ----------------------------- */}
-        <div className="flex items-center justify-between mb-6 relative">
-          {/* Back arrow */}
+  return (
+    <div className="min-h-screen w-full bg-[#F8F9FB] flex justify-center py-10 px-4">
+      <div className="w-full max-w-[450px]">
+
+        {/* HEADER */}
+        <div className="flex items-center gap-3 mb-6">
           <button
-            onClick={() => window.history.back()}
-            className="p-1 z-10"
+            onClick={() => navigate(-1)}
+            className="p-2 rounded-full hover:bg-gray-200 transition"
           >
-            <svg
-              width="24"
-              height="24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-[#111827]"
-            >
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
+            <ChevronLeft className="w-6 h-6 text-gray-700" />
           </button>
 
-          {/* Centered Title */}
-          <h1 className="absolute left-1/2 -translate-x-1/2 text-[20px] font-semibold text-[#111827]">
+          <h1 className="text-[20px] font-semibold text-[#111827] mx-auto">
             Full KYC Verification
           </h1>
-
-          {/* Placeholder to maintain center alignment */}
-          <div className="w-6"></div>
         </div>
 
-        {/* ----------------------------- */}
-        {/*      FORM CONTAINER (CARD)    */}
-        {/* ----------------------------- */}
-        <div className="space-y-6 bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+        {/* FORM CARD */}
+        <div className="bg-white px-6 py-6 rounded-[20px] shadow-sm space-y-6 border border-gray-100">
 
-          {/* Full Name */}
-          <FormInput
-            label="Full Name"
-            placeholder="Enter full name"
-          />
+          {/* FULL NAME */}
+          <div className="space-y-2">
+            <label className="text-[14px] font-medium text-[#111827]">
+              Full Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Enter full name"
+              className="
+                border border-gray-300 rounded-lg px-4 py-3 text-[14px]
+                w-full outline-none focus:ring-2 focus:ring-[#005CEE]
+                text-black placeholder-black
+              "
+            />
+          </div>
 
           {/* BVN / NIN */}
-          <FormInput
-            label="BVN / NIN"
-            placeholder="Enter BVN or NIN"
+          <div className="space-y-2">
+            <label className="text-[14px] font-medium text-[#111827]">
+              BVN / NIN <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              placeholder="Enter BVN or NIN"
+              className="
+                border border-gray-300 rounded-lg px-4 py-3 text-[14px]
+                w-full outline-none focus:ring-2 focus:ring-[#005CEE]
+                text-black placeholder-black
+              "
+            />
+          </div>
+
+          {/* UPLOAD BOXES */}
+          <UploadBox
+            label="Valid ID Upload"
+            description="Upload your NIN slip / Driver’s license / Passport here."
+            onFileSelect={(f) => console.log("Valid ID:", f)}
           />
 
-          {/* Valid ID Upload */}
-          <UploadSection
-            title="Valid ID Upload"
-            description="Upload your NIN slip or Driver’s license / Passport"
-          />
-
-          {/* CAC Document */}
-          <UploadSection
-            title="CAC Document"
+          <UploadBox
+            label="CAC Document"
             description="Upload file here or browse"
+            onFileSelect={(f) => console.log("CAC Document:", f)}
           />
 
-          {/* Selfie */}
-          <UploadSection
-            title="Selfie"
-            description="Ensure to take photos in a well-lit environment"
+          <UploadBox
+            label="Selfie"
+            description="Upload a clear photo of yourself."
+            onFileSelect={(f) => console.log("Selfie:", f)}
           />
 
-          {/* Submit */}
+          {/* SUBMIT BUTTON */}
           <button
-            className="w-full bg-[#0A0E27] text-white py-3 rounded-xl
-                       text-[16px] font-medium mt-4 hover:bg-[#090c21] transition"
+            className="
+              w-full bg-[#001021] text-white py-3 rounded-xl
+              text-[15px] font-medium mt-4 hover:bg-[#001a33] transition
+            "
           >
             Submit
           </button>
         </div>
-
-      </div>
-    </div>
-  );
-}
-
-/* -------------------------------
-      Reusable Form Input
--------------------------------- */
-interface FormInputProps {
-  label: string;
-  placeholder: string;
-}
-
-function FormInput({ label, placeholder }: FormInputProps) {
-  return (
-    <div className="flex flex-col space-y-2">
-      <label className="text-[14px] font-medium text-[#374151]">
-        {label} <span className="text-red-500">*</span>
-      </label>
-      <input
-        type="text"
-        placeholder={placeholder}
-        className="border border-gray-300 rounded-lg px-4 py-3 text-[14px]
-                   focus:ring-2 focus:ring-[#005CEE] outline-none transition"
-      />
-    </div>
-  );
-}
-
-/* -------------------------------
-      Upload Section Component
--------------------------------- */
-interface UploadProps {
-  title: string;
-  description: string;
-}
-
-function UploadSection({ title, description }: UploadProps) {
-  return (
-    <div className="border border-gray-200 rounded-xl p-4 space-y-3 bg-[#FAFAFA]">
-      <p className="text-[14px] font-medium text-[#374151]">
-        {title} <span className="text-red-500">*</span>
-      </p>
-
-      <div
-        className="flex flex-col items-center justify-center border border-dashed 
-                   border-gray-400 rounded-lg py-6 cursor-pointer bg-white"
-      >
-        <div className="text-gray-600 text-[13px] text-center px-4">
-          {description}
-        </div>
-        <div className="text-gray-400 text-[12px] mt-1">Max file size is 5MB</div>
       </div>
     </div>
   );
