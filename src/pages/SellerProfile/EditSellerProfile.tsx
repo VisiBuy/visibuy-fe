@@ -68,9 +68,9 @@ const EditSellerProfile = () => {
 
 
     return (
-        <main className='bg-gray-800 text-white rounded-lg p-6 relative w-full mx-auto'>
-                <form onSubmit={editUser} id='edit-users' className='flex flex-col gap-4 mt-6'>
-                            <div>
+        <main className='bg-white text-black rounded-lg p-6 relative border-2 my-10 mx-4'>
+                <form onSubmit={editUser} id='edit-users' className='flex flex-col gap-4'>
+                <div>
                     <div className='flex justify-center flex-col items-center'>
                         <div className='w-24 h-24 rounded-full bg-gray-400 flex
                         justify-center items-center relative'>
@@ -89,9 +89,9 @@ const EditSellerProfile = () => {
                         <p>Click to upload profile picture</p>
                     </div>
                     <div className='flex flex-col gap-2 absolute top-3 right-3'>
-                        <button className='rounded-xl border-white p-2 bg-black text-white w-36 border-solid text-center'
+                        <button className='rounded-xl border-white p-2 bg-black text-white w-16 border-solid text-center sm:w-32'
                         type='submit' form='edit-users'
-                        >Save Changes</button>
+                        >Save</button>
                         <Link to={ROUTES.SELLER.PROFILE}  className='rounded-xl border-black py-1 border-2 text-center' >Cancel</Link>
                     </div>
                 </div>
@@ -109,7 +109,7 @@ const EditSellerProfile = () => {
                         <option value="false">Disabled</option>
                     </select>
                     <label htmlFor="user-id" className='font-bold'>User ID</label>
-                    <input type="text" value={data?.id} id='user-id' className='w-full border-2 bg-transparent rounded-xl px-4 py-2 bg-black text-white' disabled />
+                    <input type="text" value={data?.id} id='user-id' className='w-full border-2 bg-black text-white rounded-xl px-4 py-2  ' disabled />
                 </form>
         </main>
     )

@@ -2,16 +2,28 @@ import React from 'react'
 import {Link} from 'react-router-dom'
 import { ROUTES } from '../../app/routes/constants';
 import { useGetSellerProfileQuery } from '../../features/sellerprofile/sellerApi';
+import 'react-loading-skeleton/dist/skeleton.css';
+import Skeleton from 'react-loading-skeleton';
+import checkmark from '../../assets/icons/line-md_circle-filled-to-confirm-circle-filled-transition.svg'
+import loadingIcon from '../../assets/icons/icon-park-solid_loading-three.svg'
+import cancelIcon from '../../assets/icons/ic_baseline-cancel.svg'
+import badgeIcon from '../../assets/icons/Group 13782 (1).svg'
 
 export const SellerProfile = () => {
 
     const { data, isLoading, isError} = useGetSellerProfileQuery();
     console.log(data);
     if(isLoading){
-        return <p className='text-white flex justify-center align-middle font-semibold text-xl'>Loading...</p>
+        return (
+                <div className = "mx-4 my-10 flex flex-col g-8">
+                        <Skeleton width={`100%`} height ={300} className = "rounded-lg"/>
+                        <Skeleton width ={`100%`} height = {200} className ="rounded-lg"/>
+                        <Skeleton width = {`100%`} height = {200} className ="rounded-lg"/>
+                </div>
+    )
     }
     if(isError){
-        return <p className='text-white flex justify-center align-middle font-semibold text-xl'>Error in Fetching Seller's Data</p>
+        return <p className='text-black flex justify-center align-middle font-semibold text-xl'>Error in Fetching Seller's Data</p>
     }
 
     const username = data?.name.toLowerCase().split(' ').join('');
@@ -24,12 +36,16 @@ export const SellerProfile = () => {
         )
     }))
     return (
-        <main className='text-white'>
+        <main className='text-black my-10 mx-4'>
               {/*  PROFILE SUMMARY */}
-            <div className='w-full flex flex-col gap-2 bg-gray-800 text-white rounded-lg p-6 relative  border-gray-300'>
+            <div className='w-full flex flex-col gap-2 bg-white text-black rounded-lg p-6 relative  border-gray-300 border-2'>
                 <div className=''>
                     <div className='flex justify-center flex-col items-center my-1'>
-                        <div className='w-24 h-24 rounded-full bg-gray-300'></div>
+                        <div className='flex
+                        justify-center items-center relative' >
+                            <div className='w-24 h-24 rounded-full bg-gray-300 '></div>
+                            <img src={badgeIcon} alt="" className='absolute bottom-1 left-1'/>
+                        </div>
                         <h3 className='font-bold text-xl'>{data?.name}</h3>
                         <p className='font-semibold'>@{username}</p>
                     </div>
@@ -54,33 +70,30 @@ export const SellerProfile = () => {
                 <div className='flex flex-col gap-2'>
                     <h3 className='font-bold'>Badges</h3>
                     <div className='flex w-full gap-2'>
-                        {/*  <div className='w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-gray-400'></div>
-                        <div className='w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-gray-400'></div>
-                        <div className='w-10 h-10  sm:w-14 sm:h-14 rounded-full bg-gray-400'></div>
-                        <div className='w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-gray-400'></div>
-                        <div className='w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-gray-400'></div> */}
                         {badges}
-                        
                     </div>
                 </div>
             </div>
           {/*   VERIFICATION STATUS */}
-            <div className='w-full bg-gray-800 rounded-lg p-6 mt-6  border-gray-300 flex flex-col gap-4'>
+            <div className='w-full bg-white rounded-lg p-6 mt-6  border-gray-300 border-2 flex flex-col gap-4'>
                 <h3 className='font-bold'>Verification Status</h3>
                 <div className='flex justify-between gap-4 '>
-                    <div className='border-2 border-gray-300 w-full rounded-xl p-4 flex flex-col justify-end'>
+                    <div className='border-2 border-gray-300 w-full rounded-xl p-4 flex flex-col justify-center align-center g-4'>
+                        <img src={checkmark} alt="Checkmark" width={45} height={45} className = "m-auto" />
+                        <div className='bg-gray-400 h-3 rounded-md '></div>
+                    </div>
+                    <div className='border-2 border-gray-300 w-full h-36 rounded-xl p-4 flex flex-col justify-center gap-4 align-center'>
+                        <img src={loadingIcon} alt=""  width={45} height={45} className ="m-auto"/>
                         <div className='bg-gray-400 h-3 w-30 rounded-md '></div>
                     </div>
-                    <div className='border-2 border-gray-300 w-full h-36 rounded-xl p-4 flex flex-col justify-end'>
-                        <div className='bg-gray-400 h-3 w-30 rounded-md '></div>
-                    </div>
-                    <div className='border-2 border-gray-300 w-full h-36 rounded-xl p-4 flex flex-col justify-end'>
+                    <div className='border-2 border-gray-300 w-full h-36 rounded-xl p-4 flex flex-col justify-center gap-4 align-center'>
+                        <img src={cancelIcon} alt="" width={45} height={45} className="m-auto"/>
                         <div className='bg-gray-400 h-3 w-30 rounded-md '></div>
                     </div>
                 </div>
             </div>
            {/*  STATISTICS */}
-            <div className='w-full bg-gray-800 rounded-lg p-6 mt-6 border-gray-300 flex flex-col gap-4'>
+            <div className='w-full bg-white rounded-lg p-6 mt-6 border-gray-300 flex flex-col gap-4 border-2'>
                 <h3 className='font-bold'>Statistics</h3>
                 <div className='h-40 w-full border-gray-300 rounded-xl border-2 p-4 flex flex-col justify-end'>
                     <div className='bg-gray-400 h-3 w-30 rounded-md '></div>
@@ -90,21 +103,3 @@ export const SellerProfile = () => {
     )
 }
 export default SellerProfile;
-
-/* import React from 'react'
-
-export const SellerProfile = () => {
-    return (
-        <main>
-            <header>
-                <nav>
-                    <ul>
-                        <li></li>
-                        <li></li>
-                    </ul>
-                </nav>
-            </header>
-        </main>
-    )
-}
- */
