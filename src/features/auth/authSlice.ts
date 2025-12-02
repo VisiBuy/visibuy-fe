@@ -1,11 +1,13 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-type User = { id: string; email: string; name?: string };
+type User = { id: string; email: string; name?: string; trustScore?: number };
 type AuthState = {
   user: User | null;
   permissions: string[];
   accessToken: string | null;
   roles: string[];
+  isInitialized: boolean;
+  isLoading: boolean;
 };
 
 const initialState: AuthState = {
@@ -13,15 +15,22 @@ const initialState: AuthState = {
   permissions: [],
   accessToken: null,
   roles: [],
+  isInitialized: false,
+  isLoading: false,
 };
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     setCredentials: (
       state,
-      action: PayloadAction<{ accessToken: string | null; user?: User | null; permissions?: string[]; roles?: string[] }>
+      action: PayloadAction<{
+        accessToken: string | null;
+        user?: User | null;
+        permissions?: string[];
+        roles?: string[];
+      }>
     ) => {
       const { accessToken, user, permissions, roles } = action.payload;
       if (accessToken) state.accessToken = accessToken;
@@ -40,6 +49,12 @@ const authSlice = createSlice({
     },
     setRoles: (state, action: PayloadAction<string[]>) => {
       state.roles = action.payload;
+    },
+    setInitialized: (state, action: PayloadAction<boolean>) => {
+      state.isInitialized = action.payload;
+    },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
     },
   },
 });

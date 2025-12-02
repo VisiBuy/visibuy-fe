@@ -2,7 +2,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { authActions } from "../../features/auth/authSlice";
 
 const API_BASE =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api/v1";
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://visibuy-staging-api.onrender.com/api/v1";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_BASE,
@@ -59,5 +60,7 @@ export const baseApi = createApi({
     "Payout",
     "Role",
     "Permission",
+    "Dashboard",
+    "sellerProfile",
   ],
 });
