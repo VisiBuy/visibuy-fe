@@ -46,6 +46,32 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
       },
     }),
 
+    // ⭐ NEW: KYC Submission Success Page
+    createPermissionRoute({
+      path: "kyc/success",
+      requiredPermissions: ["verifications.read"],
+      lazy: () =>
+        import("../../pages/Verifications/KycSubmissionSuccessPage"),
+      meta: {
+        title: "KYC Success",
+        breadcrumb: "Success",
+        showInNav: false,
+      },
+    }),
+
+    // ⭐ NEW: KYC Approved Page
+    createPermissionRoute({
+      path: "kyc/approved",
+      requiredPermissions: ["verifications.read"],
+      lazy: () =>
+        import("../../pages/Verifications/KycApprovedPage"),
+      meta: {
+        title: "KYC Approved",
+        breadcrumb: "Approved",
+        showInNav: false,
+      },
+    }),
+
     // Create Verification
     createPermissionRoute({
       path: "create",

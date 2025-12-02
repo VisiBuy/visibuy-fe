@@ -1,70 +1,214 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, X } from "lucide-react";
 
-// EXACT FIGMA SVG ICON
+// REAL FIGMA ICON
 import DocumentIcon from "../../assets/icons/line-md_document.svg";
+
+interface FileState {
+  file?: File | null;
+  uploading: boolean;
+  progress: number;
+  uploaded: boolean;
+}
 
 interface UploadBoxProps {
   label: string;
   description: string;
-  onFileSelect?: (file: File | null) => void;
+  state: FileState;
+  onFileSelect: (file: File | null) => void;
+  onEdit: () => void;
+  onView: () => void;
 }
 
-function UploadBox({ label, description, onFileSelect }: UploadBoxProps) {
+/* =======================
+      UPLOAD BOX
+========================== */
+function UploadBox({
+  label,
+  description,
+  state,
+  onFileSelect,
+  onEdit,
+  onView,
+}: UploadBoxProps) {
+  const uploading = state.uploading;
+  const uploaded = state.uploaded;
+
   return (
-    <div className="w-full space-y-2">
-      {/* LABEL */}
-      <p className="text-[14px] font-medium text-[#111827]">
+    <div className="w-full">
+      <p className="text-[14px] font-medium text-[#111827] mb-2">
         {label} <span className="text-red-500">*</span>
       </p>
 
-      {/* UPLOAD CELL */}
       <label
         className="
           block border border-gray-300 rounded-[16px]
-          px-5 py-8 cursor-pointer bg-white
-          hover:border-gray-400 transition text-center
+          px-4 py-6 cursor-pointer bg-white transition
+          hover:border-gray-400 text-center relative
         "
       >
         <input
           type="file"
           className="hidden"
-          onChange={(e) => onFileSelect?.(e.target.files?.[0] ?? null)}
+          onChange={(e) => onFileSelect(e.target.files?.[0] ?? null)}
         />
 
-        {/* FIGMA ICON */}
-        <img
-          src={DocumentIcon}
-          alt="upload icon"
-          className="w-[38px] h-[38px] mx-auto mb-4 opacity-70"
-        />
+        {/* ===== DEFAULT STATE ===== */}
+        {!uploading && !uploaded && (
+          <>
+            <img
+              src={DocumentIcon}
+              alt="upload icon"
+              className="w-10 h-10 mx-auto mb-3 opacity-70"
+            />
+            <p className="text-[13px] text-black leading-tight">{description}</p>
+            <p className="text-[12px] text-gray-500 mt-2">Max file size is 5MB</p>
+          </>
+        )}
 
-        {/* UPLOAD TEXT */}
-        <p className="text-[14px] text-black leading-tight font-normal mb-2">
-          {description}
-        </p>
+        {/* ===== UPLOADING STATE ===== */}
+        {uploading && (
+          <div className="flex flex-col items-center justify-center py-4">
+            <div className="relative w-14 h-14 mb-2">
+              <svg className="w-full h-full">
+                <circle
+                  cx="28"
+                  cy="28"
+                  r="24"
+                  stroke="#E5E7EB"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <circle
+                  cx="28"
+                  cy="28"
+                  r="24"
+                  stroke="#001F3F"
+                  strokeWidth="4"
+                  fill="none"
+                  strokeDasharray={150}
+                  strokeDashoffset={150 - (150 * state.progress) / 100}
+                  strokeLinecap="round"
+                  className="transition-all"
+                />
+              </svg>
+            </div>
+            <p className="text-sm font-medium">{state.progress}%</p>
+            <p className="text-xs text-gray-500">Uploading file...</p>
+          </div>
+        )}
 
-        {/* FILE SIZE */}
-        <p className="text-[12px] text-gray-500">Max file size is 5MB</p>
+        {/* ===== UPLOADED STATE ===== */}
+        {uploaded && (
+          <div className="flex flex-col items-center justify-center py-2">
+            <img
+              src={DocumentIcon}
+              alt="file uploaded"
+              className="w-10 h-10 mx-auto mb-2 opacity-70"
+            />
+
+            <p className="text-[13px] font-medium text-[#111827]">
+              {state.file?.name ?? "File uploaded"}
+            </p>
+
+            <p className="text-[12px] text-gray-500 mb-3">
+              Upload completed successfully
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={onView}
+                className="text-[13px] px-4 py-[6px] rounded-md border border-gray-300 bg-gray-50"
+              >
+                View
+              </button>
+              <button
+                type="button"
+                onClick={onEdit}
+                className="text-[13px] px-4 py-[6px] rounded-md border border-gray-300 bg-gray-50"
+              >
+                Edit
+              </button>
+            </div>
+          </div>
+        )}
       </label>
 
-      {/* FIGMA FOOTER TEXT */}
-      <p className="text-[12px] text-gray-500 leading-snug">
-        Ensure to take photos in a well lit environment for easier image
-        verification.
+      <p className="text-[11px] text-gray-500 mt-2 leading-tight">
+        Ensure to take photos in a well-lit environment for easier image verification.
       </p>
     </div>
   );
 }
 
+/* =======================
+      MAIN PAGE
+========================== */
+
 export default function KycVerificationPage() {
   const navigate = useNavigate();
 
+  // ========= Upload States ========= //
+  const [validId, setValidId] = useState<FileState>({
+    uploading: false,
+    progress: 0,
+    uploaded: false,
+  });
+
+  const [cacDoc, setCacDoc] = useState<FileState>({
+    uploading: false,
+    progress: 0,
+    uploaded: false,
+  });
+
+  const [selfie, setSelfie] = useState<FileState>({
+    uploading: false,
+    progress: 0,
+    uploaded: false,
+  });
+
+  // ========= Preview Modal State ========= //
+  const [previewFile, setPreviewFile] = useState<string | null>(null);
+
+  // ========= Simulated Upload ========= //
+  const simulateUpload = (
+    file: File | null,
+    setState: React.Dispatch<React.SetStateAction<FileState>>
+  ) => {
+    if (!file) return;
+
+    setState({ file, uploading: true, progress: 0, uploaded: false });
+
+    let p = 0;
+    const interval = setInterval(() => {
+      p += 8;
+      if (p >= 100) {
+        clearInterval(interval);
+        setState({ file, uploading: false, progress: 100, uploaded: true });
+      } else {
+        setState((prev) => ({ ...prev, progress: p }));
+      }
+    }, 150);
+  };
+
+  // ========= Submit Handler ========= //
+  const handleSubmit = () => {
+    navigate("/verifications/kyc/success");
+  };
+
+  // ========= Handle View File ========= //
+  const handleViewFile = (file?: File | null) => {
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setPreviewFile(url);
+  };
+
   return (
-    <div className="min-h-screen w-full bg-[#F8F9FB] flex justify-center py-10 px-4">
+    <div className="min-h-screen w-full bg-[#F8F9FB] flex justify-center py-10 px-4 relative">
       <div className="w-full max-w-[450px]">
 
         {/* HEADER */}
@@ -75,16 +219,15 @@ export default function KycVerificationPage() {
           >
             <ChevronLeft className="w-6 h-6 text-gray-700" />
           </button>
-
           <h1 className="text-[20px] font-semibold text-[#111827] mx-auto">
             Full KYC Verification
           </h1>
         </div>
 
-        {/* FORM CARD */}
+        {/* FORM */}
         <div className="bg-white px-6 py-6 rounded-[20px] shadow-sm space-y-6 border border-gray-100">
 
-          {/* FULL NAME */}
+          {/* Full Name */}
           <div className="space-y-2">
             <label className="text-[14px] font-medium text-[#111827]">
               Full Name <span className="text-red-500">*</span>
@@ -100,7 +243,7 @@ export default function KycVerificationPage() {
             />
           </div>
 
-          {/* BVN / NIN */}
+          {/* BVN/NIN */}
           <div className="space-y-2">
             <label className="text-[14px] font-medium text-[#111827]">
               BVN / NIN <span className="text-red-500">*</span>
@@ -116,29 +259,39 @@ export default function KycVerificationPage() {
             />
           </div>
 
-          {/* UPLOAD BOXES */}
+          {/* Upload Boxes */}
           <UploadBox
             label="Valid ID Upload"
             description="Upload your NIN slip / Driver’s license / Passport here."
-            onFileSelect={(f) => console.log("Valid ID:", f)}
+            state={validId}
+            onFileSelect={(f) => simulateUpload(f, setValidId)}
+            onEdit={() => setValidId({ uploading: false, progress: 0, uploaded: false })}
+            onView={() => handleViewFile(validId.file)}
           />
 
           <UploadBox
             label="CAC Document"
             description="Upload file here or browse"
-            onFileSelect={(f) => console.log("CAC Document:", f)}
+            state={cacDoc}
+            onFileSelect={(f) => simulateUpload(f, setCacDoc)}
+            onEdit={() => setCacDoc({ uploading: false, progress: 0, uploaded: false })}
+            onView={() => handleViewFile(cacDoc.file)}
           />
 
           <UploadBox
             label="Selfie"
             description="Upload a clear photo of yourself."
-            onFileSelect={(f) => console.log("Selfie:", f)}
+            state={selfie}
+            onFileSelect={(f) => simulateUpload(f, setSelfie)}
+            onEdit={() => setSelfie({ uploading: false, progress: 0, uploaded: false })}
+            onView={() => handleViewFile(selfie.file)}
           />
 
           {/* SUBMIT BUTTON */}
           <button
+            onClick={handleSubmit}
             className="
-              w-full bg-[#001021] text-white py-3 rounded-xl
+              w-full bg-[#001021] text-white py-3 rounded-xl 
               text-[15px] font-medium mt-4 hover:bg-[#001a33] transition
             "
           >
@@ -146,6 +299,25 @@ export default function KycVerificationPage() {
           </button>
         </div>
       </div>
+
+      {/* ========= PREVIEW MODAL ========= */}
+      {previewFile && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] px-4">
+          <div className="bg-white rounded-xl p-4 max-w-[90%] max-h-[90%] relative">
+            <button
+              onClick={() => setPreviewFile(null)}
+              className="absolute top-3 right-3 p-1 bg-gray-200 rounded-full"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <img
+              src={previewFile}
+              className="max-w-full max-h-[80vh] rounded-md object-contain"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
