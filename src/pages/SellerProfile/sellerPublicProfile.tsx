@@ -1,4 +1,5 @@
 import React from 'react'
+import { useMemo } from 'react';
 import { useGetPublicSellerProfileQuery } from '../../features/sellerprofile/sellerApi';
 import {renderIcon} from '../../shared/utils/iconMap'
 import { FiShare2 } from "react-icons/fi"
@@ -6,7 +7,11 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import Skeleton from 'react-loading-skeleton';
 import {useParams} from 'react-router-dom';
 import badgeIcon from '../../assets/icons/Group 13782 (1).svg'
-
+import starIcon from '../../assets/icons/material-symbols_star-rounded.svg'
+import diamondIcon from '../../assets/icons/diamond-01-svgrepo-com.svg'
+import rocketIcon from  '../../assets/icons/rocket-svgrepo-com.svg'
+import shieldIcon from '../../assets/icons/shield-check-svgrepo-com (1).svg'
+import userIcon from '../../assets/icons/user-check-alt-1-svgrepo-com.svg'
 const sellerPublicProfile = () => {
     const {id} = useParams<{id:string}>();
 
@@ -47,10 +52,21 @@ const sellerPublicProfile = () => {
 };
 
 
+    const badgesIcon:Record<string , string> = {
+        verifiedSeller: shieldIcon,
+        trustedBuyer: userIcon,
+        premiumMember: diamondIcon,
+        earlyAdopter: rocketIcon
+    }
 
-    const badges = data?.badges ? Object.entries(data.badges):[] ;
-    badges.filter(([key , value]) => value === true)
-    .map(([key]) => key)
+    const badgesToDisplay = useMemo(()=>{
+        const badgesArray = Object.entries(data?.badges || {});
+        const activeBadges = badgesArray.filter(([_, value]) => value === true).map(([key]) => key);
+
+        const matchedBadges = activeBadges.map((key) => badgesIcon[key]).filter(Boolean);
+        return matchedBadges;
+    },[data?.badges])
+
 
     
 
@@ -68,11 +84,11 @@ const sellerPublicProfile = () => {
                         <div className='mt-2'>
                             <h3 className='font-bold sm:text-xl text-xs m-0'>{data?.name}</h3>
                         <p className='font-semibold m-0'>@{username}</p>
-                        <div>
-                            <img src="" alt="" />
+                        <div className='flex flex-row gap-2 align-middle'>
+                            <img src={starIcon} alt="Trust Score star" />
                             <p>
                                 {data?.trustScore}
-                                <span>Trust Score</span>
+                                <span className='font-semibold text-gray-500 text-center'>Trust Score</span>
                             </p>
                         </div>
                         </div>
@@ -88,9 +104,19 @@ const sellerPublicProfile = () => {
                 </div>
                 <div className='flex flex-col gap-2'>
                     <h3 className='font-bold'>Badges</h3>
-                    <div className='flex w-full gap-2'>
-                        {badges}
-                    </div>
+                        {
+                            badgesToDisplay.map((icon,index ) =>{
+                                    return(
+                                        <div className='flex w-full gap-2'>
+                                                <div key={index} className='flex align-middle justify-center
+                                                w-10 h-10 rounded-full bg-gray-500'>
+                                                    <img src={icon} alt="Seller Badges" width={14} height={14}/>
+                                                </div>
+                                        </div>
+                                )
+                            }
+                            )
+                        }
                 </div>
                 </div>
                 <div className='w-full bg-white border-2 rounded-lg p-4 sm:p-6 mt-6 flex flex-col gap-4'>

@@ -12,7 +12,7 @@ import {
   FiLogOut,
   FiChevronRight,
   FiEdit2,
-  FiShare2
+  FiShare2,
 } from "react-icons/fi";
 
 /**

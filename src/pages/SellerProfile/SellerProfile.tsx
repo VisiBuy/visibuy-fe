@@ -1,4 +1,5 @@
 import React from 'react'
+import { useMemo } from 'react';
 import {Link} from 'react-router-dom'
 import { ROUTES } from '../../app/routes/constants';
 import { useGetSellerProfileQuery } from '../../features/sellerprofile/sellerApi';
@@ -8,6 +9,10 @@ import checkmark from '../../assets/icons/line-md_circle-filled-to-confirm-circl
 import loadingIcon from '../../assets/icons/icon-park-solid_loading-three.svg'
 import cancelIcon from '../../assets/icons/ic_baseline-cancel.svg'
 import badgeIcon from '../../assets/icons/Group 13782 (1).svg'
+import diamondIcon from '../../assets/icons/diamond-01-svgrepo-com.svg'
+import rocketIcon from  '../../assets/icons/rocket-svgrepo-com.svg'
+import shieldIcon from '../../assets/icons/shield-check-svgrepo-com (1).svg'
+import userIcon from '../../assets/icons/user-check-alt-1-svgrepo-com.svg'
 
 export const SellerProfile = () => {
 
@@ -27,12 +32,20 @@ export const SellerProfile = () => {
     }
 
     const username = data?.name.toLowerCase().split(' ').join('');
-
-    const badges = data?.badges ? Object.entries(data.badges):[] ;
-    badges.filter(([key , value]) => value === true)
-    .map(([key]) => key)
     
-    console.log(badges)
+    const badgesIcon:Record<string , string> = {
+            verifiedSeller: shieldIcon,
+            trustedBuyer: userIcon,
+            premiumMember: diamondIcon,
+            earlyAdopter: rocketIcon
+        }
+    const badgesToDisplay = useMemo(()=>{
+        const badgesArray = Object.entries(data?.badges || {});
+        const activeBadges = badgesArray.filter(([_, value]) => value === true).map(([key]) => key);
+
+        const matchedBadges = activeBadges.map((key) => badgesIcon[key]).filter(Boolean);
+        return matchedBadges;
+    },[data?.badges])
 
     
     return (
@@ -69,9 +82,19 @@ export const SellerProfile = () => {
                 </div>
                 <div className='flex flex-col gap-2'>
                     <h3 className='font-bold'>Badges</h3>
-                    <div className='flex w-full gap-2'>
-                        {badges}
-                    </div>
+                    {
+                            badgesToDisplay.map((icon,index ) =>{
+                                    return(
+                                        <div className='flex w-full gap-2'>
+                                                <div key={index} className='flex align-middle justify-center
+                                                w-10 h-10 rounded-full bg-gray-500'>
+                                                    <img src={icon} alt="Seller Badges" width={14} height={14}/>
+                                                </div>
+                                        </div>
+                                )
+                            }
+                            )
+                        }
                 </div>
             </div>
           {/*   VERIFICATION STATUS */}
