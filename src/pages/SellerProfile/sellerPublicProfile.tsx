@@ -21,42 +21,39 @@ const sellerPublicProfile = () => {
         )
     }
     if(error){
-        return <p className='text-black flex justify-center align-middle font-semibold text-xl'>This profile is not yet public or access is restricted</p>;
+        return <p className='text-black flex justify-center align-middle font-semibold text-xl text-center'>This profile is not yet public or access is restricted</p>;
     }
 
 
     console.log(data);
 
     const shareProfile = () => {
-  const profileUrl = `${window.location.origin}/seller/public/${id}`;
+        const profileUrl = `${window.location.origin}/seller/public/${id}`;
 
-  if (navigator.share) {
-    navigator.share({
-      title: 'Check out my Visibuy profile',
-      text: 'Here’s my public profile on Visibuy!',
-      url: profileUrl,
-    })
-    .then(() => console.log('Profile shared successfully'))
-    .catch((error) => console.error('Error sharing:', error));
-  } else {
-    // Fallback if Web Share API is not supported
-    navigator.clipboard.writeText(profileUrl)
-      .then(() => alert('Profile link copied to clipboard!'))
-      .catch(() => alert('Failed to copy profile link.'));
-  }
+    if (navigator.share) {
+        navigator.share({
+        title: 'Check out my Visibuy profile',
+        text: 'Here’s my public profile on Visibuy!',
+        url: profileUrl,
+        })
+        .then(() => console.log('Profile shared successfully'))
+        .catch((error) => console.error('Error sharing:', error));
+    } else {
+        // Fallback if Web Share API is not supported
+        navigator.clipboard.writeText(profileUrl)
+        .then(() => alert('Profile link copied to clipboard!'))
+        .catch(() => alert('Failed to copy profile link.'));
+    }
 };
 
 
 
-    const badges :any[] = (data?.badges ?? []).map((badge:any) =>{
-        return(
-            !badges ?
-            <p>No Badges Yet</p>
-            :  <div className='sm:w-14 sm:h-14 w-10 h-10 rounded-full bg-gray-400 '>
-                {badge}
-            </div> 
-        )
-    })
+    const badges = data?.badges ? Object.entries(data.badges):[] ;
+    badges.filter(([key , value]) => value === true)
+    .map(([key]) => key)
+
+    
+
     const username = data?.name.toLowerCase().split(' ').join('');
     
     return (
@@ -71,10 +68,16 @@ const sellerPublicProfile = () => {
                         <div className='mt-2'>
                             <h3 className='font-bold sm:text-xl text-xs m-0'>{data?.name}</h3>
                         <p className='font-semibold m-0'>@{username}</p>
+                        <div>
+                            <img src="" alt="" />
+                            <p>
+                                {data?.trustScore}
+                                <span>Trust Score</span>
+                            </p>
+                        </div>
                         </div>
                     </div>
                     <div className="relative group inline-block">
-                       {/*  {renderIcon('FiShare2' , 'w-6 h-6')} */}
                         <FiShare2 size ={20} 
                         className = "text-4xl cursor-pointer transition-transform duration-200 group-hover:scale-125"
                         onClick={shareProfile}/>
@@ -94,16 +97,19 @@ const sellerPublicProfile = () => {
                 <h3 className='font-bold'>Verification Summary</h3>
                 <div className='flex justify-between gap-6 '>
                     <div className='border-2 border-gray-300 flex-1 h-22 sm:h-28 rounded-xl p-4 flex flex-col justify-end'>
-                        <span className='font-bold sm:text-2xl text-sm text-center'>35</span>
-                        <div className='bg-gray-400 h-3 w-30 rounded-md '></div>
+                        <span className='font-bold sm:text-2xl text-sm text-center'>{data?.totalVerifications}</span>
+                        <p className='font-bold text-xl'>Total Verifications</p>
+                        <p className='text-gray-400 text-sm font-semibold'>Successfully completed</p>
                     </div>
                     <div className='border-2 border-gray-300 flex-1 h-22 sm:h-28 rounded-xl p-4 flex flex-col justify-end'>
-                        <span className='font-bold sm:text-2xl text-sm text-center '>92%</span>
-                        <div className='bg-gray-400 h-3 w-30 rounded-md '></div>
+                        <span className='font-bold sm:text-2xl text-sm text-center '>{data?.approvalRatePercentage}%</span>
+                        <p className='font-bold text-xl'>Approval Rate</p>
+                        <p className='text-gray-400 text-sm font-semibold'>Buyer Satisfaction</p>                
                     </div>
                     <div className='border-2 border-gray-300 flex-1 h-22 sm:h-28 rounded-xl p-4 flex flex-col justify-end'>
-                        <span className='font-bold sm:text-2xl text-sm text-center '>80</span>
-                        <div className='bg-gray-400 h-3 w-30 rounded-md '></div>
+                        <span className='font-bold sm:text-2xl text-sm text-center '>{data?.trustScore}</span>
+                        <p className='font-bold text-xl'>Trust Score</p>
+                        <p className='text-gray-400 text-sm font-semibold'>Bronze Level</p>
                     </div>
                 </div>
             </div>

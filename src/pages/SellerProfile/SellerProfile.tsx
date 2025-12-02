@@ -23,18 +23,18 @@ export const SellerProfile = () => {
     )
     }
     if(isError){
-        return <p className='text-black flex justify-center align-middle font-semibold text-xl'>Error in Fetching Seller's Data</p>
+        return <p className='text-black flex justify-center align-middle font-semibold text-xl text-center'>Error in Fetching Seller's Data</p>
     }
 
     const username = data?.name.toLowerCase().split(' ').join('');
 
-        const badges = data?.badges?.map((badge =>{
-        return(
-            <div className='sm:w-14 sm:h-14 w-10 h-10 rounded-full bg-gray-400 '>
-                {badge}
-            </div>
-        )
-    }))
+    const badges = data?.badges ? Object.entries(data.badges):[] ;
+    badges.filter(([key , value]) => value === true)
+    .map(([key]) => key)
+    
+    console.log(badges)
+
+    
     return (
         <main className='text-black my-10 mx-4'>
               {/*  PROFILE SUMMARY */}
@@ -57,12 +57,12 @@ export const SellerProfile = () => {
                 <div className='flex flex-col gap-2'>
                     <div className='flex w-full justify-between font-bold'>
                         <p>Trust score </p>
-                        <p>{data?.trustScore}/100</p>
+                        <p>{data?.trustScore ?? 0/10}/100</p>
                     </div>
                     <div>
                         <div className='w-full h-3 bg-gray-400 rounded-xl relative'>
                             <div className='bg-blue-600 absolute rounded-xl  h-3' style={{
-                                width: `${data?.trustScore}%`
+                                width: `${data?.trustScore ?? 0/10}%`
                             }}></div>
                         </div>
                     </div>
