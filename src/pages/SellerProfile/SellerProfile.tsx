@@ -85,8 +85,8 @@ export const SellerProfile = () => {
                     {
                             badgesToDisplay.map((icon,index ) =>{
                                     return(
-                                        <div className='flex w-full gap-2'>
-                                                <div key={index} className='flex align-middle justify-center
+                                        <div key={index} className='flex w-full gap-2'>
+                                                <div className='flex align-middle justify-center
                                                 w-10 h-10 rounded-full bg-gray-500'>
                                                     <img src={icon} alt="Seller Badges" width={14} height={14}/>
                                                 </div>
