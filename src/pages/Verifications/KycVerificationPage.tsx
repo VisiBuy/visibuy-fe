@@ -39,7 +39,7 @@ function UploadBox({
 
   return (
     <div className="w-full">
-      <p className="text-[14px] font-medium text-[#111827] mb-2">
+      <p className="text-[14px] lg:text-[15px] font-medium text-[#111827] mb-2">
         {label} <span className="text-red-500">*</span>
       </p>
 
@@ -56,7 +56,7 @@ function UploadBox({
           onChange={(e) => onFileSelect(e.target.files?.[0] ?? null)}
         />
 
-        {/* ===== DEFAULT STATE ===== */}
+        {/* ----- DEFAULT STATE ----- */}
         {!uploading && !uploaded && (
           <>
             <img
@@ -69,7 +69,7 @@ function UploadBox({
           </>
         )}
 
-        {/* ===== UPLOADING STATE ===== */}
+        {/* ----- UPLOADING STATE ----- */}
         {uploading && (
           <div className="flex flex-col items-center justify-center py-4">
             <div className="relative w-14 h-14 mb-2">
@@ -101,7 +101,7 @@ function UploadBox({
           </div>
         )}
 
-        {/* ===== UPLOADED STATE ===== */}
+        {/* ----- UPLOADED STATE ----- */}
         {uploaded && (
           <div className="flex flex-col items-center justify-center py-2">
             <img
@@ -138,7 +138,7 @@ function UploadBox({
         )}
       </label>
 
-      <p className="text-[11px] text-gray-500 mt-2 leading-tight">
+      <p className="text-[11px] text-gray-500 mt-2 leading-tight lg:text-[12px]">
         Ensure to take photos in a well-lit environment for easier image verification.
       </p>
     </div>
@@ -152,7 +152,7 @@ function UploadBox({
 export default function KycVerificationPage() {
   const navigate = useNavigate();
 
-  // ========= Upload States ========= //
+  // Upload States
   const [validId, setValidId] = useState<FileState>({
     uploading: false,
     progress: 0,
@@ -171,10 +171,10 @@ export default function KycVerificationPage() {
     uploaded: false,
   });
 
-  // ========= Preview Modal State ========= //
+  // Preview modal
   const [previewFile, setPreviewFile] = useState<string | null>(null);
 
-  // ========= Simulated Upload ========= //
+  // Simulated upload
   const simulateUpload = (
     file: File | null,
     setState: React.Dispatch<React.SetStateAction<FileState>>
@@ -195,12 +195,12 @@ export default function KycVerificationPage() {
     }, 150);
   };
 
-  // ========= Submit Handler ========= //
+  // Submit
   const handleSubmit = () => {
     navigate("/verifications/kyc/success");
   };
 
-  // ========= Handle View File ========= //
+  // View file
   const handleViewFile = (file?: File | null) => {
     if (!file) return;
     const url = URL.createObjectURL(file);
@@ -208,28 +208,40 @@ export default function KycVerificationPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#F8F9FB] flex justify-center py-10 px-4 relative">
-      <div className="w-full max-w-[450px]">
+    <div className="min-h-screen w-full bg-[#F8F9FB] flex justify-center px-4 lg:px-16 py-10">
+
+      {/* ===== MAIN WRAPPER WITH FIXED SPACING ===== */}
+      <div className="w-full max-w-[450px] lg:max-w-[720px] mt-8 sm:mt-10">
 
         {/* HEADER */}
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-6 lg:mb-10 mt-2 sm:mt-4">
           <button
             onClick={() => navigate(-1)}
             className="p-2 rounded-full hover:bg-gray-200 transition"
           >
             <ChevronLeft className="w-6 h-6 text-gray-700" />
           </button>
-          <h1 className="text-[20px] font-semibold text-[#111827] mx-auto">
+
+          <h1 className="text-[20px] lg:text-[24px] font-semibold text-[#111827] mx-auto">
             Full KYC Verification
           </h1>
         </div>
 
-        {/* FORM */}
-        <div className="bg-white px-6 py-6 rounded-[20px] shadow-sm space-y-6 border border-gray-100">
-
+        {/* FORM CARD */}
+        <div
+          className="
+            bg-white 
+            px-6 py-6 
+            rounded-[20px] 
+            shadow-sm 
+            space-y-6 
+            border border-gray-100 
+            lg:px-10 lg:py-10
+          "
+        >
           {/* Full Name */}
           <div className="space-y-2">
-            <label className="text-[14px] font-medium text-[#111827]">
+            <label className="text-[14px] lg:text-[15px] font-medium text-[#111827]">
               Full Name <span className="text-red-500">*</span>
             </label>
             <input
@@ -245,7 +257,7 @@ export default function KycVerificationPage() {
 
           {/* BVN/NIN */}
           <div className="space-y-2">
-            <label className="text-[14px] font-medium text-[#111827]">
+            <label className="text-[14px] lg:text-[15px] font-medium text-[#111827]">
               BVN / NIN <span className="text-red-500">*</span>
             </label>
             <input
@@ -259,7 +271,7 @@ export default function KycVerificationPage() {
             />
           </div>
 
-          {/* Upload Boxes */}
+          {/* UPLOADS */}
           <UploadBox
             label="Valid ID Upload"
             description="Upload your NIN slip / Driver’s license / Passport here."
@@ -300,7 +312,7 @@ export default function KycVerificationPage() {
         </div>
       </div>
 
-      {/* ========= PREVIEW MODAL ========= */}
+      {/* ===== PREVIEW MODAL ===== */}
       {previewFile && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] px-4">
           <div className="bg-white rounded-xl p-4 max-w-[90%] max-h-[90%] relative">
