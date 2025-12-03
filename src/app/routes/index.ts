@@ -10,9 +10,12 @@ import { usersRoutes } from "./users.routes";
 import { verificationRoutes } from "./verifications.routes";
 import { mediaRoutes } from "./media.routes";
 import { escrowRoutes } from "./escrow.routes";
+import { billingsRoutes } from "./billings.routes";
 import { apiKeysRoutes } from "./apiKeys.routes";
+import { sellerProfileRoutes } from "./sellerprofile.routes";
 import { settingsRoutes } from "./settings.routes";
 import { errorRoutes } from "./error.routes";
+
 
 /**
  * All application routes combined
@@ -29,9 +32,11 @@ export const allRoutes: RouteConfig[] = [
   ...verificationRoutes,
   ...apiKeysRoutes,
   ...mediaRoutes,
+  ...sellerProfileRoutes,
   ...settingsRoutes,
   ...escrowRoutes,
   ...usersRoutes,
+  ...billingsRoutes
 ];
 
 // Re-export types and utilities for convenience
@@ -49,3 +54,5 @@ export { escrowRoutes } from "./escrow.routes";
 export { apiKeysRoutes } from "./apiKeys.routes";
 export { settingsRoutes } from "./settings.routes";
 export { errorRoutes } from "./error.routes";
+export { sellerProfileRoutes } from "./sellerprofile.routes";
+export {billingsRoutes} from "./billings.routes"
