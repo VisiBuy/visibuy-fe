@@ -11,7 +11,7 @@ interface QuickAction {
 const quickActions: QuickAction[] = [
   {
     label: "Create Verification",
-    path: "/verifications", // This might need to be added to routes
+    path: ROUTES.VERIFICATIONS.CREATE, // This might need to be added to routes
   },
 ];
 
