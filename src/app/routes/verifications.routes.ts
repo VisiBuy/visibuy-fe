@@ -42,7 +42,7 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
     createPermissionRoute({
       path: ":id", // Relative to basePath
       requiredPermissions: ["verifications.read"],
-      lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create VerificationsDetailPage
+      lazy: () => import("../../pages/Verifications/VerificationDetailsPage"), // TODO: Create VerificationsDetailPage
       meta: {
         title: "Verification Details",
         breadcrumb: "Details",
