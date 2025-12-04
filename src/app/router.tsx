@@ -2,10 +2,9 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "./App";
 import { allRoutes, toRouteObjects } from "./routes";
 import { ROUTES } from "./routes/constants";
-import UsersPage from "@/pages/Users/UsersPage";
+import UsersPage from "@/pages/Verifications/CreateVerification";
 import { ProtectedLayout } from "../shared/layout/ProtectedLayout";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
-
 
 /**
  * Main application router
@@ -17,11 +16,6 @@ export const router = createBrowserRouter([
   {
     element: <App />,
     children: [
-      { path: "/login", element: <LoginScreen /> },
-      { path: "/signup", element: <SignupScreen /> },
-      { path: "/forgot-password", element: <ForgotPasswordScreen /> },
-      { path: "/auth/reset-password", element: <ResetPasswordScreen /> },
-
       ...toRouteObjects(
         allRoutes.filter((route) => {
           const path = route.path;
@@ -51,20 +45,13 @@ export const router = createBrowserRouter([
               );
             })
           ),
-
-          
-          
-        ],   
+        ],
       },
 
       // Root redirect
       {
         path: "/",
         element: <Navigate to={ROUTES.DASHBOARD} replace />,
-      },
-      {
-        path: "/verification/:id",
-        element: <VerificationDetailsPage />,
       },
 
       // 404 catch-all

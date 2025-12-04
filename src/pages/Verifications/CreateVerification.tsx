@@ -5,7 +5,7 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { CreateVerificationForm } from "@/forms/CreateVerificationForm";
 import { CreateVerificationFormData } from "@/schemas/createVerificationSchema";
 
-export default function UsersPage() {
+export default function CreateVerificationPage() {
   const [createVerification, { isLoading }] = useCreateVerificationMutation();
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
