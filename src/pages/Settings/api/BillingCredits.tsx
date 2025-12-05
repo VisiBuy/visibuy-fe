@@ -1,5 +1,6 @@
 import React from "react";
 import { useGetCreditsBalanceQuery } from "@/features/auth/apiKeyApi";
+import { Link } from "react-router-dom"; 
 
 export default function BillingCredits() {
   const { data: creditsData, isLoading, error } = useGetCreditsBalanceQuery();
@@ -46,9 +47,11 @@ export default function BillingCredits() {
           <div className="text-red-500 text-sm mb-4">
             Failed to load credits data
           </div>
-          <button className="bg-[#000000] text-white py-2 w-full rounded-xl text-sm">
-            Manage Billing
-          </button>
+          <Link to="/settings/payment">
+            <button className="bg-[#000000] text-white py-2 w-full rounded-xl text-sm">
+              Manage Billing
+            </button>
+          </Link>
         </div>
       </div>
     );
@@ -77,9 +80,12 @@ export default function BillingCredits() {
           {displayBalance} / {displayTotal} • Next Renewal: {nextRenewal}
         </div>
 
-        <button className="bg-[#000000] text-white py-2 w-full rounded-xl text-sm hover:bg-gray-800 transition-colors">
-          Manage Billing
-        </button>
+        {/* Wrapped the button with Link to /settings/payment */}
+        <Link to="/settings/payment">
+          <button className="bg-[#000000] text-white py-2 w-full rounded-xl text-sm hover:bg-gray-800 transition-colors">
+            Manage Billing
+          </button>
+        </Link>
       </div>
     </div>
   );

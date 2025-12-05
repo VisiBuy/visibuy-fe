@@ -1,4 +1,6 @@
 import React from "react";
+import { Button } from "antd"; 
+import { Link } from "react-router-dom"; 
 
 export default function ApiDocumentation() {
   return (
@@ -10,9 +12,12 @@ export default function ApiDocumentation() {
           Check out our detailed documentation to integrate the API
         </p>
 
-        <button className="bg-[#000000] text-white py-2 w-full rounded-xl text-sm">
-          View Documentation
-        </button>
+        <Link to="/dashboard">
+          <button className="bg-[#000000] text-white py-2 w-full rounded-xl text-sm">
+            View Documentation
+          </button>
+        </Link>
+
       </div>
     </div>
   );
