@@ -72,6 +72,8 @@ export interface MediaItemDto {
   url: string;
   type: 'image' | 'video';
   thumbnailUrl?: string;
+  uploadedAt?: string;   
+  duration?: number;
 }
 
 export interface VerificationDto {
