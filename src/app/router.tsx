@@ -9,7 +9,7 @@ import LoginScreen from "@/pages/Auth/LoginScreen";
 import SignupScreen from "@/pages/Auth/SignupScreen";
 import ForgotPasswordScreen from "@/pages/Auth/ForgotPasswordScreen";
 import ResetPasswordScreen from "@/pages/Auth/ResetPasswordScreen";
-
+import VerificationDetailsPage from "@/pages/Verifications/VerificationDetailsPage";
 export const router = createBrowserRouter([
   {
     element: <App />,
@@ -47,7 +47,7 @@ export const router = createBrowserRouter([
                 !path.startsWith("/signup")
               );
             })
-          ), 
+          ),
         ],
       },
 
@@ -55,7 +55,11 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <Navigate to={ROUTES.DASHBOARD} replace />,
-      }, 
+      },
+      {
+        path: "/verification/:id",
+        element: <VerificationDetailsPage />,
+      },
 
       // 404 catch-all
       {
