@@ -12,11 +12,30 @@ import diamondIcon from '../../assets/icons/diamond-01-svgrepo-com.svg'
 import rocketIcon from  '../../assets/icons/rocket-svgrepo-com.svg'
 import shieldIcon from '../../assets/icons/shield-check-svgrepo-com (1).svg'
 import userIcon from '../../assets/icons/user-check-alt-1-svgrepo-com.svg'
+import { Verified } from 'lucide-react';
+
+const testingBadges = {
+        verifiedSeller : true,
+        trustedBuyer : false,
+        premiumMember : true,
+        earlyAdopter : true
+    }
 const sellerPublicProfile = () => {
     const {id} = useParams<{id:string}>();
-
     const {data , isLoading , error} = useGetPublicSellerProfileQuery(id!);
+    const badgesIcon:Record<string , string> = {
+        verifiedSeller: shieldIcon,
+        trustedBuyer: userIcon,
+        premiumMember: diamondIcon,
+        earlyAdopter: rocketIcon
+    };
+    const badgesToDisplay = () =>{
+        const badgesArray = Object.entries(data?.badges || {});
+        const activeBadges = badgesArray.filter(([_, value]) => value === true).map(([key]) => key);
 
+        const matchedBadges = activeBadges.map((key) => badgesIcon[key]).filter(Boolean);
+        return matchedBadges;
+    }
     if(isLoading){
         return(
             <div className = "mx-4 my-10 flex flex-col gap-2">
@@ -52,23 +71,6 @@ const sellerPublicProfile = () => {
 };
 
 
-    const badgesIcon:Record<string , string> = {
-        verifiedSeller: shieldIcon,
-        trustedBuyer: userIcon,
-        premiumMember: diamondIcon,
-        earlyAdopter: rocketIcon
-    }
-
-    const badgesToDisplay = useMemo(()=>{
-        const badgesArray = Object.entries(data?.badges || {});
-        const activeBadges = badgesArray.filter(([_, value]) => value === true).map(([key]) => key);
-
-        const matchedBadges = activeBadges.map((key) => badgesIcon[key]).filter(Boolean);
-        return matchedBadges;
-    },[data?.badges])
-
-
-    
 
     const username = data?.name.toLowerCase().split(' ').join('');
     
@@ -104,13 +106,13 @@ const sellerPublicProfile = () => {
                 </div>
                 <div className='flex flex-col gap-2'>
                     <h3 className='font-bold'>Badges</h3>
-                        {
-                            badgesToDisplay.map((icon,index ) =>{
+                        { badgesToDisplay().length === 0 ? <p>No badges earned yet.</p> :
+                            badgesToDisplay().map((icon,index ) =>{
                                     return(
                                         <div key={index} className='flex w-full gap-2'>
                                                 <div className='flex align-middle justify-center
-                                                w-10 h-10 rounded-full bg-gray-500'>
-                                                    <img src={icon} alt="Seller Badges" width={14} height={14}/>
+                                                w-10 h-10 rounded-full bg-gray-300 p-1'>
+                                                    <img src={icon} alt="Seller Badges" width={30} height={30}/>
                                                 </div>
                                         </div>
                                 )

@@ -13,6 +13,7 @@ import diamondIcon from '../../assets/icons/diamond-01-svgrepo-com.svg'
 import rocketIcon from  '../../assets/icons/rocket-svgrepo-com.svg'
 import shieldIcon from '../../assets/icons/shield-check-svgrepo-com (1).svg'
 import userIcon from '../../assets/icons/user-check-alt-1-svgrepo-com.svg'
+import { VerifiedIcon } from 'lucide-react';
 
 export const SellerProfile = () => {
 
@@ -30,22 +31,22 @@ export const SellerProfile = () => {
     if(isError){
         return <p className='text-black flex justify-center align-middle font-semibold text-xl text-center'>Error in Fetching Seller's Data</p>
     }
-
-    const username = data?.name.toLowerCase().split(' ').join('');
-    
     const badgesIcon:Record<string , string> = {
             verifiedSeller: shieldIcon,
             trustedBuyer: userIcon,
             premiumMember: diamondIcon,
             earlyAdopter: rocketIcon
         }
-    const badgesToDisplay = useMemo(()=>{
+    const badgesToDisplay = ()=>{
+        if (!data?.badges) return []
         const badgesArray = Object.entries(data?.badges || {});
         const activeBadges = badgesArray.filter(([_, value]) => value === true).map(([key]) => key);
 
         const matchedBadges = activeBadges.map((key) => badgesIcon[key]).filter(Boolean);
         return matchedBadges;
-    },[data?.badges])
+    }
+    const username = data?.name.toLowerCase().split(' ').join('');
+    
 
     
     return (
@@ -82,13 +83,13 @@ export const SellerProfile = () => {
                 </div>
                 <div className='flex flex-col gap-2'>
                     <h3 className='font-bold'>Badges</h3>
-                    {
-                            badgesToDisplay.map((icon,index ) =>{
+                    { badgesToDisplay().length === 0 ? <p>No badges Yet</p> :
+                            badgesToDisplay().map((icon,index ) =>{
                                     return(
                                         <div key={index} className='flex w-full gap-2'>
                                                 <div className='flex align-middle justify-center
-                                                w-10 h-10 rounded-full bg-gray-500'>
-                                                    <img src={icon} alt="Seller Badges" width={14} height={14}/>
+                                                w-10 h-10 rounded-full bg-gray-300 p-1'>
+                                                    <img src={icon} alt="Seller Badges" width={30} height={30}/>
                                                 </div>
                                         </div>
                                 )
