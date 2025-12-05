@@ -24,25 +24,25 @@ export const StatsCard: React.FC<StatsCardProps> = ({
   };
 
   const getChangeColor = (change: number) => {
-    if (change > 0) return "text-green-600 dark:text-green-400";
-    if (change < 0) return "text-red-600 dark:text-red-400";
-    return "text-gray-600 dark:text-gray-400";
+    if (change > 0) return "text-primary-green";
+    if (change < 0) return "text-danger";
+    return "text-neutral-600";
   };
 
   return (
     <div
-      className={`bg-white  rounded-lg shadow p-2 md:p-4 lg:p-6 border-2 border-gray-400 ${className}`}
+      className={`bg-neutral-white rounded-card shadow-card p-card-sm md:p-card-md lg:p-card-md border-2 border-neutral-400 ${className}`}
     >
       <div>
-        <div className='md:flex gap-4 items-center'>
-          <div className='p-0 bg-blue-0 dark:bg-blue-00/0 rounded-full'>
+        <div className='md:flex gap-space-16 items-center'>
+          <div className='p-0 rounded-full'>
             {icon}
           </div>
-          <p className='text-2xl font-bold mt-1'>
+          <p className='text-h4-desktop font-bold mt-space-4'>
             {typeof value === "number" ? value.toLocaleString() : value}
           </p>
         </div>
-        <p className='text-[9px] md:text-sm font-medium '>{title}</p>
+        <p className='text-caption md:text-body-small font-medium text-neutral-700'>{title}</p>
       </div>
     </div>
   );

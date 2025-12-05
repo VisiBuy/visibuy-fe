@@ -9,16 +9,15 @@ body,
   height: 100%;
 }
 body {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial;
+  font-family: "Open Sans", sans-serif;
+  font-weight: 400;
+  color: #212529;
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Montserrat", sans-serif;
-  font-weight: 500;
 }
 /* body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }? */
 
@@ -98,6 +97,8 @@ body {
   border: 1px solid #ffccc7;
 }
 
+/* Design System Transitions */
 * {
-  transition: all 0.2s ease-in-out;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
