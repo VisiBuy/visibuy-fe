@@ -19,40 +19,88 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
     showInNav: true,
     icon: "verifications",
   },
+
   children: [
+    // Default Verifications List Page
     createProtectedRoute({
-      path: "", 
-      lazy: () => import("../../pages/Verifications/VerificationListPage"), // Implemented VerificationsListPage
+      path: "",
+      lazy: () =>
+        import("../../pages/Verifications/VerificationListPage"),
       meta: {
         title: "Verifications",
         breadcrumb: "Verifications",
         showInNav: true,
       },
     }),
+
+    // ⭐ KYC Verification Page
     createPermissionRoute({
-      path: "create", // Relative to basePath
+      path: "kyc",
+      requiredPermissions: ["verifications.read"],
+      lazy: () =>
+        import("../../pages/Verifications/KycVerificationPage"),
+      meta: {
+        title: "KYC Verification",
+        breadcrumb: "KYC",
+        showInNav: false,
+      },
+    }),
+
+    // ⭐ NEW: KYC Submission Success Page
+    createPermissionRoute({
+      path: "kyc/success",
+      requiredPermissions: ["verifications.read"],
+      lazy: () =>
+        import("../../pages/Verifications/KycSubmissionSuccessPage"),
+      meta: {
+        title: "KYC Success",
+        breadcrumb: "Success",
+        showInNav: false,
+      },
+    }),
+
+    // ⭐ NEW: KYC Approved Page
+    createPermissionRoute({
+      path: "kyc/approved",
+      requiredPermissions: ["verifications.read"],
+      lazy: () =>
+        import("../../pages/Verifications/KycApprovedPage"),
+      meta: {
+        title: "KYC Approved",
+        breadcrumb: "Approved",
+        showInNav: false,
+      },
+    }),
+
+    // Create Verification
+    createPermissionRoute({
+      path: "create",
       requiredPermissions: ["verifications.create"],
-      lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create VerificationsCreatePage
+      lazy: () => import("../../pages/Users/UsersPage"), // TODO replace later
       meta: {
         title: "Create Verification",
         breadcrumb: "Create",
         showInNav: false,
       },
     }),
+
+    // View Verification Details
     createPermissionRoute({
-      path: ":id", // Relative to basePath
+      path: ":id",
       requiredPermissions: ["verifications.read"],
-      lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create VerificationsDetailPage
+      lazy: () => import("../../pages/Users/UsersPage"),
       meta: {
         title: "Verification Details",
         breadcrumb: "Details",
         showInNav: false,
       },
     }),
+
+    // Edit Verification
     createPermissionRoute({
-      path: ":id/edit", // Relative to basePath
+      path: ":id/edit",
       requiredPermissions: ["verifications.update"],
-      lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create VerificationsEditPage
+      lazy: () => import("../../pages/Users/UsersPage"),
       meta: {
         title: "Edit Verification",
         breadcrumb: "Edit",
