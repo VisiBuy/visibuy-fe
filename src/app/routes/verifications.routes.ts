@@ -24,8 +24,7 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
     // Default Verifications List Page
     createProtectedRoute({
       path: "",
-      lazy: () =>
-        import("../../pages/Verifications/VerificationListPage"),
+      lazy: () => import("../../pages/Verifications/VerificationListPage"), // Implemented VerificationsListPage
       meta: {
         title: "Verifications",
         breadcrumb: "Verifications",
@@ -76,7 +75,7 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
     createPermissionRoute({
       path: "create",
       requiredPermissions: ["verifications.create"],
-      lazy: () => import("../../pages/Users/UsersPage"), // TODO replace later
+      lazy: () => import("../../pages/Verifications/CreateVerification"), // TODO: Create VerificationsCreatePage
       meta: {
         title: "Create Verification",
         breadcrumb: "Create",
@@ -88,7 +87,7 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
     createPermissionRoute({
       path: ":id",
       requiredPermissions: ["verifications.read"],
-      lazy: () => import("../../pages/Users/UsersPage"),
+      lazy: () => import("../../pages/Verifications/VerificationDetailsPage"), // TODO: Create VerificationsDetailPage
       meta: {
         title: "Verification Details",
         breadcrumb: "Details",
@@ -100,7 +99,7 @@ export const verificationRoutes: RouteConfig[] = createRouteGroup({
     createPermissionRoute({
       path: ":id/edit",
       requiredPermissions: ["verifications.update"],
-      lazy: () => import("../../pages/Users/UsersPage"),
+      lazy: () => import("../../pages/Verifications/CreateVerification"), // TODO: Create VerificationsEditPage
       meta: {
         title: "Edit Verification",
         breadcrumb: "Edit",

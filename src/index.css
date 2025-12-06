@@ -18,6 +18,8 @@ body,
 /* ADDED: Set body font to Open Sans (Visibuy secondary font) */
 body {
   font-family: var(--font-secondary);
+  font-weight: 400;
+  color: var(--neutral-black);
 }
 
 /* ADDED: Set headings, labels & buttons to Montserrat (primary font) */
@@ -32,8 +34,6 @@ button {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Montserrat", sans-serif;
-  font-weight: 500;
 }
 
 /* animations untouched */
@@ -113,6 +113,8 @@ button {
   border: 1px solid #ffccc7;
 }
 
+/* Design System Transitions */
 * {
-  transition: all 0.2s ease-in-out;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
