@@ -13,12 +13,22 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../public/images/VisiBuy-White Colored 1.svg";
 import lock from "../../public/icons/lock.svg";
 import { useLoginMutation } from "@/features/auth/authApi";
+import { useGetKycStatusQuery } from "@/features/kyc/kycApi";
+import { getKycRedirectPath } from "@/shared/utils/kycCheck";
+import { useAppSelector } from "@/app/hooks";
 import { LoginFormValues } from "@/types/types";
+import { ROUTES } from "@/app/routes/constants";
 
 const LoginScreen = () => {
   const [login, { isLoading }] = useLoginMutation();
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const user = useAppSelector((state) => state.auth.user);
+  
+  // Check KYC status if user is logged in
+  const { data: kycStatus } = useGetKycStatusQuery(undefined, {
+    skip: !user, // Only fetch if user is logged in
+  });
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -67,8 +77,16 @@ const LoginScreen = () => {
 
       showSuccessNotification();
 
-      setTimeout(() => {
-        navigate("/");
+      // Wait a bit for auth state to update, then check KYC status
+      setTimeout(async () => {
+        try {
+          // Fetch KYC status after login
+          // The query will automatically refetch when user is set
+          // We'll handle redirect in a useEffect instead
+        } catch (error) {
+          // If KYC check fails, just go to dashboard
+          navigate(ROUTES.DASHBOARD);
+        }
       }, 2000);
     } catch (err: any) {
       let message = "Login failed. Please check your credentials and try again.";
@@ -84,6 +102,21 @@ const LoginScreen = () => {
       showErrorNotification(message);
     }
   };
+
+  // Handle KYC redirect after login
+  React.useEffect(() => {
+    if (user && kycStatus) {
+      const redirectPath = getKycRedirectPath(kycStatus);
+      if (redirectPath) {
+        navigate(redirectPath);
+      } else {
+        // If no KYC redirect needed, go to dashboard
+        if (window.location.pathname === ROUTES.AUTH.LOGIN) {
+          navigate(ROUTES.DASHBOARD);
+        }
+      }
+    }
+  }, [user, kycStatus, navigate]);
 
   const validateEmailOrPhone = (rule: any, value: string): Promise<void> => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

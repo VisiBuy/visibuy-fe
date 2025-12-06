@@ -24,7 +24,9 @@ export const router = createBrowserRouter([
             path.startsWith("/error") ||
             path.startsWith("/forgot-password") ||
             path.startsWith("/reset-password") ||
-            path.startsWith("/signup")
+            path.startsWith("/signup") ||
+            path === ROUTES.AUTH.SOFT_KYC ||
+            path === ROUTES.AUTH.EMAIL_VERIFICATION_SUCCESS
           );
         })
       ),

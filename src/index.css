@@ -9,23 +9,17 @@ html,
 body,
 #root {
   height: 100%;
-<<<<<<< HEAD
-}
-body {
-  font-family: "Open Sans", sans-serif;
-  font-weight: 400;
-  color: #212529;
-=======
 
   /* Added font variables */
   --font-primary: 'Montserrat', sans-serif;
   --font-secondary: 'Open Sans', sans-serif;
->>>>>>> 24b3892428a591e11a7888f854f47d5feb40335c
 }
 
 /* ADDED: Set body font to Open Sans (Visibuy secondary font) */
 body {
   font-family: var(--font-secondary);
+  font-weight: 400;
+  color: var(--neutral-black);
 }
 
 /* ADDED: Set headings, labels & buttons to Montserrat (primary font) */
