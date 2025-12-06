@@ -68,11 +68,11 @@ const EditSellerProfile = () => {
 
 
     return (
-        <main className='bg-white text-black rounded-lg p-6 relative border-2 my-10 mx-4'>
-                <form onSubmit={editUser} id='edit-users' className='flex flex-col gap-4'>
+        <main className='bg-white inset-0 h-max  text-black rounded-lg p-6 border-2 my-20 mx-4 sm:my-16 sm:mx-4 absolute  top-0 sm:left-64 right-0'>
+                <form onSubmit={editUser} id='edit-users' className='flex flex-col gap-4 '>
                 <div>
                     <div className='flex justify-center flex-col items-center'>
-                        <div className='w-24 h-24 rounded-full bg-gray-400 flex
+                        <div className='sm:w-24 sm:h-24 w-20 h-20 rounded-full bg-gray-400 flex
                         justify-center items-center relative'>
                             <img 
                             src={profileImage} 
@@ -86,7 +86,7 @@ const EditSellerProfile = () => {
                         id ='image'
                         onChange={handleChange}
                         />
-                        <p>Click to upload profile picture</p>
+                        <p className='font-light font-2'>Click to upload profile picture</p>
                     </div>
                     <div className='flex flex-col gap-2 absolute top-3 right-3'>
                         <button className='rounded-xl border-white p-2 bg-black text-white w-16 border-solid text-center sm:w-32'

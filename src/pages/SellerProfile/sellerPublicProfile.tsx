@@ -75,7 +75,7 @@ const sellerPublicProfile = () => {
     const username = data?.name.toLowerCase().split(' ').join('');
     
     return (
-        <main className='text-black mx-4 my-10'>
+        <main className='text-black inset-0 my-20 mx-4 sm:my-16 sm:mx-4 absolute  sm:top-0 sm:left-64 sm:right-0'>
             <div className='w-full flex flex-col gap-6  rounded-lg py-12 sm:px-10 px-6 relative bg-white border-2'>
                 <div className='border-b-2 pb-4 flex justify-between align-top'>
                     <div className='flex flex-row gap-6 items-start'>

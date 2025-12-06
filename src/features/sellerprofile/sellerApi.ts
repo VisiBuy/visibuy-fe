@@ -26,7 +26,7 @@ export const sellerProfileApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
     getPublicSellerProfile: builder.query<sellerProfileDto, string>({
       query: (id) => ({
-        url: `users/${id}`,
+        url: `users/sellers/${id}/public`,
         method: 'GET',
       }),
       providesTags: ['sellerProfile'],

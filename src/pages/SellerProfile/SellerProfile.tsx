@@ -21,7 +21,7 @@ export const SellerProfile = () => {
     console.log(data);
     if(isLoading){
         return (
-                <div className = "mx-4 my-10 flex flex-col g-8">
+                <div className = "flex flex-col g-8">
                         <Skeleton width={`100%`} height ={300} className = "rounded-lg"/>
                         <Skeleton width ={`100%`} height = {200} className ="rounded-lg"/>
                         <Skeleton width = {`100%`} height = {200} className ="rounded-lg"/>
@@ -50,9 +50,9 @@ export const SellerProfile = () => {
 
     
     return (
-        <main className='text-black my-10 mx-4'>
+        <main className='text-black inset-0 my-20 mx-4 sm:my-16 sm:mx-4 absolute  sm:top-0 sm:left-64 sm:right-0'>
               {/*  PROFILE SUMMARY */}
-            <div className='w-full flex flex-col gap-2 bg-white text-black rounded-lg p-6 relative  border-gray-300 border-2'>
+            <div className='min-w-fit flex flex-col gap-2 bg-white text-black rounded-lg p-6 relative  border-gray-300 border-2'>
                 <div className=''>
                     <div className='flex justify-center flex-col items-center my-1'>
                         <div className='flex
@@ -60,8 +60,8 @@ export const SellerProfile = () => {
                             <div className='w-24 h-24 rounded-full bg-gray-300 '></div>
                             <img src={badgeIcon} alt="" className='absolute bottom-1 left-1'/>
                         </div>
-                        <h3 className='font-bold text-xl'>{data?.name}</h3>
-                        <p className='font-semibold'>@{username}</p>
+                        <h3 className='font-bold text-lg'>{data?.name}</h3>
+                        <p className='font-medium'>@{username}</p>
                     </div>
                     <div className='flex flex-col gap-2 sm:absolute sm:top-3 sm:right-3'>
                         <Link to={ROUTES.SELLER.PROFILE_EDIT} className='w-full  rounded-xl border-black p-2 bg-black text-white sm:w-36 border-2 text-center' >Edit Profile</Link>
