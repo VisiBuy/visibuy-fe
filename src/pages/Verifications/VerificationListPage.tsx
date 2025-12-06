@@ -31,15 +31,15 @@ export default function VerificationsListPage() {
   const hasVerifications = Array.isArray(filteredVerifications) && filteredVerifications.length > 0;
 
   return (
-    <section className='border rounded-lg text-white w-full'>
+    <section className='border rounded-lg text-white w-full z-[9999p] -mt-10'>
       <div className='p-5 md:p-10'>
           <div className='md:flex items-center justify-between mb-4'>
-            <h2 className='text-[16.22px] font-bold mb-5 hidden md:inline-block'>Recent Verifications</h2>
+            <h2 className='text-[16.22px] font-bold mb-5 hidden md:inline-block text-neutral-black'>Recent Verifications</h2>
             <div className='flex items-center gap-5 flex-wrap'>
               {VERIFICATION_STATUSES.map((status) => {
                 const isActive = activeTab === status;
-                const buttonClasses = ` gap-5 px-4 py-1 border border-[#D9D9D9] rounded-lg transition-colors text-[10px] ${
-                  isActive ? 'bg-blue-600' : ' '
+                const buttonClasses = ` text-gray-600 gap-5 px-4 py-1 border border-[#D9D9D9] rounded-lg transition-colors text-[10px] ${
+                  isActive ? 'text-neutral-white bg-blue-600' : ' '
                 }`;
                 return (
                   <button
@@ -55,13 +55,13 @@ export default function VerificationsListPage() {
           </div>
             {isLoading ? (
               <div className='flex items-center justify-center h-[80vh]'>
-                <p className='text-[20px] font-semibold'>Loading data</p>
+                <p className='text-[20px] font-semibold text-gray-600'>Loading data</p>
               </div>
             ): (
               <div className='mt-6'>
                 {!hasVerifications ? (
                   <div className='flex items-center justify-center h-[80vh]'>
-                    <p className='text-[20px] font-semibold'>No {activeTab} verifications found.</p>
+                    <p className='text-[20px] font-semibold text-gray-600'>No {activeTab} verifications found.</p>
                   </div>
                 ) : (
                   <div className='space-y-2'>

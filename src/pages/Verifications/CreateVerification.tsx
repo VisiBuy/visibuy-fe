@@ -5,7 +5,7 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { CreateVerificationForm } from "@/forms/CreateVerificationForm";
 import { CreateVerificationFormData } from "@/schemas/createVerificationSchema";
 
-export default function UsersPage() {
+export default function CreateVerificationPage() {
   const [createVerification, { isLoading }] = useCreateVerificationMutation();
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -33,39 +33,40 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-8 pt-2">
-
+    <div className="max-w-3xl mx-auto p-space-32 pt-space-8">
       <CreateVerificationForm onSubmit={handleSubmit} isLoading={isLoading} />
 
       {/* Success Modal */}
       {showSuccess && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center">
-            <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold mb-2">Verification Created Successfully</h2>
-            <p className="text-gray-600 mb-6">
+        <div className="fixed inset-0 bg-neutral-black/50 flex items-center justify-center z-50 p-space-16">
+          <div className="bg-neutral-white rounded-card p-space-32 max-w-md w-full text-center shadow-elevation-3">
+            <CheckCircle className="w-20 h-20 text-primary-green mx-auto mb-space-16" />
+            <h2 className="text-h3-desktop md:text-h3-mobile font-bold text-neutral-900 mb-space-8">
+              Verification Created Successfully
+            </h2>
+            <p className="text-body-medium text-neutral-600 mb-space-24">
               Verification link has been generated for your product
             </p>
-            <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-lg mb-6">
+            <div className="flex items-center gap-space-8 bg-neutral-100 p-space-12 rounded-input mb-space-24">
               <input
                 type="text"
                 value={verificationLink}
                 readOnly
-                className="flex-1 bg-transparent outline-none text-sm"
+                className="flex-1 bg-transparent outline-none text-body-small text-neutral-700"
               />
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(verificationLink);
                   toast.success("Link copied!");
                 }}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700"
+                className="bg-primary-blue text-neutral-white px-space-16 py-space-8 rounded-input text-body-small hover:bg-primary-blue/90 transition-standard min-h-tap-target"
               >
                 Copy Link
               </button>
             </div>
             <button
               onClick={() => setShowSuccess(false)}
-              className="bg-black text-white px-8 py-3 rounded-lg font-medium"
+              className="bg-primary-blue text-neutral-white px-space-32 py-space-12 rounded-btn-medium font-medium hover:bg-primary-blue/90 transition-standard min-h-tap-target"
             >
               Go to Verification Details
             </button>
@@ -75,23 +76,25 @@ export default function UsersPage() {
 
       {/* Error Modal */}
       {showError && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center">
-            <XCircle className="w-20 h-20 text-red-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold mb-2">Verification Failed</h2>
-            <p className="text-gray-600 mb-6">
+        <div className="fixed inset-0 bg-neutral-black/50 flex items-center justify-center z-50 p-space-16">
+          <div className="bg-neutral-white rounded-card p-space-32 max-w-md w-full text-center shadow-elevation-3">
+            <XCircle className="w-20 h-20 text-danger mx-auto mb-space-16" />
+            <h2 className="text-h3-desktop md:text-h3-mobile font-bold text-neutral-900 mb-space-8">
+              Verification Failed
+            </h2>
+            <p className="text-body-medium text-neutral-600 mb-space-24">
               Something went wrong. Please check the details and try again.
             </p>
-            <div className="flex gap-4 justify-center">
+            <div className="flex gap-space-16 justify-center">
               <button
                 onClick={() => setShowError(false)}
-                className="px-6 py-3 bg-gray-200 rounded-lg font-medium"
+                className="px-space-24 py-space-12 bg-neutral-200 rounded-btn-medium font-medium hover:bg-neutral-300 transition-standard min-h-tap-target"
               >
                 Go Back
               </button>
               <button
                 onClick={() => setShowError(false)}
-                className="px-6 py-3 bg-black text-white rounded-lg font-medium"
+                className="px-space-24 py-space-12 bg-primary-blue text-neutral-white rounded-btn-medium font-medium hover:bg-primary-blue/90 transition-standard min-h-tap-target"
               >
                 Try Again
               </button>

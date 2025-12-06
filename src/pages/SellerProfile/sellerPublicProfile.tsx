@@ -90,7 +90,7 @@ const sellerPublicProfile = () => {
                             <img src={starIcon} alt="Trust Score star" />
                             <p>
                                 {data?.trustScore}
-                                <span className='font-semibold text-gray-500 text-center'>Trust Score</span>
+                                <span className='font-semibold text-gray-500 text-center mx-1'>Trust Score</span>
                             </p>
                         </div>
                         </div>

@@ -8,12 +8,12 @@ export default function VerificationDetailsPage() {
 
   if (isError || (!isLoading && !data)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-neutral-100">
         <div className="text-center">
-          <p className="text-red-600 text-lg font-semibold mb-2">
+          <p className="text-danger text-h5-desktop font-semibold mb-space-8">
             Verification not found
           </p>
-          <p className="text-gray-600 text-sm">
+          <p className="text-neutral-600 text-body-small">
             The verification doesn't exist.
           </p>
         </div>
