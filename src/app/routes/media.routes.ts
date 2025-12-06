@@ -26,13 +26,13 @@ export const mediaRoutes: RouteConfig[] = createRouteGroup({
         createPermissionRoute({
           path: "galleries",
           requiredPermissions: ["media.create"],
-          lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create GalleriesPage
+          lazy: () => import("../../pages/Verifications/CreateVerification"), // TODO: Create GalleriesPage
           meta: { title: "Galleries", showInNav: true },
         }),
         createPermissionRoute({
           path: "albums",
           requiredPermissions: ["media.readf"],
-          lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create AlbumsPage
+          lazy: () => import("../../pages/Verifications/CreateVerification"), // TODO: Create AlbumsPage
           meta: { title: "Albums", showInNav: true },
         }),
       ],

@@ -1,51 +1,44 @@
-import React, { useState } from "react";
+// src/layouts/AppLayout.tsx
+import React from "react";
 import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 
-/**
- * Main application layout wrapper
- * Provides sidebar navigation and content area
- */
-export const AppLayout: React.FC<{ children?: React.ReactNode }> = ({
-  children,
-}) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+interface AppLayoutProps {
+  children?: React.ReactNode;
+}
 
+export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-950">
-      {/* Sidebar */}
-      <Sidebar
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen(!sidebarOpen)}
-      />
+    <div className="flex flex-col h-screen bg-neutral-100">
+      {/* FULL-WIDTH BLACK TOP BANNER */}
+      <div className="w-full bg-neutral-black text-neutral-white text-body-small px-space-24 py-space-8 text-center shrink-0">
+        We just released the referral code feature on our dashboard →{" "}
+        <span className="text-primary-blue underline cursor-pointer hover:text-primary-blue/80 transition-standard">
+          To earn delivery point, Try it out.
+        </span>
+      </div>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="p-6">
-          {/* Mobile menu button */}
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="md:hidden mb-4 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800"
-            aria-label="Open sidebar"
-          >
-            <svg
-              className="w-6 h-6 text-gray-600 dark:text-gray-400"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
+      {/* MAIN LAYOUT: Sidebar + Content */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar (handles its own mobile state) */}
+        <Sidebar />
 
-          {/* Page Content */}
-          {children || <Outlet />}
+
+        {/* Content Area */}
+        <div className="flex flex-col flex-1">
+          {/* BLUE HEADER – always visible */}
+          <header className="bg-primary-blue text-neutral-white px-space-24 py-space-20 shadow-elevation-1 shrink-0">
+            {/* Page title is now handled inside each page component */}
+          </header>
+
+          {/* SCROLLABLE PAGE CONTENT */}
+          <main className="flex-1 overflow-y-auto">
+            <div className="max-w-7xl mx-auto w-full p-space-24">
+              {children || <Outlet />}
+            </div>
+          </main>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
-

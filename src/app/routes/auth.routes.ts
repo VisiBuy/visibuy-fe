@@ -14,4 +14,44 @@ export const authRoutes: RouteConfig[] = [
       showInNav: false,
     },
   }),
+  createLazyRoute({
+    path: ROUTES.AUTH.SIGNUP,
+    lazy: () => import("../../pages/Auth/SignupScreen"),
+    meta: {
+      title: "Login",
+      showInNav: false,
+    },
+  }),
+  createLazyRoute({
+    path: ROUTES.AUTH.FORGOT_PASSWORD,
+    lazy: () => import("../../pages/Auth/ForgotPasswordScreen"),
+    meta: {
+      title: "Login",
+      showInNav: false,
+    },
+  }),
+  createLazyRoute({
+    path: ROUTES.AUTH.RESET_PASSWORD,
+    lazy: () => import("../../pages/Auth/ResetPasswordScreen"),
+    meta: {
+      title: "Login",
+      showInNav: false,
+    },
+  }),
+  createLazyRoute({
+    path: ROUTES.AUTH.SOFT_KYC,
+    lazy: () => import("../../pages/Auth/SoftKycPage"),
+    meta: {
+      title: "Email Verification",
+      showInNav: false,
+    },
+  }),
+  createLazyRoute({
+    path: ROUTES.AUTH.EMAIL_VERIFICATION_SUCCESS,
+    lazy: () => import("../../pages/Auth/EmailVerificationSuccessPage"),
+    meta: {
+      title: "Verification Successful",
+      showInNav: false,
+    },
+  }),
 ];
