@@ -8,7 +8,9 @@ export const ROUTES = {
     LOGIN: "/login",
     SIGNUP: "/signup",
     FORGOT_PASSWORD: "/forgot-password",
-    RESET_PASSWORD: "/reset-password",
+    RESET_PASSWORD: "/auth/reset-password",
+    SOFT_KYC: "/auth/soft-kyc",
+    EMAIL_VERIFICATION_SUCCESS: "/auth/email-verification-success",
   },
 
   // Dashboard
@@ -42,9 +44,9 @@ export const ROUTES = {
     LIST: "/escrows",
     DETAIL: (id: string) => `/escrows/${id}`,
   },
-  
-  BILLLING:{
-    ROOT : '/billings'
+
+  BILLLING: {
+    ROOT: "/billings",
   },
 
   // API Keys

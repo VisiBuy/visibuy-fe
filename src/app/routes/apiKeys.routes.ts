@@ -20,7 +20,7 @@ export const apiKeysRoutes: RouteConfig[] = createRouteGroup({
   children: [
     createLazyRoute({
       path: "",
-      lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create ApiKeysListPage
+      lazy: () => import("../../pages/Verifications/CreateVerification"), // TODO: Create ApiKeysListPage
       meta: {
         title: "API Keys",
         breadcrumb: "API Keys",
@@ -29,7 +29,7 @@ export const apiKeysRoutes: RouteConfig[] = createRouteGroup({
     createPermissionRoute({
       path: "create",
       requiredPermissions: ["api_keys.create"],
-      lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create ApiKeysCreatePage
+      lazy: () => import("../../pages/Verifications/CreateVerification"), // TODO: Create ApiKeysCreatePage
       meta: {
         title: "Create API Key",
         breadcrumb: "Create",
@@ -39,7 +39,7 @@ export const apiKeysRoutes: RouteConfig[] = createRouteGroup({
     createPermissionRoute({
       path: ":id",
       requiredPermissions: ["api_keys.read"],
-      lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create ApiKeysDetailPage
+      lazy: () => import("../../pages/Verifications/CreateVerification"), // TODO: Create ApiKeysDetailPage
       meta: {
         title: "API Key Details",
         breadcrumb: "Details",

@@ -1,21 +1,4 @@
 import React from 'react'
-<<<<<<< HEAD
-
-export const SellerProfile = () => {
-    return (
-        <main>
-            <header>
-                <nav>
-                    <ul>
-                        <li></li>
-                        <li></li>
-                    </ul>
-                </nav>
-            </header>
-        </main>
-    )
-}
-=======
 import {Link} from 'react-router-dom'
 import { ROUTES } from '../../app/routes/constants';
 import { useGetSellerProfileQuery } from '../../features/sellerprofile/sellerApi';
@@ -107,4 +90,3 @@ const SellerProfile = () => {
     )
 }
 export default SellerProfile;
->>>>>>> 29d7e95a19f52662135b5f499b0d70e3c61faaeb
