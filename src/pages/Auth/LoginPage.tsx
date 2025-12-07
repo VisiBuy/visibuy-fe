@@ -26,7 +26,7 @@ export default function LoginPage() {
         <h2 className="text-xl mb-4">Sign in</h2>
         <input name="email" placeholder="Email" className="w-full p-2 mb-2 border" />
         <input name="password" type="password" placeholder="Password" className="w-full p-2 mb-4 border" />
-        <button className="w-full p-2 bg-blue-600 text-white" disabled={isLoading}>{isLoading ? 'Signing in...' : 'Sign in'}</button>
+        <button className="w-full p-2 bg-blue-600 text-white" disabled={isLoading}>Sign in</button>
       </form>
     </div>
   );
