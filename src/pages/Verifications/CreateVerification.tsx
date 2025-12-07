@@ -14,17 +14,39 @@ export default function CreateVerificationPage() {
   const handleSubmit = async (data: CreateVerificationFormData) => {
     try {
       const formData = new FormData();
-      formData.append("title", data.title);
-      formData.append("description", data.description);
-      formData.append("price", data.price.toString());
-      formData.append("enableEscrow", data.enableEscrow.toString());
 
-      data.photos.forEach((photo) => formData.append("photos", photo));
-      if (data.video) formData.append("video", data.video);
+      // Append product details according to new schema
+      formData.append("productTitle", data.title);
+      formData.append("description", data.description);
+
+      // Price: required if escrow is enabled, optional otherwise
+      if (data.enableEscrow) {
+        // Price is required when escrow is enabled
+        formData.append("price", data.price.toString());
+      } else if (data.price > 0) {
+        // Optional price when escrow is disabled
+        formData.append("price", data.price.toString());
+      }
+
+      // Escrow enabled (optional boolean) - only append if true
+      if (data.enableEscrow) {
+        formData.append("escrowEnabled", "true");
+      }
+
+      // Combine photos and video into a single files array
+      // Up to 5 images and 1 video (video is required)
+      data.photos.forEach((photo) => {
+        formData.append("files", photo);
+      });
+
+      // Video is required, so it should always be present
+      formData.append("files", data.video);
 
       const result = await createVerification(formData as any).unwrap();
 
-      setVerificationLink(`${window.location.origin}/verify/${result.id}`);
+      setVerificationLink(
+        `${window.location.origin}/verify/${result.publicToken}`
+      );
       setShowSuccess(true);
     } catch (err) {
       console.error("Verification failed:", err);
