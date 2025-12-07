@@ -9,6 +9,7 @@ import LockIconUrl from "../../assets/icons/hugeicons_locked.svg?url";
 import HelpIconUrl from "../../assets/icons/iconoir_headset-help.svg?url";
 import CardIconUrl from "../../assets/icons/Vector.svg?url";
 import ApiIconUrl from "../../assets/icons/Vector (1).svg?url";
+import { PageWrapper } from "@/shared/components/layout/PageWrapper";
 
 type SettingItem = {
   label: string;
@@ -81,7 +82,8 @@ export default function SettingsPage() {
   const navigate = useNavigate(); // ✅ clean, minimal navigation hook
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center pb-16">
+    
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center pb-16 overflow-y-auto h-full">
       {/*  Straight-Edged Navbar (Figma Accurate) */}
       <div className="w-full bg-blue-500 text-white py-4 sm:py-5 md:py-6 px-5 sm:px-6 relative flex items-center justify-center transition-all duration-300">
         {/* Hamburger Menu - Hidden on desktop (lg and above) */}
@@ -164,5 +166,6 @@ export default function SettingsPage() {
         </p>
       </div>
     </div>
+   
   );
 }

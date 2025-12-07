@@ -1,9 +1,11 @@
 import React from "react";
-import { Verification } from "../../../features/dashboard/dashboardApi";
-import { renderIcon } from "../../utils/iconMap";
+import { VerificationDto } from "@/types/api";
+import { ROUTES } from "@/app/routes/constants";
+import { useNavigate } from "react-router-dom";
+import FormatDate from "@/shared/hooks/FormatDate";
 
 interface RecentVerificationProps {
-  verifications: Verification[];
+  verifications: VerificationDto[];
   className?: string;
 }
 
@@ -11,100 +13,141 @@ export const RecentVerifications: React.FC<RecentVerificationProps> = ({
   verifications,
   className = "",
 }) => {
-  // const getStatusColor = (status: Verification) => {
-  //   switch (status) {
-  //     case "completed":
-  //       return "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20";
-  //     case "pending":
-  //       return "text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20";
-  //     case "cancelled":
-  //       return "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20";
-  //     default:
-  //       return "text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/20";
-  //   }
-  // };
+  const navigate = useNavigate();
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "approved":
+      case "completed":
+        return "bg-primary-green";
+      case "pending":
+        return "bg-[#FFB62E]";
+      case "active":
+        return "bg-primary-blue";
+      case "rejected":
+        return "bg-danger";
+      default:
+        return "bg-neutral-600";
+    }
+  };
+
+  const formatVerificationCode = (publicToken: string): string => {
+    if (publicToken.includes("-")) {
+      return publicToken;
+    }
+    return publicToken.slice(0, 8).toUpperCase();
+  };
+
+  const getStatusLabel = (status: string): string => {
+    switch (status) {
+      case "approved":
+        return "Completed";
+      case "rejected":
+        return "Rejected";
+      default:
+        return status.charAt(0).toUpperCase() + status.slice(1);
+    }
   };
 
   if (!verifications || verifications.length === 0) {
     return (
-      <div className={`bg-white rounded-lg shadow p-6 ${className}`}>
-        <h3 className='text-lg font-semibold text-black dark:text-black mb-4'>
-          Recent Verifications
-        </h3>
-        <p className='text-black dark:text-black text-center'>
-          No recent Verifications
-        </p>
+      <div
+        className={`border border-neutral-300 rounded-card bg-neutral-white shadow-card w-full -mt-[60px] md:-mt-[70px] relative z-[100] ${className}`}
+        style={{
+          position: "absolute",
+          top: "-60px",
+          left: "0",
+          right: "0",
+          zIndex: 100,
+        }}
+      >
+        <div className="p-card-md">
+          <div className="flex items-center justify-between mb-space-16">
+            <h3 className="text-h5-desktop md:text-h4-desktop font-bold text-neutral-900">
+              Recent Verifications
+            </h3>
+          </div>
+          <p className="text-body-medium text-neutral-600 text-center py-space-32">
+            No recent verifications
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div
-      className={`bg-white dark:bg-gray-800 rounded-lg shadow p-6 ${className}`}
-    >
-      <h3 className='text-lg font-semibold text-gray-900 dark:text-white mb-4'>
-        Recent Verifications
-      </h3>
+    <>
+      <div
+        className={`border border-neutral-300 rounded-card bg-neutral-white shadow-card w-full relative z-[100] ${className}`}
+        style={{
+          position: "absolute",
+          top: "-60px",
+          left: "0",
+          right: "0",
+          zIndex: 100,
+        }}
+      >
+        <div className="p-card-md">
+          <div className="flex items-center justify-between mb-space-24">
+            <h3 className="text-h5-desktop md:text-h4-desktop font-bold text-neutral-900">
+              Recent Verifications
+            </h3>
+            <button
+              onClick={() => navigate(ROUTES.VERIFICATIONS.LIST)}
+              className="text-primary-blue hover:text-primary-blue/80 transition-standard text-body-small font-medium"
+            >
+              View All
+            </button>
+          </div>
 
-      <div className='space-y-3'>
-        {/* {verifications.slice(0, 5).map((order) => (
-          <div
-            key={order.id}
-            className='flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg'
-          >
-            <div className='flex-1'>
-              <div className='flex items-center gap-3'>
-                <div className='w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center'>
-                  {renderIcon(
-                    "shopping-cart",
-                    "w-4 h-4 text-blue-600 dark:text-blue-400"
-                  )}
-                </div>
-                <div>
-                  <p className='font-medium text-gray-900 dark:text-white'>
-                    {order.customerName}
+          <div className="space-y-space-12">
+            {verifications.map((verification) => (
+              <div
+                key={verification.id}
+                className="flex items-center justify-between p-space-16 border border-neutral-200 rounded-input hover:bg-neutral-50 transition-standard"
+              >
+                <div className="flex-1 min-w-0 pr-space-16">
+                  <h4 className="text-body-medium font-semibold text-neutral-900 truncate mb-space-8">
+                    {verification.productTitle}
+                  </h4>
+                  <p className="text-caption text-neutral-600 mb-space-8">
+                    {formatVerificationCode(verification.publicToken)}
                   </p>
-                  <p className='text-sm text-gray-600 dark:text-gray-400'>
-                    {formatDate(order.createdAt)}
+                  <div className="flex items-center gap-space-12">
+                    <span
+                      className={`px-space-12 py-space-4 rounded-btn-small text-neutral-white text-caption font-semibold ${getStatusColor(
+                        verification.status
+                      )}`}
+                    >
+                      {getStatusLabel(verification.status)}
+                    </span>
+                    <span className="text-caption text-neutral-600">
+                      {Math.floor(Math.random() * 50) + 1} views
+                    </span>
+                  </div>
+                </div>
+
+                <div className="text-right flex-shrink-0">
+                  <p className="text-body-medium font-semibold text-neutral-900 mb-space-8">
+                    {verification.price
+                      ? new Intl.NumberFormat("en-NG", {
+                          style: "currency",
+                          currency: "NGN",
+                          minimumFractionDigits: 2,
+                        }).format(verification.price)
+                      : "N/A"}
+                  </p>
+                  <p className="text-caption text-neutral-600">
+                    {FormatDate(verification.createdAt)}
                   </p>
                 </div>
               </div>
-            </div>
-
-            <div className='text-right'>
-              <p className='font-semibold text-gray-900 dark:text-white'>
-                ₦{order.amount.toLocaleString()}
-              </p>
-              <span
-                className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(
-                  order.status
-                )}`}
-              >
-                {order.status}
-              </span>
-            </div>
+            ))}
           </div>
-        ))} */}
-        <div className='text-black dark:text-black text-center'>
-          Recent verifications will be displayed here.
         </div>
       </div>
-
-      {verifications.length > 5 && (
-        <div className='mt-4 pt-4 border-t border-gray-200 dark:border-gray-700'>
-          <button className='w-full text-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium'>
-            View all verifications →
-          </button>
-        </div>
-      )}
-    </div>
+      {/* Spacer to prevent content from going under the overlapping section */}
+      <div style={{ height: "120px" }}></div>
+    </>
   );
 };
