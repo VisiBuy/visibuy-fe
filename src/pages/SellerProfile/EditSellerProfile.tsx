@@ -86,30 +86,32 @@ const EditSellerProfile = () => {
                         id ='image'
                         onChange={handleChange}
                         />
-                        <p className='font-light font-2'>Click to upload profile picture</p>
+                        <p className='font-light text-xs'>Click to upload profile picture</p>
                     </div>
                     <div className='flex flex-col gap-2 absolute top-3 right-3'>
-                        <button className='rounded-xl border-white p-2 bg-black text-white w-16 border-solid text-center sm:w-32'
+                        <button className='rounded-xl border-gray-300 border-2 p-2 bg-gray-300 text-gray-600 w-16 border-solid text-center sm:w-32 text-sm'
                         type='submit' form='edit-users'
                         >Save</button>
-                        <Link to={ROUTES.SELLER.PROFILE}  className='rounded-xl border-black py-1 border-2 text-center' >Cancel</Link>
+                        <Link to={ROUTES.SELLER.PROFILE}  className='rounded-xl border-black py-1 border-2 text-center bg-black text-white text-sm' >Cancel</Link>
                     </div>
                 </div>
-                    <label htmlFor="First Name" className='font-bold'>First Name</label>
-                    <input type="text" id='First Name' name='firstName' className='w-full border-2 bg-transparent border-gray-500 rounded-xl p-2' />
-                    <label htmlFor="Last Name" className='font-bold'>Last Name</label>
-                    <input type="text" id='Last Name' name='lastName' className='w-full border-2 bg-transparent border-gray-500 rounded-xl p-2' />
-                    <label htmlFor="phone" className='font-bold'>Phone Number</label>
-                    <input type="tel" name="phone" id="phone" className='w-full border-2 border-gray-500 bg-transparent rounded-xl p-2' />
-                    <label htmlFor="address">Address</label>
-                    <input type="text" name="address" id="address" className='w-full border-2 border-gray-500 bg-transparent rounded-xl p-2' />
-                    <label htmlFor="mfa">MFA Enabled</label>
-                    <select name="mfa" id="mfa" className='w-full border-2 border-gray-500 bg-transparent rounded-xl p-2'>
+                <div className='flex flex-col gap-4 w-full'>
+                    <label htmlFor="First Name" className='font-bold text-sm text-gray-700 mb-2'>First Name</label>
+                    <input type="text" id='First Name' name='firstName' className='w-full border-2 bg-transparent  rounded-xl p-2 focus:border-blue-400 focus:outline-none' />
+                    <label htmlFor="Last Name" className='font-bold text-sm text-gray-700 mb-2'>Last Name</label>
+                    <input type="text" id='Last Name' name='lastName' className='w-full border-2 bg-transparent  rounded-xl p-2 focus:border-blue-400 focus:outline-none' />
+                    <label htmlFor="phone" className='font-bold text-sm text-gray-700 mb-2'>Phone Number</label>
+                    <input type="tel" name="phone" id="phone" className='w-full border-2  bg-transparent rounded-xl p-2 focus:border-blue-400 focus:outline-none' />
+                    <label htmlFor="address" className='font-bold text-sm text-gray-700 mb-2'>Address</label>
+                    <input type="text" name="address" id="address" className='w-full border-2  bg-transparent rounded-xl p-2 focus:border-blue-400 focus:outline-none' />
+                    <label htmlFor="mfa" className='font-bold text-sm text-gray-700 mb-2'>MFA Enabled</label>
+                    <select name="mfa" id="mfa" className='w-full border-2  bg-transparent rounded-xl p-2 focus:border-blue-400 focus:outline-none'>
                         <option value="true">Enabled</option>
                         <option value="false">Disabled</option>
                     </select>
-                    <label htmlFor="user-id" className='font-bold'>User ID</label>
+                    <label htmlFor="user-id" className='font-bold text-sm text-gray-700 mb-2'>User ID</label>
                     <input type="text" value={data?.id} id='user-id' className='w-full border-2 bg-black text-white rounded-xl px-4 py-2  ' disabled />
+                    </div>
                 </form>
         </main>
     )

@@ -38,9 +38,9 @@ const sellerPublicProfile = () => {
     }
     if(isLoading){
         return(
-            <div className = "mx-4 my-10 flex flex-col gap-2">
-                <Skeleton width ={`100%`} height ={200} className = "rounded-lg"/>
-                <Skeleton width = {`100%`} height = {150} className = "rounded-lg"/>
+            <div className = "mx-4 my-10 flex flex-col gap-4 ">
+                <Skeleton width ={`100%`} height ={350} className = "rounded-lg"/>
+                <Skeleton width = {`100%`} height = {200} className = "rounded-lg"/>
             </div>
         )
     }
@@ -78,19 +78,21 @@ const sellerPublicProfile = () => {
         <main className='text-black inset-0 my-20 mx-4 sm:my-16 sm:mx-4 absolute  sm:top-0 sm:left-64 sm:right-0'>
             <div className='w-full flex flex-col gap-6  rounded-lg py-12 sm:px-10 px-6 relative bg-white border-2'>
                 <div className='border-b-2 pb-4 flex justify-between align-top'>
-                    <div className='flex flex-row gap-6 items-start'>
+                    <div className='flex flex-row gap-2 sm:gap-6 items-start w-max'>
                         <div className='relative'>
                         <div className='w-24 h-24 rounded-full bg-gray-400'></div>
                         <img src={badgeIcon} alt="" className='absolute bottom-1 left-1'/>
                         </div>
                         <div className='mt-2'>
                             <h3 className='font-bold sm:text-xl text-xs m-0'>{data?.name}</h3>
-                        <p className='font-semibold m-0'>@{username}</p>
-                        <div className='flex flex-row gap-2 align-middle'>
-                            <img src={starIcon} alt="Trust Score star" />
-                            <p>
+                        <p className='font-semibold text-xs m-0'>@{username}</p>
+                        <div className='flex flex-row gap-1 sm:align-middle sm:justify-center'>
+                            <img src={starIcon} alt="Trust Score star"
+                            className='sm:w-6 sm:h-6 w-4 h-4 text-center mt-0.5'
+                            />
+                            <p className='font-bold text-nowrap sm:text-lg text-center w-max'>
                                 {data?.trustScore}
-                                <span className='font-semibold text-gray-500 text-center mx-1'>Trust Score</span>
+                                <span className='text-gray-500 text-center font-bold text-xs sm:text-sm mx-1 '>Trust Score</span>
                             </p>
                         </div>
                         </div>
@@ -99,7 +101,7 @@ const sellerPublicProfile = () => {
                         <FiShare2 size ={20} 
                         className = "text-4xl cursor-pointer transition-transform duration-200 group-hover:scale-125"
                         onClick={shareProfile}/>
-                        <span className="absolute -bottom-7 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <span className="absolute -bottom-7 top-8 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 h-max w-max">
                             Copy Link
                         </span>
                     </div>
@@ -123,20 +125,20 @@ const sellerPublicProfile = () => {
                 </div>
                 <div className='w-full bg-white border-2 rounded-lg p-4 sm:p-6 mt-6 flex flex-col gap-4'>
                 <h3 className='font-bold'>Verification Summary</h3>
-                <div className='flex justify-between gap-6 '>
-                    <div className='border-2 border-gray-300 flex-1 h-22 sm:h-28 rounded-xl p-4 flex flex-col justify-end'>
+                <div className='flex justify-between sm:gap-6 gap-2 w-full flex-wrap'>
+                    <div className='border-2 border-gray-300 flex-1 h-auto rounded-xl p-4 flex flex-col justify-center  text-center'>
                         <span className='font-bold sm:text-2xl text-sm text-center'>{data?.totalVerifications}</span>
-                        <p className='font-bold text-xl'>Total Verifications</p>
-                        <p className='text-gray-400 text-sm font-semibold'>Successfully completed</p>
+                        <p className='font-bold text-sm'>Total Verifications</p>
+                        <p className='text-gray-400 text-sm font-medium'>Successfully completed</p>
                     </div>
-                    <div className='border-2 border-gray-300 flex-1 h-22 sm:h-28 rounded-xl p-4 flex flex-col justify-end'>
-                        <span className='font-bold sm:text-2xl text-sm text-center '>{data?.approvalRatePercentage}%</span>
-                        <p className='font-bold text-xl'>Approval Rate</p>
+                    <div className='border-2 border-gray-300 flex-1 h-auto rounded-xl p-4 flex flex-col justify-center align-middle  text-center'>
+                        <span className='font-bold sm:text-2xl text-sm '>{data?.approvalRatePercentage || 0}%</span>
+                        <p className='font-bold text-sm '>Approval Rate</p>
                         <p className='text-gray-400 text-sm font-semibold'>Buyer Satisfaction</p>                
                     </div>
-                    <div className='border-2 border-gray-300 flex-1 h-22 sm:h-28 rounded-xl p-4 flex flex-col justify-end'>
+                    <div className='border-2 border-gray-300 flex-1 h-auto rounded-xl p-4 flex flex-col justify-center  text-center'>
                         <span className='font-bold sm:text-2xl text-sm text-center '>{data?.trustScore}</span>
-                        <p className='font-bold text-xl'>Trust Score</p>
+                        <p className='font-bold text-sm'>Trust Score</p>
                         <p className='text-gray-400 text-sm font-semibold'>Bronze Level</p>
                     </div>
                 </div>

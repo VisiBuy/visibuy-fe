@@ -61,7 +61,7 @@ export const SellerProfile = () => {
                             <img src={badgeIcon} alt="" className='absolute bottom-1 left-1'/>
                         </div>
                         <h3 className='font-bold text-lg'>{data?.name}</h3>
-                        <p className='font-medium'>@{username}</p>
+                        <p className='font-medium text-xs'>@{username}</p>
                     </div>
                     <div className='flex flex-col gap-2 sm:absolute sm:top-3 sm:right-3'>
                         <Link to={ROUTES.SELLER.PROFILE_EDIT} className='w-full  rounded-xl border-black p-2 bg-black text-white sm:w-36 border-2 text-center' >Edit Profile</Link>
@@ -101,16 +101,16 @@ export const SellerProfile = () => {
           {/*   VERIFICATION STATUS */}
             <div className='w-full bg-white rounded-lg p-6 mt-6  border-gray-300 border-2 flex flex-col gap-4'>
                 <h3 className='font-bold'>Verification Status</h3>
-                <div className='flex justify-between gap-4 '>
-                    <div className='border-2 border-gray-300 w-full rounded-xl p-4 flex flex-col justify-center align-center g-4'>
+                <div className='flex justify-between gap-2 flex-wrap'>
+                    <div className='border-2 border-gray-300 h-36 rounded-xl p-4 flex flex-col justify-center align-center g-4 w-max flex-1 '>
                         <img src={checkmark} alt="Checkmark" width={45} height={45} className = "m-auto" />
                         <div className='bg-gray-400 h-3 rounded-md '></div>
                     </div>
-                    <div className='border-2 border-gray-300 w-full h-36 rounded-xl p-4 flex flex-col justify-center gap-4 align-center'>
+                    <div className='border-2 border-gray-300 h-36 rounded-xl p-4 flex flex-col justify-center gap-4 align-center flex-1 w-max'>
                         <img src={loadingIcon} alt=""  width={45} height={45} className ="m-auto"/>
                         <div className='bg-gray-400 h-3 w-30 rounded-md '></div>
                     </div>
-                    <div className='border-2 border-gray-300 w-full h-36 rounded-xl p-4 flex flex-col justify-center gap-4 align-center'>
+                    <div className='border-2 border-gray-300  h-36 rounded-xl p-4 flex flex-col justify-center gap-4 align-center flex-1 w-max'>
                         <img src={cancelIcon} alt="" width={45} height={45} className="m-auto"/>
                         <div className='bg-gray-400 h-3 w-30 rounded-md '></div>
                     </div>
@@ -119,8 +119,23 @@ export const SellerProfile = () => {
            {/*  STATISTICS */}
             <div className='w-full bg-white rounded-lg p-6 mt-6 border-gray-300 flex flex-col gap-4 border-2'>
                 <h3 className='font-bold'>Statistics</h3>
-                <div className='h-40 w-full border-gray-300 rounded-xl border-2 p-4 flex flex-col justify-end'>
-                    <div className='bg-gray-400 h-3 w-30 rounded-md '></div>
+                <div className='h-max w-full border-gray-300 rounded-xl border-2 p-4 flex flex-col align-middle justify-center shadow-[0_2px_8px_rgba(0,0,0,0.06)]'>
+                    <div className='flex justify-between mb-4 font-semibold'>
+                        <p>Total Views</p>
+                        <span>N/A</span>
+                    </div>
+                    <div className='flex justify-between mb-4 font-semibold'>
+                        <p>Success Rate</p>
+                        <span>N/A</span>
+                    </div>
+                    <div className='flex justify-between mb-4 font-semibold'>
+                        <p>Average Response Time</p>
+                        <span>N/A</span>
+                    </div>
+                    <div className='flex justify-between mb-4 font-semibold'>
+                        <p>Member Since</p>
+                        <span>N/A</span>
+                    </div>
                 </div>
             </div>
         </main> 
