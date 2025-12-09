@@ -209,113 +209,88 @@ export const CreateVerificationForm: React.FC<Props> = ({
         </div>
 
         {/* Video (Required) */}
-        <div>
-          <label className="block text-body-small font-medium text-neutral-700 mb-space-12">
-<<<<<<< HEAD
-            Upload Video <span className="text-danger">*</span>
-=======
-            Upload Video (Optional)
->>>>>>> cbb4417da2b54201b0d8f015955366ad904a8f59
-          </label>
-          <input
-            type="file"
-            accept="video/*"
-<<<<<<< HEAD
-            onChange={(e) => {
-              if (e.target.files?.[0]) {
-                setValue("video", e.target.files[0], { shouldValidate: true });
-              }
-            }}
-=======
-            onChange={(e) =>
-              e.target.files?.[0] && setValue("video", e.target.files[0])
-            }
->>>>>>> cbb4417da2b54201b0d8f015955366ad904a8f59
-            className="hidden"
-            id="video-upload"
-            required
-          />
-          <label
-            htmlFor="video-upload"
-            className="cursor-pointer inline-flex items-center gap-space-8 px-space-20 py-space-12 bg-neutral-100 rounded-input hover:bg-neutral-200 transition-standard min-h-tap-target"
-          >
-            <Upload className="w-5 h-5" />
-            {video ? "Change Video" : "Upload Video"}
-          </label>
-          {video && (
-            <div className="mt-space-12 inline-flex items-center gap-space-8 bg-primary-green/10 text-primary-green px-space-16 py-space-8 rounded-full text-body-small font-medium">
-              <CheckCircle className="w-4 h-4" />
-              {video.name}
-              <button
-                type="button"
-<<<<<<< HEAD
-                onClick={() =>
-                  setValue("video", undefined as any, { shouldValidate: true })
-                }
-=======
-                onClick={() => setValue("video", null)}
->>>>>>> cbb4417da2b54201b0d8f015955366ad904a8f59
-                className="min-h-tap-target min-w-tap-target flex items-center justify-center"
-              >
-                <X className="w-4 h-4 ml-space-8 hover:bg-primary-green/20 rounded-full p-space-4 transition-standard" />
-              </button>
-            </div>
-          )}
-          {errors.video && (
-            <p className="text-danger text-body-small mt-space-8">
-              {errors.video.message}
-            </p>
-          )}
-        </div>
-      </div>
+<div>
+  <label className="block text-body-small font-medium text-neutral-700 mb-space-12">
+    Upload Video <span className="text-danger">*</span>
+  </label>
 
-      {/* Escrow */}
-      <div className="flex items-center gap-space-12">
-        <input
-          type="checkbox"
-          {...register("enableEscrow")}
-          className="w-5 h-5 text-primary-blue rounded focus:ring-primary-blue min-h-tap-target min-w-tap-target"
-        />
-        <label className="text-body-medium font-medium text-neutral-700">
-          Enable Escrow Protection
-        </label>
-      </div>
+  <input
+    type="file"
+    accept="video/*"
+    id="video-upload"
+    className="hidden"
+    required
+    onChange={(e) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        setValue("video", file, { shouldValidate: true });
+      }
+    }}
+  />
 
-      {/* Submit Button */}
+  <label
+    htmlFor="video-upload"
+    className="cursor-pointer inline-flex items-center gap-space-8 px-space-20 py-space-12 bg-neutral-100 rounded-input hover:bg-neutral-200 transition-standard min-h-tap-target"
+  >
+    <Upload className="w-5 h-5" />
+    {video ? "Change Video" : "Upload Video"}
+  </label>
+
+  {video && (
+    <div className="mt-space-12 inline-flex items-center gap-space-8 bg-primary-green/10 text-primary-green px-space-16 py-space-8 rounded-full text-body-small font-medium">
+      <CheckCircle className="w-4 h-4" />
+      {video.name}
       <button
-        type="submit"
-<<<<<<< HEAD
-        disabled={isLoading || photos.length !== 5 || !video}
-        className={`w-full h-btn-medium px-btn-medium-x rounded-btn-medium font-semibold text-neutral-white transition-standard shadow-elevation-2 min-h-tap-target ${
-          photos.length === 5 && video && !isLoading
-=======
-        disabled={isLoading || photos.length !== 5}
-        className={`w-full h-btn-medium px-btn-medium-x rounded-btn-medium font-semibold text-neutral-white transition-standard shadow-elevation-2 min-h-tap-target ${
-          photos.length === 5 && !isLoading
->>>>>>> cbb4417da2b54201b0d8f015955366ad904a8f59
-            ? "bg-primary-blue hover:bg-primary-blue/90 active:opacity-90"
-            : "bg-neutral-400 cursor-not-allowed"
-        }`}
+        type="button"
+        onClick={() =>
+          setValue("video", undefined as any, { shouldValidate: true })
+        }
+        className="min-h-tap-target min-w-tap-target flex items-center justify-center"
       >
-        {isLoading ? "Creating Verification..." : "Submit Verification"}
+        <X className="w-4 h-4 ml-space-8 hover:bg-primary-green/20 rounded-full p-space-4 transition-standard" />
       </button>
+    </div>
+  )}
 
-      {/* Final Warning (only after submit) */}
-<<<<<<< HEAD
-      {isSubmitted && (photos.length !== 5 || !video) && (
-        <p className="text-center text-danger font-medium text-body-small mt-space-16 animate-pulse">
-          {photos.length !== 5 && !video
-            ? "Please upload exactly 5 photos and a video before submitting"
-            : photos.length !== 5
-            ? "Please upload exactly 5 photos before submitting"
-            : "Please upload a video before submitting"}
-=======
-      {isSubmitted && photos.length !== 5 && (
-        <p className="text-center text-danger font-medium text-body-small mt-space-16 animate-pulse">
-          Please upload exactly 5 photos before submitting
->>>>>>> cbb4417da2b54201b0d8f015955366ad904a8f59
-        </p>
-      )}
-    </form>
-  );
-};
+  {errors.video && (
+    <p className="text-danger text-body-small mt-space-8">
+      {errors.video.message}
+    </p>
+  )}
+</div>
+
+{/* Escrow */}
+<div className="flex items-center gap-space-12">
+  <input
+    type="checkbox"
+    {...register("enableEscrow")}
+    className="w-5 h-5 text-primary-blue rounded focus:ring-primary-blue min-h-tap-target min-w-tap-target"
+  />
+  <label className="text-body-medium font-medium text-neutral-700">
+    Enable Escrow Protection
+  </label>
+</div>
+
+{/* Submit Button */}
+<button
+  type="submit"
+  disabled={isLoading || photos.length !== 5 || !video}
+  className={`w-full h-btn-medium px-btn-medium-x rounded-btn-medium font-semibold text-neutral-white transition-standard shadow-elevation-2 min-h-tap-target ${
+    photos.length === 5 && video && !isLoading
+      ? "bg-primary-blue hover:bg-primary-blue/90 active:opacity-90"
+      : "bg-neutral-400 cursor-not-allowed"
+  }`}
+>
+  {isLoading ? "Creating Verification..." : "Submit Verification"}
+</button>
+
+{/* Final Warning (only after submit) */}
+{isSubmitted && (photos.length !== 5 || !video) && (
+  <p className="text-center text-danger font-medium text-body-small mt-space-16 animate-pulse">
+    {photos.length !== 5 && !video
+      ? "Please upload exactly 5 photos and a video before submitting"
+      : photos.length !== 5
+      ? "Please upload exactly 5 photos before submitting"
+      : "Please upload a video before submitting"}
+  </p>
+)}
