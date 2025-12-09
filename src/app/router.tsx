@@ -1,11 +1,10 @@
-import React from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "./App";
 import { allRoutes, toRouteObjects } from "./routes";
 import { ROUTES } from "./routes/constants";
+import UsersPage from "@/pages/Verifications/CreateVerification";
 import { ProtectedLayout } from "../shared/layout/ProtectedLayout";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
-
 
 /**
  * Main application router
@@ -17,7 +16,6 @@ export const router = createBrowserRouter([
   {
     element: <App />,
     children: [
-      // Public routes (auth, error pages) - no sidebar
       ...toRouteObjects(
         allRoutes.filter((route) => {
           const path = route.path;
@@ -26,7 +24,9 @@ export const router = createBrowserRouter([
             path.startsWith("/error") ||
             path.startsWith("/forgot-password") ||
             path.startsWith("/reset-password") ||
-            path.startsWith("/signup")
+            path.startsWith("/signup") ||
+            path === ROUTES.AUTH.SOFT_KYC ||
+            path === ROUTES.AUTH.EMAIL_VERIFICATION_SUCCESS
           );
         })
       ),
@@ -47,10 +47,7 @@ export const router = createBrowserRouter([
               );
             })
           ),
-
-          
-          
-        ],   
+        ],
       },
 
       // Root redirect

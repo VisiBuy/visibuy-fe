@@ -20,7 +20,7 @@ export const escrowRoutes: RouteConfig[] = createRouteGroup({
   children: [
     createLazyRoute({
       path: "",
-      lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create EscrowsListPage
+      lazy: () => import("../../pages/Verifications/CreateVerification"), // TODO: Create EscrowsListPage
       meta: {
         title: "Escrows",
         breadcrumb: "Escrows",
@@ -30,7 +30,7 @@ export const escrowRoutes: RouteConfig[] = createRouteGroup({
     createPermissionRoute({
       path: ":id",
       requiredPermissions: ["escrows.read"],
-      lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create EscrowsDetailPage
+      lazy: () => import("../../pages/Verifications/CreateVerification"), // TODO: Create EscrowsDetailPage
       meta: {
         title: "Escrow Details",
         breadcrumb: "Details",
