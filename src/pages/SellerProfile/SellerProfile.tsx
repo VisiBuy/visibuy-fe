@@ -14,6 +14,7 @@ import rocketIcon from  '../../assets/icons/rocket-svgrepo-com.svg'
 import shieldIcon from '../../assets/icons/shield-check-svgrepo-com (1).svg'
 import userIcon from '../../assets/icons/user-check-alt-1-svgrepo-com.svg'
 import { VerifiedIcon } from 'lucide-react';
+import { PageWrapper } from "@/shared/components/layout/PageWrapper";
 
 export const SellerProfile = () => {
 
@@ -50,7 +51,7 @@ export const SellerProfile = () => {
 
     
     return (
-        <main className='text-black inset-0 my-20 mx-4 sm:my-16 sm:mx-4 absolute  sm:top-0 sm:left-64 sm:right-0'>
+        <section className='text-black relative z-[100] '>
               {/*  PROFILE SUMMARY */}
             <div className='min-w-fit flex flex-col gap-2 bg-white text-black rounded-lg p-6 relative  border-gray-300 border-2'>
                 <div className=''>
@@ -138,7 +139,7 @@ export const SellerProfile = () => {
                     </div>
                 </div>
             </div>
-        </main> 
+        </section> 
     )
 }
 export default SellerProfile;

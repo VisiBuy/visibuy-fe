@@ -68,7 +68,7 @@ const EditSellerProfile = () => {
 
 
     return (
-        <main className='bg-white inset-0 h-max  text-black rounded-lg p-6 border-2 my-20 mx-4 sm:my-16 sm:mx-4 absolute  top-0 sm:left-64 right-0'>
+        <section className='bg-white inset-0 h-max  text-black rounded-lg p-6 border-2 my-20 mx-4 sm:my-16 sm:mx-4 absolute  -top-12 right-0 z-[100]'>
                 <form onSubmit={editUser} id='edit-users' className='flex flex-col gap-4 '>
                 <div>
                     <div className='flex justify-center flex-col items-center'>
@@ -113,7 +113,7 @@ const EditSellerProfile = () => {
                     <input type="text" value={data?.id} id='user-id' className='w-full border-2 bg-black text-white rounded-xl px-4 py-2  ' disabled />
                     </div>
                 </form>
-        </main>
+        </section>
     )
 }
 

@@ -13,6 +13,7 @@ import rocketIcon from  '../../assets/icons/rocket-svgrepo-com.svg'
 import shieldIcon from '../../assets/icons/shield-check-svgrepo-com (1).svg'
 import userIcon from '../../assets/icons/user-check-alt-1-svgrepo-com.svg'
 import { Verified } from 'lucide-react';
+import { PageWrapper } from '@/shared/components/layout/PageWrapper';
 
 const testingBadges = {
         verifiedSeller : true,
@@ -21,6 +22,7 @@ const testingBadges = {
         earlyAdopter : true
     }
 const sellerPublicProfile = () => {
+    
     const {id} = useParams<{id:string}>();
     const {data , isLoading , error} = useGetPublicSellerProfileQuery(id!);
     const badgesIcon:Record<string , string> = {
@@ -48,7 +50,6 @@ const sellerPublicProfile = () => {
         return <p className='text-black flex justify-center align-middle font-semibold text-xl text-center'>This profile is not yet public or access is restricted</p>;
     }
 
-
     console.log(data);
 
     const shareProfile = () => {
@@ -75,7 +76,9 @@ const sellerPublicProfile = () => {
     const username = data?.name.toLowerCase().split(' ').join('');
     
     return (
-        <main className='text-black inset-0 my-20 mx-4 sm:my-16 sm:mx-4 absolute  sm:top-0 sm:left-64 sm:right-0'>
+            <PageWrapper isScrollable={false}>
+        <div className="relative -mt-[60px] md:-mt-[50px] z-[100]">
+        <section className='text-black'>
             <div className='w-full flex flex-col gap-6  rounded-lg py-12 sm:px-10 px-6 relative bg-white border-2'>
                 <div className='border-b-2 pb-4 flex justify-between align-top'>
                     <div className='flex flex-row gap-2 sm:gap-6 items-start w-max'>
@@ -143,7 +146,9 @@ const sellerPublicProfile = () => {
                     </div>
                 </div>
             </div>
-        </main>
+        </section>
+        </div>
+        </PageWrapper>
     )
 }
 export default sellerPublicProfile;
