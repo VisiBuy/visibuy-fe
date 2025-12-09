@@ -2,23 +2,20 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "./App";
 import { allRoutes, toRouteObjects } from "./routes";
 import { ROUTES } from "./routes/constants";
-import UsersPage from "@/pages/Users/UsersPage";
+import UsersPage from "@/pages/Verifications/CreateVerification";
 import { ProtectedLayout } from "../shared/layout/ProtectedLayout";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
-import LoginScreen from "@/pages/Auth/LoginScreen";
-import SignupScreen from "@/pages/Auth/SignupScreen";
-import ForgotPasswordScreen from "@/pages/Auth/ForgotPasswordScreen";
-import ResetPasswordScreen from "@/pages/Auth/ResetPasswordScreen";
-import VerificationDetailsPage from "@/pages/Verifications/VerificationDetailsPage";
+
+/**
+ * Main application router
+ *
+ * Combines auto-generated routes from src/app/routes
+ * and manual routes for Settings and error pages.
+ */
 export const router = createBrowserRouter([
   {
     element: <App />,
     children: [
-      { path: "/login", element: <LoginScreen /> },
-      { path: "/signup", element: <SignupScreen /> },
-      { path: "/forgot-password", element: <ForgotPasswordScreen /> },
-      { path: "/auth/reset-password", element: <ResetPasswordScreen /> },
-
       ...toRouteObjects(
         allRoutes.filter((route) => {
           const path = route.path;
@@ -27,7 +24,9 @@ export const router = createBrowserRouter([
             path.startsWith("/error") ||
             path.startsWith("/forgot-password") ||
             path.startsWith("/reset-password") ||
-            path.startsWith("/signup")
+            path.startsWith("/signup") ||
+            path === ROUTES.AUTH.SOFT_KYC ||
+            path === ROUTES.AUTH.EMAIL_VERIFICATION_SUCCESS
           );
         })
       ),
@@ -55,10 +54,6 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <Navigate to={ROUTES.DASHBOARD} replace />,
-      },
-      {
-        path: "/verification/:id",
-        element: <VerificationDetailsPage />,
       },
 
       // 404 catch-all
