@@ -294,3 +294,6 @@ export const CreateVerificationForm: React.FC<Props> = ({
       : "Please upload a video before submitting"}
   </p>
 )}
+  </div>   {/* closes Media Upload wrapper div */}
+</form>  {/* closes the form */}
+);     
