@@ -30,7 +30,7 @@ export const CreateVerificationForm: React.FC<Props> = ({
       price: 0,
       enableEscrow: false,
       photos: [],
-      video: null,
+      video: undefined,
     },
   });
 
@@ -208,19 +208,32 @@ export const CreateVerificationForm: React.FC<Props> = ({
           </p>
         </div>
 
-        {/* Video (Optional) */}
+        {/* Video (Required) */}
         <div>
           <label className="block text-body-small font-medium text-neutral-700 mb-space-12">
+<<<<<<< HEAD
+            Upload Video <span className="text-danger">*</span>
+=======
             Upload Video (Optional)
+>>>>>>> cbb4417da2b54201b0d8f015955366ad904a8f59
           </label>
           <input
             type="file"
             accept="video/*"
+<<<<<<< HEAD
+            onChange={(e) => {
+              if (e.target.files?.[0]) {
+                setValue("video", e.target.files[0], { shouldValidate: true });
+              }
+            }}
+=======
             onChange={(e) =>
               e.target.files?.[0] && setValue("video", e.target.files[0])
             }
+>>>>>>> cbb4417da2b54201b0d8f015955366ad904a8f59
             className="hidden"
             id="video-upload"
+            required
           />
           <label
             htmlFor="video-upload"
@@ -235,12 +248,23 @@ export const CreateVerificationForm: React.FC<Props> = ({
               {video.name}
               <button
                 type="button"
+<<<<<<< HEAD
+                onClick={() =>
+                  setValue("video", undefined as any, { shouldValidate: true })
+                }
+=======
                 onClick={() => setValue("video", null)}
+>>>>>>> cbb4417da2b54201b0d8f015955366ad904a8f59
                 className="min-h-tap-target min-w-tap-target flex items-center justify-center"
               >
                 <X className="w-4 h-4 ml-space-8 hover:bg-primary-green/20 rounded-full p-space-4 transition-standard" />
               </button>
             </div>
+          )}
+          {errors.video && (
+            <p className="text-danger text-body-small mt-space-8">
+              {errors.video.message}
+            </p>
           )}
         </div>
       </div>
@@ -260,9 +284,15 @@ export const CreateVerificationForm: React.FC<Props> = ({
       {/* Submit Button */}
       <button
         type="submit"
+<<<<<<< HEAD
+        disabled={isLoading || photos.length !== 5 || !video}
+        className={`w-full h-btn-medium px-btn-medium-x rounded-btn-medium font-semibold text-neutral-white transition-standard shadow-elevation-2 min-h-tap-target ${
+          photos.length === 5 && video && !isLoading
+=======
         disabled={isLoading || photos.length !== 5}
         className={`w-full h-btn-medium px-btn-medium-x rounded-btn-medium font-semibold text-neutral-white transition-standard shadow-elevation-2 min-h-tap-target ${
           photos.length === 5 && !isLoading
+>>>>>>> cbb4417da2b54201b0d8f015955366ad904a8f59
             ? "bg-primary-blue hover:bg-primary-blue/90 active:opacity-90"
             : "bg-neutral-400 cursor-not-allowed"
         }`}
@@ -271,9 +301,19 @@ export const CreateVerificationForm: React.FC<Props> = ({
       </button>
 
       {/* Final Warning (only after submit) */}
+<<<<<<< HEAD
+      {isSubmitted && (photos.length !== 5 || !video) && (
+        <p className="text-center text-danger font-medium text-body-small mt-space-16 animate-pulse">
+          {photos.length !== 5 && !video
+            ? "Please upload exactly 5 photos and a video before submitting"
+            : photos.length !== 5
+            ? "Please upload exactly 5 photos before submitting"
+            : "Please upload a video before submitting"}
+=======
       {isSubmitted && photos.length !== 5 && (
         <p className="text-center text-danger font-medium text-body-small mt-space-16 animate-pulse">
           Please upload exactly 5 photos before submitting
+>>>>>>> cbb4417da2b54201b0d8f015955366ad904a8f59
         </p>
       )}
     </form>

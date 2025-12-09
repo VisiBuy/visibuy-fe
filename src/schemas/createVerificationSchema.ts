@@ -7,11 +7,15 @@ export const createVerificationSchema = z.object({
   enableEscrow: z.boolean(),
   photos: z
     .array(z.instanceof(File))
-    .length(5, "You must upload exactly 5 photos") 
-    .refine((files) => files.every(file => file instanceof File), {
+    .length(5, "You must upload exactly 5 photos")
+    .refine((files) => files.every((file) => file instanceof File), {
       message: "Invalid file",
     }),
-  video: z.instanceof(File).nullable().optional(),
+  video: z.instanceof(File, {
+    message: "Video is required",
+  }),
 });
 
-export type CreateVerificationFormData = z.infer<typeof createVerificationSchema>;
+export type CreateVerificationFormData = z.infer<
+  typeof createVerificationSchema
+>;
