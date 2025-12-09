@@ -126,17 +126,17 @@ const sellerPublicProfile = () => {
                 <div className='w-full bg-white border-2 rounded-lg p-4 sm:p-6 mt-6 flex flex-col gap-4'>
                 <h3 className='font-bold'>Verification Summary</h3>
                 <div className='flex justify-between sm:gap-6 gap-2 w-full flex-wrap'>
-                    <div className='border-2 border-gray-300 flex-1 h-auto rounded-xl p-4 flex flex-col justify-center  text-center'>
+                    <div className='border-2 border-gray-300 flex-1 h-auto rounded-xl p-4 flex flex-col justify-center  text-center shadow-[0_2px_8px_rgba(0,0,0,0.06)]'>
                         <span className='font-bold sm:text-2xl text-sm text-center'>{data?.totalVerifications}</span>
                         <p className='font-bold text-sm'>Total Verifications</p>
                         <p className='text-gray-400 text-sm font-medium'>Successfully completed</p>
                     </div>
-                    <div className='border-2 border-gray-300 flex-1 h-auto rounded-xl p-4 flex flex-col justify-center align-middle  text-center'>
+                    <div className='border-2 border-gray-300 flex-1 h-auto rounded-xl p-4 flex flex-col justify-center align-middle  text-center shadow-[0_2px_8px_rgba(0,0,0,0.06)]'>
                         <span className='font-bold sm:text-2xl text-sm '>{data?.approvalRatePercentage || 0}%</span>
                         <p className='font-bold text-sm '>Approval Rate</p>
                         <p className='text-gray-400 text-sm font-semibold'>Buyer Satisfaction</p>                
                     </div>
-                    <div className='border-2 border-gray-300 flex-1 h-auto rounded-xl p-4 flex flex-col justify-center  text-center'>
+                    <div className='border-2 border-gray-300 flex-1 h-auto rounded-xl p-4 flex flex-col justify-center  text-center shadow-[0_2px_8px_rgba(0,0,0,0.06)]'>
                         <span className='font-bold sm:text-2xl text-sm text-center '>{data?.trustScore}</span>
                         <p className='font-bold text-sm'>Trust Score</p>
                         <p className='text-gray-400 text-sm font-semibold'>Bronze Level</p>

@@ -102,15 +102,15 @@ export const SellerProfile = () => {
             <div className='w-full bg-white rounded-lg p-6 mt-6  border-gray-300 border-2 flex flex-col gap-4'>
                 <h3 className='font-bold'>Verification Status</h3>
                 <div className='flex justify-between gap-2 flex-wrap'>
-                    <div className='border-2 border-gray-300 h-36 rounded-xl p-4 flex flex-col justify-center align-center g-4 w-max flex-1 '>
+                    <div className='border-2 border-gray-300 h-36 rounded-xl p-4 flex flex-col justify-center align-center g-4 w-max flex-1 shadow-[0_2px_8px_rgba(0,0,0,0.06)]'>
                         <img src={checkmark} alt="Checkmark" width={45} height={45} className = "m-auto" />
                         <div className='bg-gray-400 h-3 rounded-md '></div>
                     </div>
-                    <div className='border-2 border-gray-300 h-36 rounded-xl p-4 flex flex-col justify-center gap-4 align-center flex-1 w-max'>
+                    <div className='border-2 border-gray-300 h-36 rounded-xl p-4 flex flex-col justify-center gap-4 align-center flex-1 w-max shadow-[0_2px_8px_rgba(0,0,0,0.06)] '>
                         <img src={loadingIcon} alt=""  width={45} height={45} className ="m-auto"/>
                         <div className='bg-gray-400 h-3 w-30 rounded-md '></div>
                     </div>
-                    <div className='border-2 border-gray-300  h-36 rounded-xl p-4 flex flex-col justify-center gap-4 align-center flex-1 w-max'>
+                    <div className='border-2 border-gray-300  h-36 rounded-xl p-4 flex flex-col justify-center gap-4 align-center flex-1 w-max shadow-[0_2px_8px_rgba(0,0,0,0.06)]'>
                         <img src={cancelIcon} alt="" width={45} height={45} className="m-auto"/>
                         <div className='bg-gray-400 h-3 w-30 rounded-md '></div>
                     </div>
