@@ -60,8 +60,8 @@ export const baseApi = createApi({
     "Payout",
     "Role",
     "Permission",
-    "Dashboard",
     "sellerProfile",
     "Kyc",
+    "Dashboard",
   ],
 });

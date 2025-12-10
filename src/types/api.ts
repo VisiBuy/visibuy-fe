@@ -187,10 +187,19 @@ export interface sellerProfileDto {
   kycStatus ?: string;
   mfaEnabled ?: boolean,
   createdAt ?: string,
-  badges ?: any[],
-  lastLoginAt ?:  string,
   trustScore ?: number,
+  badges ?: {
+    verifiedSeller : boolean,
+    trustedBuyer: boolean,
+    premiumMember: boolean,
+    earlyAdopter: boolean
+  },
+  lastLoginAt ?:  string,
   updatedAt ?:  string,
-  address ?: string
-  profileImage ?: string
+  address ?: string,
+  profileImage ?: string,
+  totalCompletedVerification ? : number,
+  approvalRatePercentage ? : number,
+  totalVerifications ? : number
+
 }
