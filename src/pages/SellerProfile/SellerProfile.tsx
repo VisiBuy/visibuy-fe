@@ -51,7 +51,7 @@ export const SellerProfile = () => {
 
     
     return (
-        <section className='text-black relative z-[100] '>
+        <section className='text-black relative z-[100] -mt-3'>
               {/*  PROFILE SUMMARY */}
             <div className='min-w-fit flex flex-col gap-2 bg-white text-black rounded-lg p-6 relative  border-gray-300 border-2'>
                 <div className=''>
