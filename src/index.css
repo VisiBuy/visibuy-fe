@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 @import "@fortawesome/fontawesome-free/css/all.min.css";
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@300;400;500;600&display=swap');
 
@@ -17,16 +18,8 @@ body,
 
 /* ADDED: Set body font to Open Sans (Visibuy secondary font) */
 body {
-  font-family: var(--font-secondary);
-  font-weight: 400;
-  color: var(--neutral-black);
-}
-
-/* ADDED: Set headings, labels & buttons to Montserrat (primary font) */
-h1, h2, h3, h4, h5, h6,
-label,
-button {
-  font-family: var(--font-primary);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial;
 }
 
 /* Your original styles – untouched */
