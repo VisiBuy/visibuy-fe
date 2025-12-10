@@ -1,94 +1,85 @@
-import React, { useState } from "react";
+import React from "react";
 import { useAppSelector } from "@/app/hooks";
 import { StatsCard } from "@/shared/components/dashboard/StatsCard";
-// import { SalesChart } from "@/shared/components/dashboard/SalesChart";
 import { RecentVerifications } from "@/shared/components/dashboard/RecentVerifications";
 import { QuickActions } from "@/shared/components/dashboard/QuickActions";
-import {
-  useGetDashboardStatsQuery,
-  useGetSalesDataQuery,
-  useGetRecentOrdersQuery,
-} from "@/features/dashboard/dashboardApi";
+import { useGetDashboardStatsQuery } from "@/features/dashboard/dashboardApi";
+import { useGetVerificationsQuery } from "@/features";
 import { FaCheckCircle } from "react-icons/fa";
 import { FaArrowTrendUp } from "react-icons/fa6";
 import { SunSolid } from "@/ui/icons/SunSolid";
-
-type Period = "7d" | "30d" | "90d";
+import { PageWrapper } from "@/shared/components/layout/PageWrapper";
 
 export default function DashboardPage() {
   const user = useAppSelector((s) => s.auth.user);
-
-  // const [selectedPeriod, setSelectedPeriod] = useState<Period>("30d");
   const { data: stats, isLoading: statsLoading } = useGetDashboardStatsQuery();
-  // const { data: salesData, isLoading: salesLoading } = useGetSalesDataQuery({
-  //   period: selectedPeriod,
-  // });
-  const { data, isLoading: ordersLoading } = useGetRecentOrdersQuery();
+  const { data: verificationsData, isLoading: verificationsLoading } =
+    useGetVerificationsQuery();
 
-  // const periodOptions: { value: Period; label: string }[] = [
-  //   { value: "7d", label: "7 Days" },
-  //   { value: "30d", label: "30 Days" },
-  //   { value: "90d", label: "90 Days" },
-  // ];
+  // Calculate stats from verifications
+  const totalVerifications = verificationsData?.total || stats?.total || 0;
+  const activeVerifications =
+    verificationsData?.items?.filter(
+      (v) => v.status === "approved" || v.status === "pending"
+    ).length ||
+    stats?.totalOrders ||
+    0;
+  const trustScore = user?.trustScore || 0;
 
   return (
-    <div className='w-full flex justify-center'>
-      <div className='space-y-6 absolute top-[60px] md:top-[20px] w-100vw lg:w-[calc(100%-16rem)] md:w-70vw p-0 md:p-8 lg:p-12 flex flex-col justify-center'>
-        {/* Stats Cards */}
-        <div className='grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6'>
-          <StatsCard
-            title='Total Verifications'
-            value={stats?.total || 0}
-            change={stats?.revenueChange}
-            icon={
-              <FaCheckCircle className='w-6 h-6 text-gray-600 dark:text-gray-400' />
-            }
-            className={statsLoading ? "animate-pulse" : ""}
-          />
-          <StatsCard
-            title='Active'
-            value={stats?.totalOrders || 0}
-            change={stats?.ordersChange}
-            icon={
-              <SunSolid className='w-6 h-6 text-gray-600 dark:text-gray-400' />
-            }
-            className={statsLoading ? "animate-pulse" : ""}
-          />
-          <StatsCard
-            title='Trust Score'
-            value={user?.trustScore || 0}
-            change={stats?.productsChange}
-            icon={
-              <FaArrowTrendUp className='w-6 h-6 text-gray-600 dark:text-gray-400' />
-            }
-            className={statsLoading ? "animate-pulse" : ""}
-          />
-        </div>
+    <PageWrapper isScrollable={false}>
+      <div className="w-full">
+        <div className="flex flex-col gap-24 -mt-[60px] md:-mt-[50px] relative z-[100]">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-space-16 md:gap-space-20">
+            <StatsCard
+              title="Total Verifications"
+              value={totalVerifications}
+              icon={<FaCheckCircle className="w-6 h-6 text-primary-green" />}
+              className={
+                statsLoading || verificationsLoading ? "animate-pulse" : ""
+              }
+            />
+            <StatsCard
+              title="Active"
+              value={activeVerifications}
+              icon={<SunSolid className="w-6 h-6 text-primary-blue" />}
+              className={
+                statsLoading || verificationsLoading ? "animate-pulse" : ""
+              }
+            />
+            <StatsCard
+              title="Trust Score"
+              value={trustScore}
+              icon={<FaArrowTrendUp className="w-6 h-6 text-primary-blue" />}
+              className={statsLoading ? "animate-pulse" : ""}
+            />
+          </div>
 
-        <div>
-          {/* Recent Orders */}
-          <div>
-            {ordersLoading ? (
-              <div className='bg-white rounded-lg shadow p-6 animate-pulse'>
-                <div className='h-8 bg-gray-200 dark:bg-gray-700 rounded mb-4'></div>
-                <div className='space-y-3'>
-                  {[...Array(5)].map((_, i) => (
-                    <div
-                      key={i}
-                      className='h-16 bg-gray-200 dark:bg-gray-700 rounded'
-                    ></div>
+          {/* Recent Verifications - Overlapping the header */}
+          <div className="relative">
+            {verificationsLoading ? (
+              <div className="border border-neutral-300 rounded-card bg-neutral-white shadow-card p-card-md animate-pulse -mt-[60px] md:-mt-[70px] relative z-[100]">
+                <div className="h-8 bg-neutral-200 rounded mb-space-16"></div>
+                <div className="space-y-space-12">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="h-20 bg-neutral-200 rounded"></div>
                   ))}
                 </div>
               </div>
             ) : (
-              <RecentVerifications verifications={data?.items ?? []} />
+              <RecentVerifications
+                verifications={verificationsData?.items?.slice(0, 3) || []}
+              />
             )}
           </div>
-        </div>
 
-        {/* Quick Actions */}
-        <QuickActions />
+          {/* Quick Actions */}
+          <div className="">
+            <QuickActions />
+          </div>
+        </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 }

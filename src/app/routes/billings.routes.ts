@@ -16,7 +16,7 @@ export const billingsRoutes: RouteConfig[] = createRouteGroup({
     createPermissionRoute({
       path: "",
       requiredPermissions: ["users.read"],
-      lazy: () => import("../../pages/Users/UsersPage"),
+      lazy: () => import("../../pages/Verifications/CreateVerification"),
       meta: {
         title: "Users",
         showInNav: true,

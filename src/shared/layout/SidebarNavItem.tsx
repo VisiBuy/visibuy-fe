@@ -15,7 +15,7 @@ export const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
   onClick,
 }) => {
   return (
-    <li>
+    <li> 
       <NavLink
         to={path}
         onClick={onClick}
