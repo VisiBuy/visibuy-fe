@@ -12,7 +12,6 @@ import diamondIcon from '../../assets/icons/diamond-01-svgrepo-com.svg'
 import rocketIcon from  '../../assets/icons/rocket-svgrepo-com.svg'
 import shieldIcon from '../../assets/icons/shield-check-svgrepo-com (1).svg'
 import userIcon from '../../assets/icons/user-check-alt-1-svgrepo-com.svg'
-import { Verified } from 'lucide-react';
 import { PageWrapper } from '@/shared/components/layout/PageWrapper';
 
 const testingBadges = {
