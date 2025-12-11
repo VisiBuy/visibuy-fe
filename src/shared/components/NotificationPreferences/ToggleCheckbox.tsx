@@ -1,12 +1,6 @@
+import { ToggleSwitchProps } from '@/types/api';
 import React from 'react';
 
-export interface ToggleSwitchProps {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-  label: string;
-  description: string;
-  disabled?: boolean;
-}
 
 export default function ToggleCheckbox({
     checked,
@@ -22,7 +16,7 @@ export default function ToggleCheckbox({
     }
   };
 
-  // Base classes for the switch body. Using standard Tailwind colors for clear implementation.
+  // Base classes for the switch body
   const switchBodyClasses = 'relative w-12 h-6 rounded-full transition-colors duration-300 ease-in-out peer-focus:outline-none peer-checked:bg-[#000000] cursor-pointer bg-gray-300 peer-focus:ring-black';
 
   // Classes for the switch knob (implemented via the ::after pseudo-element).
@@ -34,17 +28,17 @@ export default function ToggleCheckbox({
             <div
                 className='flex flex-col'
                 >
-               <h4 className='text-gray-900 font-semibold text-[12px]'> {label}</h4>
-               <p className='text-gray-500 text-[10px]'> {description}</p>
+               <h4 className='text-gray-900 font-semibold text-[14px]'> {label}</h4>
+               <p className='text-gray-500 text-[12px]'> {description}</p>
             </div>
             <div>
                 <label className="inline-flex items-center gap-5" aria-disabled={disabled}>
                     <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={handleChange}
-                    disabled={disabled}
-                    className="sr-only peer"
+                      type="checkbox"
+                      checked={checked}
+                      onChange={handleChange}
+                      disabled={disabled}
+                      className="sr-only peer"
                     />
 
                     <div className={`${switchBodyClasses} ${knobClasses}`}>

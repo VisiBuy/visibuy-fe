@@ -52,6 +52,7 @@ export const baseApi = createApi({
     "Auth",
     "User",
     "Verification",
+    "Notification",
     "Escrow",
     "Credit",
     "Payment",
