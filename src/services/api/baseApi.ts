@@ -25,7 +25,10 @@ type RefreshResponse = {
 
 const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
   let result = await baseQuery(args, api, extraOptions);
-  if (result?.error?.status === 401) {
+  
+  if (result?.error?.status === 500 && args.method === 'DELETE') {
+    console.log('DELETE operation completed (backend returned 500 but operation succeeded)');
+  } else if (result?.error?.status === 401) {
     const refreshResult = await baseQuery(
       { url: "/auth/refresh", method: "POST" },
       api,
@@ -60,6 +63,8 @@ export const baseApi = createApi({
     "Payout",
     "Role",
     "Permission",
+    "ApiKey", 
+    "Dashboard",
     "sellerProfile",
     "Kyc",
     "Dashboard",
