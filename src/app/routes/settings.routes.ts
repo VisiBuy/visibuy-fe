@@ -59,7 +59,7 @@ export const settingsRoutes: RouteConfig[] = createRouteGroup({
     }),
     createProtectedRoute({
       path: "api",
-      lazy: () => import("../../pages/Settings/ApiPage"),
+      lazy: () => import("../../pages/Settings/api/ApiPage"),
       meta: {
         title: "API Access",
         breadcrumb: "API",
