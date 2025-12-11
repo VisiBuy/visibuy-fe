@@ -26,6 +26,12 @@ export type ApiResult<T> = ApiSuccess<T> | ApiError;
 export interface LoginRequest { email: string; password: string; }
 export interface RegisterRequest { name: string; email: string; password: string; phone?: string; address?: string; }
 
+export  interface RegisterCredentials {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+}
 export interface AuthUser {
   id: UUID;
   name: string;
@@ -66,6 +72,8 @@ export interface MediaItemDto {
   url: string;
   type: 'image' | 'video';
   thumbnailUrl?: string;
+  uploadedAt?: string;   
+  duration?: number;
 }
 
 export interface VerificationDto {
@@ -170,7 +178,31 @@ export interface ValidationErrorResponse {
   message: string | string[] | ValidationErrorItem[];
   error: string;
 }
+/* Seller Profile*/
+export interface sellerProfileDto {
+  id ?: UUID,
+  name :  string,
+  phone : string,
+  email ?: string,
+  kycStatus ?: string;
+  mfaEnabled ?: boolean,
+  createdAt ?: string,
+  trustScore ?: number,
+  badges ?: {
+    verifiedSeller : boolean,
+    trustedBuyer: boolean,
+    premiumMember: boolean,
+    earlyAdopter: boolean
+  },
+  lastLoginAt ?:  string,
+  updatedAt ?:  string,
+  address ?: string,
+  profileImage ?: string,
+  totalCompletedVerification ? : number,
+  approvalRatePercentage ? : number,
+  totalVerifications ? : number
 
+}
 
 //Notification Preferences
 export interface ToggleSwitchProps {

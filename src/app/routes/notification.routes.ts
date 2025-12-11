@@ -7,10 +7,10 @@ import { ROUTES } from "./constants";
  */
 export const notificationRoutes: RouteConfig[] = [
   createProtectedRoute({
-    path: ROUTES.NOTIFICATION,
+    path: ROUTES.SETTINGS.NOTIFICATIONS,
     lazy: () => import("../../pages/NotificationPreferences/NotificationPreferencesPage"),
     meta: {
-      title: "Notification",
+      title: "Notifications",
       showInNav: true,
       icon: "notification",
     },

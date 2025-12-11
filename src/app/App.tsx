@@ -1,6 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import { AuthInitializer } from "../shared/components/AuthInitializer";
+import { Toaster } from 'react-hot-toast';
 
 /**
  * Main App component
@@ -12,6 +13,7 @@ export default function App() {
     <AuthInitializer>
       <div>
         <Outlet />
+        <Toaster position="top-right" reverseOrder={false} />
       </div>
     </AuthInitializer>
   );

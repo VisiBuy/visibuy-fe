@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useNavigate } from "react-router-dom";
+import toast from 'react-hot-toast';
 import EmailNotification from '@/shared/components/NotificationPreferences/EmailNotification';
 import SMSNotification from '@/shared/components/NotificationPreferences/SMSNotification';
 import WhatsappNotification from '@/shared/components/NotificationPreferences/WhatsappNotification';
@@ -85,6 +87,7 @@ export default function NotificationPreferencesPage() {
     } = useGetNotificationQuery();
     const [createNotification, { isLoading: isCreating }] = useCreateNotificationMutation();
     const [updateNotification, { isLoading: isUpdating }] = useUpdateNotificationMutation();
+    const navigate = useNavigate();
 
     const isMutating = isCreating || isUpdating; 
 
@@ -135,6 +138,9 @@ export default function NotificationPreferencesPage() {
      if (!userId || isSaveDisabled) return;
 
         let preferencesToSave: PreferenceDto[];
+
+        const loadingToast = toast.loading('Saving preferences...');
+        
      try {
         if (allPreferences.length === 0) {
             preferencesToSave = buildInitialPayload(localSettings);
@@ -153,10 +159,11 @@ export default function NotificationPreferencesPage() {
                 await updateNotification(updatePayload).unwrap();
         }
     
-        setInitialSettings(localSettings);
-
-     } catch (error) {
-        console.error('Failed to save notification preferences:', error);
+            setInitialSettings(localSettings);
+            toast.success('Preferences saved successfully!', { id: loadingToast });
+        } catch (error) {
+            // console.error('Failed to save notification preferences:', error);
+            toast.error('Failed to save preferences. Please try again.', { id: loadingToast });
     }
 };
 
@@ -170,52 +177,67 @@ export default function NotificationPreferencesPage() {
 
     
     return (
-        <section className='min-h-screen p-5 space-y-12'>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
-                <EmailNotification 
-                    allPreferences={allPreferences} 
-                    localSettings={localSettings} 
-                    setChannelSetting={setChannelSetting}
-                />
-                <SMSNotification 
-                    allPreferences={allPreferences} 
-                    localSettings={localSettings} 
-                    setChannelSetting={setChannelSetting}
-                />
-                <WhatsappNotification 
-                    allPreferences={allPreferences} 
-                    localSettings={localSettings} 
-                    setChannelSetting={setChannelSetting}
-                />
+        <div className="min-h-screen bg-gray-50 flex flex-col items-center pb-16">
+            <div className="w-full bg-blue-500 text-white py-4 sm:py-5 md:py-6 px-5 flex items-center">
+                <button
+                onClick={() => navigate(-1)}
+                className="mr-3 text-white text-lg"
+                aria-label="Back"
+                >
+                ←
+                </button>
+                <h1 className="text-lg sm:text-xl md:text-2xl font-semibold tracking-wide">
+                Notifications
+                </h1>
             </div>
-            <div className='space-y-4'>
-                <div className='flex items-center justify-center space-x-5'>
-                    <button
-                        onClick={handleCancel}
-                        className={`px-10 py-3 rounded-lg font-bold transition-colors text-xl
-                         ${isSaveDisabled 
-                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                            : 'bg-white hover:bg-gray-100 text-[#000000]'
-                        }`}
-                    >
-                        cancel
-                    </button>
-                    <button 
-                        onClick={handleSave}
-                        disabled={isSaveDisabled}
-                        className={`px-10 py-3 rounded-lg font-bold transition-colors text-xl
-                         ${isSaveDisabled 
-                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                            : 'bg-white hover:bg-gray-100 text-[#000000]'
-                        }`}
-                    >
-                        {isMutating ? 'saving Preferences' : 'save Preferences'}
-                    </button>
+
+            <div className="w-full py-8 space-y-20">
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
+                    <EmailNotification 
+                        allPreferences={allPreferences} 
+                        localSettings={localSettings} 
+                        setChannelSetting={setChannelSetting}
+                    />
+                    <SMSNotification 
+                        allPreferences={allPreferences} 
+                        localSettings={localSettings} 
+                        setChannelSetting={setChannelSetting}
+                    />
+                    <WhatsappNotification 
+                        allPreferences={allPreferences} 
+                        localSettings={localSettings} 
+                        setChannelSetting={setChannelSetting}
+                    />
                 </div>
-                <p className="text-medium text-white text-center font-bold">
-                    You can change these settings at any time. We'll always send critical security notifications regardless of your preferences.
-                </p>
+                <div className='space-y-4 max-w-2xl mx-auto'>
+                    <div className='flex items-center justify-center space-x-5'>
+                        <button
+                            onClick={handleCancel}
+                            className={`px-10 py-3 rounded-lg font-bold transition-colors text-xl
+                            ${isSaveDisabled 
+                                ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+                                : 'bg-[#000000] hover:bg-gray-700 text-white'
+                            }`}
+                        >
+                            cancel
+                        </button>
+                        <button 
+                            onClick={handleSave}
+                            disabled={isSaveDisabled}
+                            className={`px-10 py-3 rounded-lg font-bold transition-colors text-xl
+                            ${isSaveDisabled 
+                                ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+                                : 'bg-[#000000] hover:bg-gray-700 text-white'
+                            }`}
+                        >
+                            {isMutating ? 'saving Preferences' : 'save Preferences'}
+                        </button>
+                    </div>
+                    <p className="text-medium text-[#00000080]/50 text-center font-bold">
+                        You can change these settings at any time. We'll always send critical security notifications regardless of your preferences.
+                    </p>
+                </div>
             </div>
-        </section>
+        </div>
     );
 };
