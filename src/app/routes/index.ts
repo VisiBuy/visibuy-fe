@@ -33,6 +33,7 @@ export const allRoutes: RouteConfig[] = [
   ...apiKeysRoutes,
   ...mediaRoutes,
   ...sellerProfileRoutes,
+  ...sellerProfileRoutes,
   ...settingsRoutes,
   ...escrowRoutes,
   ...usersRoutes,
@@ -56,3 +57,4 @@ export { settingsRoutes } from "./settings.routes";
 export { errorRoutes } from "./error.routes";
 export { sellerProfileRoutes } from "./sellerprofile.routes";
 export {billingsRoutes} from "./billings.routes"
+

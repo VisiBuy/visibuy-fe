@@ -20,7 +20,11 @@ export const apiKeysRoutes: RouteConfig[] = createRouteGroup({
   children: [
     createLazyRoute({
       path: "",
-      lazy: () => import("../../pages/Verifications/CreateVerification"), // TODO: Create ApiKeysListPage
+      // lazy: () => import("../../pages/Users/UsersPage"), // TODO: Create ApiKeysListPage
+      lazy: () => import("../../pages/Settings/api/ApiPage"), 
+
+      // lazy: () => import("../../pages/Verifications/CreateVerification"), 
+      // lazy: () => import("../../pages/Verifications/CreateVerification"), // TODO: Create ApiKeysListPage
       meta: {
         title: "API Keys",
         breadcrumb: "API Keys",

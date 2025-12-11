@@ -13,6 +13,7 @@ export const authApi = baseApi.injectEndpoints({
         try {
           const { data } = await queryFulfilled;
           const { accessToken, user, permissions, roles } = data;
+          console.log(data.accessToken)
           dispatch(
             authActions.setCredentials({
               accessToken,
