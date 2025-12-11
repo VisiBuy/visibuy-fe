@@ -8,7 +8,9 @@ export const ROUTES = {
     LOGIN: "/login",
     SIGNUP: "/signup",
     FORGOT_PASSWORD: "/forgot-password",
-    RESET_PASSWORD: "/reset-password",
+    RESET_PASSWORD: "/auth/reset-password",
+    SOFT_KYC: "/auth/soft-kyc",
+    EMAIL_VERIFICATION_SUCCESS: "/auth/email-verification-success",
   },
 
   // Dashboard
@@ -42,9 +44,9 @@ export const ROUTES = {
     LIST: "/escrows",
     DETAIL: (id: string) => `/escrows/${id}`,
   },
-  
-  BILLLING:{
-    ROOT : '/billings'
+
+  BILLLING: {
+    ROOT: "/billings",
   },
 
   // API Keys
@@ -65,12 +67,20 @@ export const ROUTES = {
     HELP: "/settings/help",
     API_KEYS: "/settings/api-keys",
   },
+  //Seller Pages
+  SELLER:{
+    PROFILE : "/seller/profile",
+    PUBLIC : "/seller/public-profile",
+  // Edit Seller Profile
+    PROFILE_EDIT: "/seller/profile/edit"
+  }, 
+  // Seller Public Profile
 
-  SELLER: {
+/*   SELLER: {
     ROOT: "/seller/profile",
     PROFILE_EDIT: "/seller/profile/edit",
     PUBLIC_PROFILE: "/seller/public/:username",
-  },
+  }, */
   // Error pages
   ERROR: {
     NOT_FOUND: "/404",

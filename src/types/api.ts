@@ -72,6 +72,8 @@ export interface MediaItemDto {
   url: string;
   type: 'image' | 'video';
   thumbnailUrl?: string;
+  uploadedAt?: string;   
+  duration?: number;
 }
 
 export interface VerificationDto {
@@ -185,10 +187,19 @@ export interface sellerProfileDto {
   kycStatus ?: string;
   mfaEnabled ?: boolean,
   createdAt ?: string,
-  badges ?: any[],
-  lastLoginAt ?:  string,
   trustScore ?: number,
+  badges ?: {
+    verifiedSeller : boolean,
+    trustedBuyer: boolean,
+    premiumMember: boolean,
+    earlyAdopter: boolean
+  },
+  lastLoginAt ?:  string,
   updatedAt ?:  string,
-  address ?: string
-  profileImage ?: string
+  address ?: string,
+  profileImage ?: string,
+  totalCompletedVerification ? : number,
+  approvalRatePercentage ? : number,
+  totalVerifications ? : number
+
 }

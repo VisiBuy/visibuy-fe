@@ -9,7 +9,7 @@ export const usersRoutes: RouteConfig[] = [
   createPermissionRoute({
     path: ROUTES.USERS.LIST,
     requiredPermissions: ["users.read"],
-    lazy: () => import("../../pages/Users/UsersPage"),
+    lazy: () => import("../../pages/Verifications/CreateVerification"),
     meta: {
       title: "Users",
       showInNav: true,

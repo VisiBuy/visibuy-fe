@@ -66,5 +66,7 @@ export const baseApi = createApi({
     "ApiKey", 
     "Dashboard",
     "sellerProfile",
+    "Kyc",
+    "Dashboard",
   ],
 });

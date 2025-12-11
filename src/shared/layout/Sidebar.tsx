@@ -20,6 +20,7 @@ export const Sidebar: React.FC = () => {
     {
       name: "Profile",
       path: ROUTES.SELLER.ROOT,
+      path: "/seller/profile",
       icon: <i className="fa-solid fa-user w-5"></i>,
     },
     {
@@ -129,8 +130,8 @@ export const Sidebar: React.FC = () => {
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
               <img src={visibuyLogo} alt="Visibuy" />
-              <button onClick={() => setIsOpen(false)}>
-                <i className="fa-solid fa-xmark w-5"></i>
+              <button onClick={() => setIsOpen(false)} aria-label="Close menu" title="Close menu">
+                <i className="fa-solid fa-xmark w-5" aria-hidden="true"></i>
               </button>
             </div>
 

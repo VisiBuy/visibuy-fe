@@ -1,3 +1,7 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@300;400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,21 +10,26 @@ html,
 body,
 #root {
   height: 100%;
+
+  /* Added font variables */
+  --font-primary: 'Montserrat', sans-serif;
+  --font-secondary: 'Open Sans', sans-serif;
 }
+
+/* ADDED: Set body font to Open Sans (Visibuy secondary font) */
 body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
     Arial;
 }
 
+/* Your original styles – untouched */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Montserrat", sans-serif;
-  font-weight: 500;
 }
-/* body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }? */
 
+/* animations untouched */
 @keyframes fade-in-up {
   from {
     opacity: 0;
@@ -97,6 +106,8 @@ body {
   border: 1px solid #ffccc7;
 }
 
+/* Design System Transitions */
 * {
-  transition: all 0.2s ease-in-out;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }

@@ -13,12 +13,22 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../public/images/VisiBuy-White Colored 1.svg";
 import lock from "../../public/icons/lock.svg";
 import { useLoginMutation } from "@/features/auth/authApi";
+import { useGetKycStatusQuery } from "@/features/kyc/kycApi";
+import { getKycRedirectPath } from "@/shared/utils/kycCheck";
+import { useAppSelector } from "@/app/hooks";
 import { LoginFormValues } from "@/types/types";
+import { ROUTES } from "@/app/routes/constants";
 
 const LoginScreen = () => {
   const [login, { isLoading }] = useLoginMutation();
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const user = useAppSelector((state) => state.auth.user);
+  
+  // Check KYC status if user is logged in
+  const { data: kycStatus } = useGetKycStatusQuery(undefined, {
+    skip: !user, // Only fetch if user is logged in
+  });
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -35,7 +45,7 @@ const LoginScreen = () => {
         background: "#f6ffed",
         border: "1px solid #b7eb8f",
         borderRadius: "8px",
-        boxShadow: "0 4px 12px rgba(82, 196, 26, 0.2)",
+        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.08)",
       },
       duration: 3,
     });
@@ -52,7 +62,7 @@ const LoginScreen = () => {
         background: "#fff2f0",
         border: "1px solid #ffccc7",
         borderRadius: "8px",
-        boxShadow: "0 4px 12px rgba(255, 77, 79, 0.2)",
+        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.08)",
       },
       duration: 4,
     });
@@ -67,8 +77,16 @@ const LoginScreen = () => {
 
       showSuccessNotification();
 
-      setTimeout(() => {
-        navigate("/");
+      // Wait a bit for auth state to update, then check KYC status
+      setTimeout(async () => {
+        try {
+          // Fetch KYC status after login
+          // The query will automatically refetch when user is set
+          // We'll handle redirect in a useEffect instead
+        } catch (error) {
+          // If KYC check fails, just go to dashboard
+          navigate(ROUTES.DASHBOARD);
+        }
       }, 2000);
     } catch (err: any) {
       let message = "Login failed. Please check your credentials and try again.";
@@ -84,6 +102,21 @@ const LoginScreen = () => {
       showErrorNotification(message);
     }
   };
+
+  // Handle KYC redirect after login
+  React.useEffect(() => {
+    if (user && kycStatus) {
+      const redirectPath = getKycRedirectPath(kycStatus);
+      if (redirectPath) {
+        navigate(redirectPath);
+      } else {
+        // If no KYC redirect needed, go to dashboard
+        if (window.location.pathname === ROUTES.AUTH.LOGIN) {
+          navigate(ROUTES.DASHBOARD);
+        }
+      }
+    }
+  }, [user, kycStatus, navigate]);
 
   const validateEmailOrPhone = (rule: any, value: string): Promise<void> => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -122,7 +155,7 @@ const LoginScreen = () => {
         </div>
       )}
 
-      <div className="hidden md:flex md:w-2/5 bg-[#007AFF] flex-col p-10 py-20 px-14 transition-all duration-500 ease-out fixed left-0 top-0 h-full overflow-y-auto">
+      <div className="hidden md:flex md:w-2/5 bg-primary-blue flex-col p-10 py-20 px-14 transition-standard fixed left-0 top-0 h-full overflow-y-auto">
         <div className="flex items-center space-x-2 text-white transform hover:scale-105 transition-transform duration-300">
           <img src={Logo} alt="logo" className="transition-all duration-300" draggable='false' />
         </div>
@@ -135,7 +168,7 @@ const LoginScreen = () => {
             draggable='false'
           />
           <div className="flex justify-center items-center">
-            <h4 className="text-xl text-white font-semibold animate-pulse-slow">
+            <h4 className="text-h5-desktop text-neutral-white font-semibold animate-pulse-slow">
               Login
             </h4>
           </div>
@@ -144,7 +177,7 @@ const LoginScreen = () => {
 
       <div className="w-full md:w-3/5 p-8 bg-white flex items-center justify-center animate-fade-in md:ml-[40%]">
         <div className="w-full max-w-[496px] transform transition-all duration-500 ease-in-out bg-white">
-          <div className="md:hidden flex items-center space-x-2 text-[#007AFF] mb-8 justify-center animate-bounce-in">
+          <div className="md:hidden flex items-center space-x-space-8 text-primary-blue mb-space-32 justify-center animate-bounce-in">
             <img
               src={Logo}
               alt="logo"
@@ -152,12 +185,12 @@ const LoginScreen = () => {
             />
           </div>
 
-          <div className="mb-8 text-center animate-fade-in-up">
-            <h2 className="text-3xl font-semibold text-gray-900 mb-2 transform hover:scale-105 transition-transform duration-300 tracking-[1%]">
+          <div className="mb-space-32 text-center animate-fade-in-up">
+            <h2 className="text-h2-desktop md:text-h2-mobile font-semibold text-neutral-900 mb-space-8 transform hover:scale-105 transition-standard tracking-[1%]">
               Welcome back!
             </h2>
 
-            <p className="text-gray-600 text-sm font-[400] animate-pulse-slow">
+            <p className="text-neutral-600 text-body-small font-regular animate-pulse-slow">
               Enter your details to sign in to your account
             </p>
           </div>
@@ -168,12 +201,12 @@ const LoginScreen = () => {
             onFinish={onFinish}
             layout="vertical"
             size="large"
-            className="space-y-6 border border-[#E3E3E3] rounded-2xl shadow-sm p-8 hover:shadow-sm"
+            className="space-y-space-24 border border-neutral-300 rounded-card shadow-elevation-1 p-space-32 hover:shadow-elevation-2 transition-standard"
           >
             <Form.Item
               name="email"
               label={
-                <span className="text-gray-700 font-medium transition-colors duration-300">
+                <span className="text-neutral-700 font-medium text-body-small transition-standard">
                   Email or Phone Number *
                 </span>
               }
@@ -186,11 +219,11 @@ const LoginScreen = () => {
             >
               <Input
                 suffix={
-                  <MailOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
+                  <MailOutlined className="text-neutral-400 transition-standard hover:text-primary-blue" />
                 }
                 placeholder="Enter your email or phone number"
                 autoComplete="email"
-                className="rounded-lg transition-all duration-300 h-[51px] hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                className="rounded-input transition-standard h-input hover:border-primary-blue focus:border-primary-blue focus:shadow-elevation-2"
                 disabled={isLoading}
               />
             </Form.Item>
@@ -198,7 +231,7 @@ const LoginScreen = () => {
             <Form.Item
               name="password"
               label={
-                <span className="text-gray-700 font-medium transition-colors duration-300">
+                <span className="text-neutral-700 font-medium text-body-small transition-standard">
                   Password *
                 </span>
               }
@@ -215,18 +248,18 @@ const LoginScreen = () => {
             >
               <Input.Password
                 prefix={
-                  <LockOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
+                  <LockOutlined className="text-neutral-400 transition-standard hover:text-primary-blue" />
                 }
                 placeholder="Enter your password"
                 autoComplete="current-password"
                 iconRender={(visible) =>
                   visible ? (
-                    <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" />
+                    <EyeTwoTone className="transition-standard hover:text-primary-blue" />
                   ) : (
-                    <EyeInvisibleOutlined className="transition-colors duration-300 hover:text-[#007AFF]" />
+                    <EyeInvisibleOutlined className="transition-standard hover:text-primary-blue" />
                   )
                 }
-                className="rounded-lg transition-all duration-300 h-[51px] hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+                className="rounded-input transition-standard h-input hover:border-primary-blue focus:border-primary-blue focus:shadow-elevation-2"
                 disabled={isLoading}
               />
             </Form.Item>
@@ -234,7 +267,7 @@ const LoginScreen = () => {
             <Form.Item>
               <Form.Item name="remember" valuePropName="checked" noStyle>
                 <Checkbox
-                  className="text-gray-600 transition-colors duration-300 hover:text-[#007AFF]"
+                  className="text-neutral-600 transition-standard hover:text-primary-blue"
                   disabled={isLoading}
                 >
                   Remember me
@@ -248,7 +281,7 @@ const LoginScreen = () => {
                 htmlType="submit"
                 loading={isLoading}
                 block
-                className="h-12 rounded-lg bg-[#28A745] border-[#28A745] hover:bg-green-600 hover:border-green-600 text-base font-[400] transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="h-btn-medium rounded-btn-medium bg-primary-green border-primary-green hover:bg-primary-green/90 hover:border-primary-green/90 text-body-medium font-regular transform hover:scale-105 transition-standard shadow-elevation-2 hover:shadow-elevation-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none min-h-tap-target"
                 disabled={isLoading}
                 icon={isLoading ? <LoadingOutlined spin /> : null}
               >
@@ -256,13 +289,13 @@ const LoginScreen = () => {
               </Button>
             </Form.Item>
 
-            <div className="text-center text-sm space-y-3 animate-fade-in-up mt-6">
+            <div className="text-center text-body-small space-y-space-12 animate-fade-in-up mt-space-24">
               <div>
-                <span className="text-gray-600 transition-colors duration-300">
+                <span className="text-neutral-600 transition-standard">
                   Don't have an account?{" "}
                   <Link
                     to="/signup"
-                    className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300 transform hover:scale-105 inline-block"
+                    className="text-primary-blue hover:text-primary-blue/80 font-medium transition-standard transform hover:scale-105 inline-block"
                   >
                     Sign up
                   </Link>
@@ -271,7 +304,7 @@ const LoginScreen = () => {
               <div>
                 <Link
                   to="/forgot-password"
-                  className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300 transform hover:scale-105 inline-block"
+                  className="text-primary-blue hover:text-primary-blue/80 font-medium transition-standard transform hover:scale-105 inline-block"
                 >
                   Forgot password?
                 </Link>
