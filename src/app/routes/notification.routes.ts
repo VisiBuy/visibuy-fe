@@ -8,7 +8,7 @@ import { ROUTES } from "./constants";
 export const notificationRoutes: RouteConfig[] = [
   createProtectedRoute({
     path: ROUTES.SETTINGS.NOTIFICATIONS,
-    lazy: () => import("../../pages/NotificationPreferences/NotificationPreferencesPage"),
+    lazy: () => import("../../pages/Settings/NotificationPreferencesPage"),
     meta: {
       title: "Notifications",
       showInNav: true,
