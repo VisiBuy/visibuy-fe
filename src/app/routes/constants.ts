@@ -67,12 +67,22 @@ export const ROUTES = {
     HELP: "/settings/help",
     API_KEYS: "/settings/api-keys",
   },
+  //Seller Pages
+  SELLER:{
+    PROFILE : "/seller/profile",
+    PUBLIC : "/seller/public-profile",
+  // Edit Seller Profile
+    PROFILE_EDIT: "/seller/profile/edit"
+  }, 
+  // Seller Public Profile
 
-  SELLER: {
+/*   SELLER: {
     ROOT: "/seller/profile",
     PROFILE_EDIT: "/seller/profile/edit",
     PUBLIC_PROFILE: "/seller/public/:username",
-  },
+  }, */
+  NOTIFICATION: "/notification",
+
   // Error pages
   ERROR: {
     NOT_FOUND: "/404",

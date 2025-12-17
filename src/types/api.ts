@@ -187,10 +187,71 @@ export interface sellerProfileDto {
   kycStatus ?: string;
   mfaEnabled ?: boolean,
   createdAt ?: string,
-  badges ?: any[],
-  lastLoginAt ?:  string,
   trustScore ?: number,
+  badges ?: {
+    verifiedSeller : boolean,
+    trustedBuyer: boolean,
+    premiumMember: boolean,
+    earlyAdopter: boolean
+  },
+  lastLoginAt ?:  string,
   updatedAt ?:  string,
-  address ?: string
-  profileImage ?: string
+  address ?: string,
+  profileImage ?: string,
+  totalCompletedVerification ? : number,
+  approvalRatePercentage ? : number,
+  totalVerifications ? : number
+
 }
+
+//Notification Preferences
+export interface ToggleSwitchProps {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  label: string;
+  description: string;
+  disabled?: boolean;
+}
+
+export type EGlobalSettingsMap = Record<string, Record<string, boolean>>;
+export interface EmailNotificationProps {
+allPreferences: PreferenceDto[];
+localSettings: EGlobalSettingsMap; 
+setChannelSetting: (eventType: string, channelName: string, enabled: boolean) => void;
+}
+
+export type SGlobalSettingsMap = Record<string, Record<string, boolean>>;
+
+export interface SMSNotificationProps {
+  allPreferences: PreferenceDto[];
+  localSettings: SGlobalSettingsMap; 
+  setChannelSetting: (eventType: string, channelName: string, enabled: boolean) => void; 
+}
+
+export type WGlobalSettingsMap = Record<string, Record<string, boolean>>;
+
+export interface WhatsappNotificationProps {
+    allPreferences: PreferenceDto[];
+    localSettings: WGlobalSettingsMap; 
+    setChannelSetting: (eventType: string, channelName: string, enabled: boolean) => void; 
+}
+
+
+export interface ChannelDto {
+  channel: string;
+  isEnabled: boolean;
+  metadata?: null; 
+  isAvailable?: boolean;
+}
+
+export interface PreferenceDto {
+  eventType: string;
+  channels: ChannelDto[];
+}
+
+export interface NotificationPreferencesResponse {
+  preferences: PreferenceDto[];
+  userId: string
+}
+
+

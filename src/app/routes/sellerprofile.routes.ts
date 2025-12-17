@@ -1,47 +1,38 @@
 import { RouteConfig } from "./types";
 import {
-  createProtectedRoute,
-  createLazyRoute,
-  createPermissionRoute,
-  createRouteGroup,
+    createProtectedRoute,
+    createLazyRoute,
+    createPermissionRoute,
 } from "./builders";
 import { ROUTES } from "./constants";
 
-export const sellerProfileRoutes: RouteConfig[] = createRouteGroup({
-  basePath: ROUTES.SELLER.ROOT,
-  protected: true,
-  meta: {
-    title: "Seller Profile",
-    showInNav: true,
-    icon: "seller-profile",
-  },
-  children: [
+
+export const sellerProfileRoutes: RouteConfig[] = [
     createProtectedRoute({
-      path: "",
-      lazy: () => import("../../pages/SellerProfile/SellerProfile"),
-      meta: {
+        path: ROUTES.SELLER.PROFILE,
+        lazy: () => import("../../pages/SellerProfile/SellerProfile"),
+        meta: {
         title: "Seller Profile",
         showInNav: true,
         icon: "seller-profile",
-      },
+        },
     }),
     createProtectedRoute({
-      path: ROUTES.SELLER.PROFILE_EDIT,
-      lazy: () => import("../../pages/SellerProfile/EditSellerProfile"),
-      meta: {
-        title: "Edit Seller Profile",
-        showInNav: false,
-        icon: "seller-profile",
-      },
+        path: ROUTES.SELLER.PROFILE_EDIT,
+        lazy: () => import("../../pages/SellerProfile/EditSellerProfile"),
+        meta: {
+            title: "Edit Seller Profile",
+            showInNav: false,
+            icon : "seller-profile",
+        },
     }),
-    createProtectedRoute({
-      path: ROUTES.SELLER.PUBLIC_PROFILE,
-      lazy: () => import("../../pages/SellerProfile/sellerPublicProfile"),
-      meta: {
-        title: "Seller Public Profile",
-        showInNav: false,
-        icon: "seller-profile",
-      },
+    createLazyRoute({
+        path: ROUTES.SELLER.PUBLIC +"/:id",
+        lazy: () => import("../../pages/SellerProfile/sellerPublicProfile"),
+        meta: {
+            title: "Seller Public Profile",
+            showInNav: false,
+            icon: "seller-profile",
+        }
     }),
-  ],
-});
+];
