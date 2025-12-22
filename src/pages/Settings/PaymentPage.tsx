@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BsFillCreditCardFill } from "react-icons/bs";
 import { RiDeleteBinLine } from "react-icons/ri";
+import { AddBankAccountModal } from "@/shared/components/payment/AddBankAccountModal";
+import { BankAccountSuccessModal } from "@/shared/components/payment/BankAccountSuccessModal";
+import { useGetPayoutAccountsQuery } from "@/features/payout/payoutApi";
 
 // ------------------------------------------------------
 // MOCK SERVICES (replace with real API integration)
@@ -80,6 +83,12 @@ export default function PaymentPage(): JSX.Element {
 
   const [methods, setMethods] = useState<any[]>([]);
   const [escrowOn, setEscrowOn] = useState<boolean>(true);
+  const [isAddBankModalOpen, setIsAddBankModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+
+  // Fetch payout accounts
+  const { data: payoutAccounts = [], refetch: refetchPayoutAccounts } =
+    useGetPayoutAccountsQuery();
 
   useEffect(() => {
     fetchPaymentMethods().then((data) => setMethods(data));
@@ -134,120 +143,131 @@ export default function PaymentPage(): JSX.Element {
           </div>
         </SectionCard>
 
-        <SectionCard>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-bold">Saved Payments Methods</h2>
-
-            <button
-              className="px-4 py-2 bg-black text-white text-xs rounded-lg shadow-sm"
-              onClick={() => {
-                /* open modal - not implemented in mock */
-              }}
-            >
-              + Add New
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            {methods.map((method) => (
-              <div
-                key={method.id}
-                className="flex items-center bg-[#ffffff] justify-between gap-4 p-4 border border-gray-300 rounded-xl shadow-sm"
-              >
-                <div className="flex items-center gap-4">
-                  {/* Black Box Icon */}
-                  <div className="w-14 h-10 bg-black rounded-base flex items-center justify-center">
-                    <BsFillCreditCardFill size={22} className="text-white" />{" "}
-                  </div>
-
-                  <div>
-                    <p className="font-bold text-sm">
-                      {method.brand} •••• {method.last4}
-                      {method.isDefault && (
-                        <span className="ml-3 inline-block align-middle text-xs font-bold bg-green-300 text-green-800 px-2 py-0.5 rounded">
-                          Default
-                        </span>
-                      )}
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      Expires {method.expires}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => handleDelete(method.id)}
-                    aria-label="Delete payment method"
-                    className="p-2 rounded-full hover:bg-gray-100"
-                    title="Delete"
-                  >
-                    <RiDeleteBinLine size={20} className="text-red-500" />
-                  </button>
-                </div>
-              </div>
-            ))}
-            {/* If No Saved payments */}
-            {methods.length === 0 && (
-              <p className="text-gray-500 text-sm text-center">
-                No payment methods added yet.
-              </p>
-            )}
-          </div>
-        </SectionCard>
-
         {/* Bank Accounts for Payouts */}
         <SectionCard>
           <div className="flex items-center justify-between">
             <h2 className="text-base font-bold">Bank Accounts for Payouts</h2>
 
-            <button className="px-8 py-1 bg-black text-white text-xs rounded-lg shadow-sm">
-              Edit
+            <button
+              onClick={() => setIsAddBankModalOpen(true)}
+              className="px-4 py-2 bg-black text-white text-xs rounded-lg shadow-sm hover:bg-neutral-800 transition-standard"
+            >
+              + Add New
             </button>
           </div>
 
-          <div className="mt-4 border border-gray-200 rounded-xl p-3">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-10 bg-black rounded-base flex items-center justify-center">
-                <BsFillCreditCardFill size={22} className="text-white" />{" "}
+          <div className="mt-4 space-y-3">
+            {payoutAccounts.length > 0 ? (
+              payoutAccounts.map((account) => (
+                <div
+                  key={account.id}
+                  className="border border-gray-200 rounded-xl p-3"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-10 bg-black rounded-base flex items-center justify-center">
+                      <BsFillCreditCardFill size={22} className="text-white" />
+                    </div>
+
+                    <div className="flex-1">
+                      <p className="font-bold text-sm">{account.bankName}</p>
+                      <p className="text-xs text-gray-400">
+                        Account: {account.accountNumber.slice(0, 2)}•••••••
+                        {account.accountNumber.slice(-2)}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {account.accountName}
+                      </p>
+                    </div>
+                    {account.isDefault && (
+                      <span className="inline-block align-middle text-xs font-bold bg-green-300 text-green-800 px-2 py-0.5 rounded">
+                        Default
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="border border-gray-200 rounded-xl p-3">
+                <p className="text-gray-500 text-sm text-center py-2">
+                  No bank accounts added yet.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {payoutAccounts.length > 0 && (
+            <div className="flex mt-8 flex-col items-center gap-4">
+              <p className="flex justify-center text-center text-xs text-gray-400 mt-3">
+                Verification required: To receive payouts. Please verify your
+                bank account. we'll send a small deposit for verification.{" "}
+              </p>
+
+              <button className="w-1/2 flex justify-center text-xs px-3 py-1 bg-black text-white rounded-lg shadow-sm hover:bg-neutral-800 transition-standard">
+                Verify Now
+              </button>
+            </div>
+          )}
+        </SectionCard>
+
+        {/* Flutterwave Account */}
+        <SectionCard className="relative overflow-hidden">
+          {/* Coming Soon Overlay */}
+          <div className="absolute inset-0 bg-white/95 backdrop-blur-[2px] rounded-2xl flex items-center justify-center z-10">
+            <div className="flex flex-col items-center gap-4 px-6 py-4">
+              {/* Badge */}
+              <div className="px-4 py-2 bg-primary-blue/10 rounded-lg border border-primary-blue/30">
+                <span className="text-sm font-bold text-primary-blue">
+                  Coming Soon
+                </span>
               </div>
 
-              <div>
-                <p className="font-bold text-sm">Garanti BBVA</p>
-                <p className="text-xs text-gray-400">
-                  IBAN: TR•• •••• •••• •••• •••• ••42
+              {/* Message */}
+              <div className="text-center space-y-1 max-w-xs">
+                <p className="text-sm font-semibold text-neutral-900">
+                  Flutterwave Integration
+                </p>
+                <p className="text-xs text-neutral-600 leading-relaxed">
+                  We're working on adding Flutterwave support for international
+                  payments. This feature will be available in a future update.
                 </p>
               </div>
             </div>
           </div>
-          <div className="flex mt-8 flex-col items-center gap-4">
-            <p className="flex justify-center text-center text-xs text-gray-400 mt-3">
-              Verification required: To receive payouts. Please verify your bank
-              account. we’ll send a small deposit for verification.{" "}
-            </p>
 
-            <button className=" w-1/2 flex justify-center text-xs px-3 py-1 bg-black text-white rounded-lg shadow-sm">
-              Verify Now{" "}
-            </button>
-          </div>
-        </SectionCard>
-
-        {/* Flutterwave Account */}
-        <SectionCard>
-          <div className="flex flex-col items-start gap-4">
+          {/* Dimmed Content */}
+          <div className="flex flex-col items-start gap-4 opacity-40 pointer-events-none">
             <h3 className="text-sm font-bold">Flutterwave Account</h3>
             <p className="text-xs font-bold text-black">
               Connect your Flutterwave account to receive international payments
               and manage payouts seamlessly.
             </p>
             <div className="w-full flex justify-center mt-2">
-              <button className="px-8 py-2 bg-black text-white rounded-lg font-bold shadow-sm">
-                Connect Flutterwave{" "}
-              </button>{" "}
+              <button
+                disabled
+                className="px-8 py-2 bg-black text-white rounded-lg font-bold shadow-sm cursor-not-allowed"
+              >
+                Connect Flutterwave
+              </button>
             </div>
           </div>
         </SectionCard>
       </div>
+
+      {/* Add Bank Account Modal */}
+      <AddBankAccountModal
+        open={isAddBankModalOpen}
+        onOpenChange={setIsAddBankModalOpen}
+        onSuccess={() => {
+          setIsSuccessModalOpen(true);
+          refetchPayoutAccounts();
+        }}
+      />
+
+      {/* Success Modal */}
+      <BankAccountSuccessModal
+        open={isSuccessModalOpen}
+        onOpenChange={setIsSuccessModalOpen}
+      />
     </div>
   );
 }
