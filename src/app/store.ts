@@ -13,6 +13,7 @@ import {
 import storage from "redux-persist/lib/storage";
 import authReducer from "../features/auth/authSlice";
 import { baseApi } from "../services/api/baseApi";
+import { nubanApi } from "../features/payout/nubanApi";
 
 // Configure redux-persist for auth slice
 // Exclude accessToken from persistence (handled by httpOnly cookie)
@@ -27,6 +28,7 @@ const persistedAuthReducer = persistReducer(persistConfig, authReducer);
 export const store = configureStore({
   reducer: {
     [baseApi.reducerPath]: baseApi.reducer,
+    [nubanApi.reducerPath]: nubanApi.reducer,
     auth: persistedAuthReducer,
   },
   middleware: (getDefaultMiddleware) =>
@@ -34,7 +36,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(baseApi.middleware),
+    }).concat(baseApi.middleware, nubanApi.middleware),
 });
 
 setupListeners(store.dispatch);

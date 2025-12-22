@@ -167,6 +167,7 @@ export interface PayoutAccountDto {
   bankName: string;
   accountNumber: string;
   accountName: string;
+  bankCode?: number;
   isDefault: boolean;
   createdAt: ISODateString;
 }

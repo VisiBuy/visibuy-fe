@@ -219,7 +219,7 @@ export default function NotificationPreferencesPage() {
                                 : 'bg-[#000000] hover:bg-gray-700 text-white'
                             }`}
                         >
-                            cancel
+                            Cancel
                         </button>
                         <button 
                             onClick={handleSave}
@@ -230,7 +230,7 @@ export default function NotificationPreferencesPage() {
                                 : 'bg-[#000000] hover:bg-gray-700 text-white'
                             }`}
                         >
-                            {isMutating ? 'saving Preferences' : 'save Preferences'}
+                            {isMutating ? 'Saving Preferences' : 'Save Preferences'}
                         </button>
                     </div>
                     <p className="text-medium text-[#00000080]/50 text-center font-bold">
