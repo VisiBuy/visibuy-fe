@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react';
 import {Link,useNavigate} from 'react-router-dom'
 import {ROUTES} from '../../app/routes/constants';
@@ -8,10 +8,17 @@ import { sellerProfileDto } from "@/types/api";
 import { boolean } from 'zod';
 
 const EditSellerProfile = () => {
+    const [mfaEnabled, setMfaEnabled] = useState<boolean | undefined>(false);
     const [profileImage, setProfileImage] = useState<string | any>(null)
     const [preview, setPreview] = useState<string | null>(null)
 
     const {data, isLoading, error} = useGetSellerProfileQuery();
+
+    useEffect(() => {
+        if(data) {
+            setMfaEnabled(data?.mfaEnabled)
+        }
+    },[data])
 
     const navigate = useNavigate();
     const covertToBase64 = (file:File):Promise<string>=>{
@@ -45,16 +52,14 @@ const EditSellerProfile = () => {
         
         const firstName = (form.firstName as HTMLInputElement).value;
         const lastName = (form.lastName as HTMLInputElement).value;
-        const name = `${firstName} ${lastName}`;
-
         const user:sellerProfileDto = {
-            name,
-            phone: (form.phone as HTMLInputElement).value,
-            address: (form.address as HTMLInputElement).value,
+            name : `${firstName} ${lastName}`.trim() || data?.name || "",
+            phone: (form.phone as HTMLInputElement).value || data?.phone || "", 
+            address: (form.address as HTMLInputElement).value || data?.address || "",
             mfaEnabled : (form.mfa as HTMLSelectElement).value === "true",
            /*  profileImage: profileImage */
         }
-        console.log(user);
+        /* console.log(user); */
 
         try {
             await updateSellerProfile(user);
@@ -105,7 +110,7 @@ const EditSellerProfile = () => {
                     <label htmlFor="address" className='font-bold text-sm text-gray-700 mb-2'>Address</label>
                     <input type="text" name="address" id="address" className='w-full border-2  bg-transparent rounded-xl p-2 focus:border-blue-400 focus:outline-none' />
                     <label htmlFor="mfa" className='font-bold text-sm text-gray-700 mb-2'>MFA Enabled</label>
-                    <select name="mfa" id="mfa" className='w-full border-2  bg-transparent rounded-xl p-2 focus:border-blue-400 focus:outline-none'>
+                    <select name="mfa" id="mfa" value={String(mfaEnabled)}   onChange={(e) => setMfaEnabled(e.target.value === "true")} className='w-full border-2  bg-transparent rounded-xl p-2 focus:border-blue-400 focus:outline-none'>
                         <option value="true">Enabled</option>
                         <option value="false">Disabled</option>
                     </select>
