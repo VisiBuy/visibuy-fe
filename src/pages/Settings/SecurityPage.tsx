@@ -45,7 +45,7 @@ export default function SecurityPage(): JSX.Element {
           </div> */}
 
           {/* Content Container */}
-          <div className='max-w-4xl'>
+          <div className='w-full'>
             <ChangePassword />
             <TwoFactorAuth />
             <RecentLoginActivity />

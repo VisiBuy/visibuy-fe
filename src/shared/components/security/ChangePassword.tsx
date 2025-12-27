@@ -102,7 +102,7 @@ const ChangePassword: React.FC = () => {
     <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6 w-full">
       <h2 className="text-xl font-bold text-gray-900 mb-6">Change Password</h2>
       
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 w-full">
         {/* Current Password */}
         <div className='relative' >
           <label htmlFor="current-password" className="block text-sm font-medium text-gray-700 mb-2">
@@ -119,7 +119,7 @@ const ChangePassword: React.FC = () => {
           />
           <img src={showCurrent ? eyeOn : eyeOff } alt="toggle-shown" 
           onClick={toggleCurrent}
-          className='absolute right-3 top-10' />
+          className='absolute right-3 top-10 cursor-pointer' />
         </div>
 
         {/* New Password */}
@@ -138,7 +138,7 @@ const ChangePassword: React.FC = () => {
           />
           <img src={showNew ? eyeOn : eyeOff } alt="toggle-shown" 
           onClick={toggleNew}
-          className='absolute right-3 top-10' />
+          className='absolute right-3 top-10 cursor-pointe' />
           <p className="mt-2 text-xs text-gray-500">
             Must be at least 8 characters with uppercase, lowercase, and numbers
           </p>
@@ -173,7 +173,7 @@ const ChangePassword: React.FC = () => {
           />
           <img src={showConfirm ? eyeOn : eyeOff } alt="toggle-shown" 
           onClick={toggleConfirm}
-          className='absolute right-3 top-10' />
+          className='absolute right-3 top-10 cursor-pointe' />
         </div>
 
         {error && <p style={{ color: "red" }}>{error}</p>}
