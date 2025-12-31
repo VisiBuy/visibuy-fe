@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 export default function SecurityPage(): JSX.Element {
   const navigate = useNavigate();
   return (
-    <div className='w-full min-h-screen bg-gray-50 flex flex-col items-center pb-16'>
+    <div className='w-full'>
       {/* <div className='w-full bg-blue-500 text-white py-4 sm:py-5 md:py-6 px-5 flex items-center'>
         <button
           onClick={() => navigate(-1)}
@@ -21,12 +21,12 @@ export default function SecurityPage(): JSX.Element {
         </h1>
       </div> */}
 
-      <div className='w-full px-6 py-8'>
+      <div className='w-full'>
         {/* <p className="text-gray-700 text-sm sm:text-base">
           Placeholder: change password, enable/disable 2FA, review active sessions.
         </p> */}
         {/* TODO: Add password & 2FA forms */}
-        <main className='w-full pt-16 lg:pt-0 pb-20 lg:pb-0 px-4 lg:px-8 py-6 lg:py-8'>
+        <main className='w-full'>
           {/* Desktop Header */}
           {/* <div className='hidden lg:block mb-8'>
             <div className='bg-primary text-white py-3 px-6 rounded-lg -mx-8 mb-8'>
@@ -45,7 +45,7 @@ export default function SecurityPage(): JSX.Element {
           </div> */}
 
           {/* Content Container */}
-          <div className='max-w-4xl'>
+          <div className='w-full'>
             <ChangePassword />
             <TwoFactorAuth />
             <RecentLoginActivity />
