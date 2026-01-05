@@ -49,7 +49,7 @@ const sellerPublicProfile = () => {
         return <p className='text-black flex justify-center align-middle font-semibold text-xl text-center'>This profile is not yet public or access is restricted</p>;
     }
 
-    console.log(data);
+/*     console.log(data); */
 
     const shareProfile = () => {
         const profileUrl = `${window.location.origin}/seller/public/${id}`;
@@ -77,9 +77,9 @@ const sellerPublicProfile = () => {
     return (
             <PageWrapper isScrollable={false}>
         <div className="relative -mt-[60px] md:-mt-[50px] z-[100]">
-        <section className='text-black'>
+        <section className='text-black w-full'>
             <div className='w-full flex flex-col gap-6  rounded-lg py-12 sm:px-10 px-6 relative bg-white border-2'>
-                <div className='border-b-2 pb-4 flex justify-between align-top'>
+                <div className='border-b-2 pb-4 flex justify-between align-top gap-1'>
                     <div className='flex flex-row gap-2 sm:gap-6 items-start w-max'>
                         <div className='relative'>
                         <div className='w-24 h-24 rounded-full bg-gray-400'></div>
@@ -88,7 +88,7 @@ const sellerPublicProfile = () => {
                         <div className='mt-2'>
                             <h3 className='font-bold sm:text-xl text-xs m-0'>{data?.name}</h3>
                         <p className='font-semibold text-xs m-0'>@{username}</p>
-                        <div className='flex flex-row gap-1 sm:align-middle sm:justify-center'>
+                        <div className='flex flex-row gap-1 sm:align-middle sm:justify-start'>
                             <img src={starIcon} alt="Trust Score star"
                             className='sm:w-6 sm:h-6 w-4 h-4 text-center mt-0.5'
                             />
