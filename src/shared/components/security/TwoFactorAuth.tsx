@@ -9,10 +9,10 @@ const TwoFactorAuth: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+    <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6 ">
       <h2 className="text-xl font-bold text-gray-900 mb-4">Two-Factor Authentication</h2>
       
-      <div className="flex items-center justify-between">
+      <div className="flex items-center sm:justify-between">
         <div>
           <p className="text-sm font-medium text-gray-900 mb-1">
             {isEnabled ? 'Enabled' : 'Not Enabled'}

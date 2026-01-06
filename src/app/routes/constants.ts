@@ -81,6 +81,8 @@ export const ROUTES = {
     PROFILE_EDIT: "/seller/profile/edit",
     PUBLIC_PROFILE: "/seller/public/:username",
   }, */
+  NOTIFICATION: "/notification",
+
   // Error pages
   ERROR: {
     NOT_FOUND: "/404",
