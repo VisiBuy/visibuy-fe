@@ -4,6 +4,7 @@ import { allRoutes, toRouteObjects } from "./routes";
 import { ROUTES } from "./routes/constants";
 import UsersPage from "@/pages/Verifications/CreateVerification";
 import { ProtectedLayout } from "../shared/layout/ProtectedLayout";
+import { AppLayout } from "../shared/layout/AppLayout";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
 
 /**
@@ -30,6 +31,20 @@ export const router = createBrowserRouter([
           );
         })
       ),
+      {
+        path: ROUTES.SELLER.PUBLIC + "/:id",
+        lazy: async () => {
+          const module = await import("../pages/SellerProfile/sellerPublicProfile");
+          const Component = module.default;
+          return {
+            Component: () => (
+              <AppLayout showSidebar={false}>
+                <Component />
+              </AppLayout>
+            ),
+          } as any;
+        },
+      },
 
       // Protected routes with sidebar layout
       {
