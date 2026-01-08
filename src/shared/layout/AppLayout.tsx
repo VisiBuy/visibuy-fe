@@ -5,6 +5,10 @@ import { Sidebar } from "./Sidebar";
 
 interface AppLayoutProps {
   children?: React.ReactNode;
+  /**
+   * Controls whether the sidebar should be shown. Defaults to true.
+   */
+  showSidebar?: boolean;
 }
 
 /**
@@ -25,7 +29,7 @@ export const useScrollContext = () => {
   return context;
 };
 
-export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
+export const AppLayout: React.FC<AppLayoutProps> = ({ children, showSidebar = true }) => {
   const [isScrollable, setIsScrollable] = useState<boolean>(true);
 
   return (
@@ -41,8 +45,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
         {/* MAIN LAYOUT: Sidebar + Content */}
         <div className="flex flex-1 overflow-hidden">
-          {/* Sidebar (handles its own mobile state) */}
-          <Sidebar />
+            {/* Sidebar (handles its own mobile state) */}
+            {showSidebar && <Sidebar />}
 
           {/* Content Area */}
           <div className="flex flex-col flex-1 relative">
