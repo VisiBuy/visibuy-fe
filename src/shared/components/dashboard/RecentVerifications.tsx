@@ -51,27 +51,31 @@ export const RecentVerifications: React.FC<RecentVerificationProps> = ({
 
   if (!verifications || verifications.length === 0) {
     return (
-      <div
-        className={`border border-neutral-300 rounded-card bg-neutral-white shadow-card w-full -mt-[60px] md:-mt-[70px] relative z-[100] ${className}`}
-        style={{
-          position: "absolute",
-          top: "-60px",
-          left: "0",
-          right: "0",
-          zIndex: 100,
-        }}
-      >
-        <div className="p-card-md">
-          <div className="flex items-center justify-between mb-space-16">
-            <h3 className="text-h5-desktop md:text-h4-desktop font-bold text-neutral-900">
-              Recent Verifications
-            </h3>
+      <>
+        <div
+          className={`border border-neutral-300 rounded-card bg-neutral-white shadow-card w-full relative z-[100] ${className}`}
+          style={{
+            position: "absolute",
+            top: "-60px",
+            left: "0",
+            right: "0",
+            zIndex: 100,
+          }}
+        >
+          <div className="p-card-md">
+            <div className="flex items-center justify-between mb-space-16">
+              <h3 className="text-h5-desktop md:text-h4-desktop font-bold text-neutral-900">
+                Recent Verifications
+              </h3>
+            </div>
+            <p className="text-body-medium text-neutral-600 text-center py-space-32">
+              No recent verifications
+            </p>
           </div>
-          <p className="text-body-medium text-neutral-600 text-center py-space-32">
-            No recent verifications
-          </p>
         </div>
-      </div>
+        {/* Spacer to prevent content from going under the overlapping section */}
+        <div className="h-[100px] md:h-[140px]"></div>
+      </>
     );
   }
 
@@ -85,6 +89,7 @@ export const RecentVerifications: React.FC<RecentVerificationProps> = ({
           left: "0",
           right: "0",
           zIndex: 100,
+          marginTop: "0",
         }}
       >
         <div className="p-card-md">
@@ -147,7 +152,7 @@ export const RecentVerifications: React.FC<RecentVerificationProps> = ({
         </div>
       </div>
       {/* Spacer to prevent content from going under the overlapping section */}
-      <div style={{ height: "120px" }}></div>
+      <div className="h-[100px] md:h-[140px]"></div>
     </>
   );
 };

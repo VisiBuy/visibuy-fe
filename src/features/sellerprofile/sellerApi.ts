@@ -22,4 +22,16 @@ export const sellerProfileApi = baseApi.injectEndpoints({
             }),
         }),
     });
+    export const sellerPublicProfileApi = baseApi.injectEndpoints({
+    endpoints: (builder) => ({
+    getPublicSellerProfile: builder.query<sellerProfileDto, string>({
+      query: (id) => ({
+        url: `users/sellers/${id}/public`,
+        method: 'GET',
+      }),
+      providesTags: ['sellerProfile'],
+    }),
+  }),
+});
 export const { useGetSellerProfileQuery, useUpdateSellerProfileMutation } = sellerProfileApi;
+export const {useGetPublicSellerProfileQuery} = sellerPublicProfileApi;

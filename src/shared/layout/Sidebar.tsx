@@ -19,7 +19,7 @@ export const Sidebar: React.FC = () => {
     },
     {
       name: "Profile",
-      path: ROUTES.SELLER.ROOT,
+      path: ROUTES.SELLER.PROFILE,
       icon: <i className="fa-solid fa-user w-5"></i>,
     },
     {

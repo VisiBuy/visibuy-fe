@@ -15,6 +15,7 @@ import { apiKeysRoutes } from "./apiKeys.routes";
 import { sellerProfileRoutes } from "./sellerprofile.routes";
 import { settingsRoutes } from "./settings.routes";
 import { errorRoutes } from "./error.routes";
+import { notificationRoutes } from "./notification.routes";
 
 
 /**
@@ -33,9 +34,11 @@ export const allRoutes: RouteConfig[] = [
   ...apiKeysRoutes,
   ...mediaRoutes,
   ...sellerProfileRoutes,
+  ...sellerProfileRoutes,
   ...settingsRoutes,
   ...escrowRoutes,
   ...usersRoutes,
+  ...notificationRoutes,
   ...billingsRoutes
 ];
 
@@ -54,5 +57,7 @@ export { escrowRoutes } from "./escrow.routes";
 export { apiKeysRoutes } from "./apiKeys.routes";
 export { settingsRoutes } from "./settings.routes";
 export { errorRoutes } from "./error.routes";
+export { notificationRoutes } from "./notification.routes";
 export { sellerProfileRoutes } from "./sellerprofile.routes";
 export {billingsRoutes} from "./billings.routes"
+

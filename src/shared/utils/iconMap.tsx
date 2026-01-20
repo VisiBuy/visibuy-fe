@@ -12,6 +12,8 @@ import {
   FiLogOut,
   FiChevronRight,
   FiEdit2,
+  FiShare2,
+  FiBell 
 } from "react-icons/fi";
 
 /**
@@ -35,6 +37,7 @@ export const iconMap: Record<
   logout: FiLogOut,
   chevronRight: FiChevronRight,
   FiEdit: FiEdit2,
+  notification: FiBell,
 };
 
 /**

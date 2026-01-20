@@ -41,7 +41,7 @@ export const settingsRoutes: RouteConfig[] = createRouteGroup({
     }),
     createProtectedRoute({
       path: "notifications",
-      lazy: () => import("../../pages/Settings/NotificationsPage"),
+      lazy: () => import("../../pages/Settings/NotificationPreferencesPage"),
       meta: {
         title: "Notifications",
         breadcrumb: "Notifications",
@@ -59,7 +59,7 @@ export const settingsRoutes: RouteConfig[] = createRouteGroup({
     }),
     createProtectedRoute({
       path: "api",
-      lazy: () => import("../../pages/Settings/ApiPage"),
+      lazy: () => import("../../pages/Settings/api/ApiPage"),
       meta: {
         title: "API Access",
         breadcrumb: "API",
