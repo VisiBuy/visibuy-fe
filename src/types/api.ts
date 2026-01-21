@@ -132,7 +132,32 @@ export interface EscrowPaymentDto {
 
 /* Credits */
 export interface CreditBalanceDto { verificationCredits: number; premiumCredits: number; escrowCredits: number; }
-export interface TopupVerificationCreditsRequest { packageId: UUID; }
+export interface CreditPackageDto {
+  id: string;
+  credits: number;
+  amount: number;
+  currency: string;
+  description?: string;
+  isPopular?: boolean;
+}
+export interface CreditHistoryDto {
+  id: UUID;
+  userId: UUID;
+  packageId: string;
+  creditsAdded: number;
+  amount: number;
+  currency: string;
+  paymentReference: string;
+  paymentProvider: 'flutterwave' | 'paystack' | 'stripe' | 'internal';
+  status: 'PENDING' | 'COMPLETED' | 'FAILED';
+  createdAt: ISODateString;
+  completedAt?: ISODateString | null;
+}
+export interface TopupVerificationCreditsRequest { 
+  packageId: string;
+  method: 'card' | 'bank_transfer' | 'ussd' | 'mobile_money' | 'wallet';
+  provider: 'flutterwave' | 'paystack' | 'stripe' | 'internal';
+}
 
 /* Payments */
 export type PaymentProvider = 'flutterwave';

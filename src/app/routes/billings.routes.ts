@@ -3,6 +3,7 @@ import {
   createPermissionRoute,
   createLazyRoute,
   createRouteGroup,
+  createProtectedRoute,
 } from "./builders";
 import { ROUTES } from "./constants";
 
@@ -13,14 +14,14 @@ export const billingsRoutes: RouteConfig[] = createRouteGroup({
   basePath: ROUTES.BILLLING.ROOT,
 
   children: [
-    createPermissionRoute({
+    createProtectedRoute({
       path: "",
-      requiredPermissions: ["users.read"],
-      lazy: () => import("../../pages/Verifications/CreateVerification"),
+      // requiredPermissions: ["billings.read"],
+      lazy: () => import("../../pages/Billing&Credit/Billing&Credit"),
       meta: {
-        title: "Users",
+        title: "Billing & Credit",
         showInNav: true,
-        icon: "users",
+        icon: "credit-card",
       },
     }),
   ],
