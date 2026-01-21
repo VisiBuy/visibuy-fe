@@ -11,9 +11,9 @@ import {
 const TransactionHistory = () => {
   const { data: history = [], isLoading, error } = useGetCreditHistoryQuery();
 
-  console.log("error", error);
-  console.log("history", history);
-  console.log("isloading", isLoading);
+  // console.log("error", error);
+  // console.log("history", history);
+  // console.log("isloading", isLoading);
   // console.log("data", data);
 
   const getStatusColor = (status: string) => {
