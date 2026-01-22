@@ -1,27 +1,81 @@
-import React from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import App from "./App";
-import LoginPage from "../pages/Auth/LoginPage";
-import DashboardPage from "../pages/Dashboard/DashboardPage";
-import UsersPage from "../pages/Users/UsersPage";
-import Error401 from "../pages/ErrorPages/401";
+import { allRoutes, toRouteObjects } from "./routes";
+import { ROUTES } from "./routes/constants";
+import UsersPage from "@/pages/Verifications/CreateVerification";
+import { ProtectedLayout } from "../shared/layout/ProtectedLayout";
+import { AppLayout } from "../shared/layout/AppLayout";
 import { ProtectedRoute } from "../shared/components/ProtectedRoute";
 
+/**
+ * Main application router
+ *
+ * Combines auto-generated routes from src/app/routes
+ * and manual routes for Settings and error pages.
+ */
 export const router = createBrowserRouter([
   {
     element: <App />,
     children: [
-      { path: "/login", element: <LoginPage /> },
+      ...toRouteObjects(
+        allRoutes.filter((route) => {
+          const path = route.path;
+          return (
+            path === "/login" ||
+            path.startsWith("/error") ||
+            path.startsWith("/forgot-password") ||
+            path.startsWith("/reset-password") ||
+            path.startsWith("/signup") ||
+            path === ROUTES.AUTH.SOFT_KYC ||
+            path === ROUTES.AUTH.EMAIL_VERIFICATION_SUCCESS
+          );
+        })
+      ),
       {
-        element: <ProtectedRoute />,
-        children: [{ index: true, element: <DashboardPage /> }],
+        path: ROUTES.SELLER.PUBLIC + "/:id",
+        lazy: async () => {
+          const module = await import("../pages/SellerProfile/sellerPublicProfile");
+          const Component = module.default;
+          return {
+            Component: () => (
+              <AppLayout showSidebar={false}>
+                <Component />
+              </AppLayout>
+            ),
+          } as any;
+        },
       },
+
+      // Protected routes with sidebar layout
       {
-        element: <ProtectedRoute requiredPermissions={["VIEW_USERS"]} />,
-        children: [{ path: "/users", element: <UsersPage /> }],
+        element: <ProtectedLayout />,
+        children: [
+          ...toRouteObjects(
+            allRoutes.filter((route) => {
+              const path = route.path;
+              return (
+                path !== "/login" &&
+                !path.startsWith("/error") &&
+                !path.startsWith("/forgot-password") &&
+                !path.startsWith("/reset-password") &&
+                !path.startsWith("/signup")
+              );
+            })
+          ),
+        ],
       },
-      { path: "/error/401", element: <Error401 /> },
-      { path: "*", element: <Navigate to="/" replace /> },
+
+      // Root redirect
+      {
+        path: "/",
+        element: <Navigate to={ROUTES.DASHBOARD} replace />,
+      },
+
+      // 404 catch-all
+      {
+        path: "*",
+        element: <Navigate to={ROUTES.ERROR.NOT_FOUND} replace />,
+      },
     ],
   },
 ]);

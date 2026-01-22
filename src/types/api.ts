@@ -26,6 +26,12 @@ export type ApiResult<T> = ApiSuccess<T> | ApiError;
 export interface LoginRequest { email: string; password: string; }
 export interface RegisterRequest { name: string; email: string; password: string; phone?: string; address?: string; }
 
+export  interface RegisterCredentials {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+}
 export interface AuthUser {
   id: UUID;
   name: string;
@@ -66,6 +72,8 @@ export interface MediaItemDto {
   url: string;
   type: 'image' | 'video';
   thumbnailUrl?: string;
+  uploadedAt?: string;   
+  duration?: number;
 }
 
 export interface VerificationDto {
@@ -79,6 +87,11 @@ export interface VerificationDto {
   media: MediaItemDto[];
   createdAt: ISODateString;
   expiresAt?: ISODateString | null;
+}
+
+export interface ProductCardProps {
+  verification: VerificationDto;
+  onClick?: () => void;
 }
 
 export interface CreateVerificationRequest {
@@ -120,7 +133,32 @@ export interface EscrowPaymentDto {
 
 /* Credits */
 export interface CreditBalanceDto { verificationCredits: number; premiumCredits: number; escrowCredits: number; }
-export interface TopupVerificationCreditsRequest { packageId: UUID; }
+export interface CreditPackageDto {
+  id: string;
+  credits: number;
+  amount: number;
+  currency: string;
+  description?: string;
+  isPopular?: boolean;
+}
+export interface CreditHistoryDto {
+  id: UUID;
+  userId: UUID;
+  packageId: string;
+  creditsAdded: number;
+  amount: number;
+  currency: string;
+  paymentReference: string;
+  paymentProvider: 'flutterwave' | 'paystack' | 'stripe' | 'internal';
+  status: 'PENDING' | 'COMPLETED' | 'FAILED';
+  createdAt: ISODateString;
+  completedAt?: ISODateString | null;
+}
+export interface TopupVerificationCreditsRequest { 
+  packageId: string;
+  method: 'card' | 'bank_transfer' | 'ussd' | 'mobile_money' | 'wallet';
+  provider: 'flutterwave' | 'paystack' | 'stripe' | 'internal';
+}
 
 /* Payments */
 export type PaymentProvider = 'flutterwave';
@@ -155,6 +193,7 @@ export interface PayoutAccountDto {
   bankName: string;
   accountNumber: string;
   accountName: string;
+  bankCode?: number;
   isDefault: boolean;
   createdAt: ISODateString;
 }
@@ -166,3 +205,80 @@ export interface ValidationErrorResponse {
   message: string | string[] | ValidationErrorItem[];
   error: string;
 }
+/* Seller Profile*/
+export interface sellerProfileDto {
+  id ?: UUID,
+  name :  string,
+  phone : string,
+  email ?: string,
+  kycStatus ?: string;
+  mfaEnabled ?: boolean,
+  createdAt ?: string,
+  trustScore ?: number,
+  badges ?: {
+    verifiedSeller : boolean,
+    trustedBuyer: boolean,
+    premiumMember: boolean,
+    earlyAdopter: boolean
+  },
+  lastLoginAt ?:  string,
+  updatedAt ?:  string,
+  address ?: string,
+  profileImage ?: string,
+  totalCompletedVerification ? : number,
+  approvalRatePercentage ? : number,
+  totalVerifications ? : number
+
+}
+
+//Notification Preferences
+export interface ToggleSwitchProps {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  label: string;
+  description: string;
+  disabled?: boolean;
+}
+
+export type EGlobalSettingsMap = Record<string, Record<string, boolean>>;
+export interface EmailNotificationProps {
+allPreferences: PreferenceDto[];
+localSettings: EGlobalSettingsMap; 
+setChannelSetting: (eventType: string, channelName: string, enabled: boolean) => void;
+}
+
+export type SGlobalSettingsMap = Record<string, Record<string, boolean>>;
+
+export interface SMSNotificationProps {
+  allPreferences: PreferenceDto[];
+  localSettings: SGlobalSettingsMap; 
+  setChannelSetting: (eventType: string, channelName: string, enabled: boolean) => void; 
+}
+
+export type WGlobalSettingsMap = Record<string, Record<string, boolean>>;
+
+export interface WhatsappNotificationProps {
+    allPreferences: PreferenceDto[];
+    localSettings: WGlobalSettingsMap; 
+    setChannelSetting: (eventType: string, channelName: string, enabled: boolean) => void; 
+}
+
+
+export interface ChannelDto {
+  channel: string;
+  isEnabled: boolean;
+  metadata?: null; 
+  isAvailable?: boolean;
+}
+
+export interface PreferenceDto {
+  eventType: string;
+  channels: ChannelDto[];
+}
+
+export interface NotificationPreferencesResponse {
+  preferences: PreferenceDto[];
+  userId: string
+}
+
+
