@@ -193,7 +193,7 @@ const SignupScreen = () => {
               name="email"
               label={
                 <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Organization Email *
+                  Email *
                 </span>
               }
               rules={[

@@ -18,18 +18,21 @@ export default function DashboardPage() {
 
   // Calculate stats from verifications
   const totalVerifications = verificationsData?.total || stats?.total || 0;
+
   const activeVerifications =
     verificationsData?.items?.filter(
       (v) => v.status === "approved" || v.status === "pending"
     ).length ||
     stats?.totalOrders ||
     0;
+
   const trustScore = user?.trustScore || 0;
 
   return (
-    <PageWrapper isScrollable={false}>
+    <PageWrapper isScrollable={true}>
       <div className="w-full">
-        <div className="flex flex-col -mt-[60px] md:-mt-[50px] relative z-[100]">
+        {/* Instead of negative margin, just give a normal top padding */}
+        <div className="flex flex-col pt-space-24 md:pt-space-32 relative z-[100]">
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-space-16 md:gap-space-20 mb-space-24 md:mb-space-32">
             <StatsCard
@@ -56,10 +59,10 @@ export default function DashboardPage() {
             />
           </div>
 
-          {/* Recent Verifications - Overlapping the header */}
-          <div className="relative mt-24 md:mt-32">
+          {/* Recent Verifications */}
+          {/* <div className="relative mb-space-24 md:mb-space-32">
             {verificationsLoading ? (
-              <div className="border border-neutral-300 rounded-card bg-neutral-white shadow-card p-card-md animate-pulse -mt-[60px] md:-mt-[70px] relative z-[100]">
+              <div className="border border-neutral-300 rounded-card bg-neutral-white shadow-card p-card-md animate-pulse">
                 <div className="h-8 bg-neutral-200 rounded mb-space-16"></div>
                 <div className="space-y-space-12">
                   {[...Array(3)].map((_, i) => (
@@ -72,11 +75,28 @@ export default function DashboardPage() {
                 verifications={verificationsData?.items?.slice(0, 3) || []}
               />
             )}
-          </div>
+          </div> */}
 
-          {/* Quick Actions */}
-          <div className="mt-space-16 md:mt-space-24">
+          {/* Quick Actions – now always below RecentVerifications */}
+          <div className="mt-space-8 md:mt-space-12 pb-space-24">
             <QuickActions />
+          </div>
+          {/* Recent Verifications */}
+          <div className="relative mb-space-24 md:mb-space-32">
+            {verificationsLoading ? (
+              <div className="border border-neutral-300 rounded-card bg-neutral-white shadow-card p-card-md animate-pulse">
+                <div className="h-8 bg-neutral-200 rounded mb-space-16"></div>
+                <div className="space-y-space-12">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="h-20 bg-neutral-200 rounded"></div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <RecentVerifications
+                verifications={verificationsData?.items?.slice(0, 3) || []}
+              />
+            )}
           </div>
         </div>
       </div>

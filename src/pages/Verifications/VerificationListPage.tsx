@@ -43,8 +43,8 @@ export default function VerificationsListPage() {
     Array.isArray(filteredVerifications) && filteredVerifications.length > 0;
 
   return (
-    <PageWrapper isScrollable={false}>
-      <div className="relative -mt-[60px] md:-mt-[50px] z-[100]">
+    <PageWrapper isScrollable={true}>
+      <div className="relative z-[100]">
         {/* Overlapping section positioned absolutely to escape overflow context */}
         <section className="border border-neutral-300 rounded-card bg-neutral-white shadow-card w-full relative z-[100]">
           <div className="p-card-md md:p-card-md overflow-x-auto">
@@ -104,15 +104,14 @@ export default function VerificationsListPage() {
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-space-8">
-                    {filteredVerifications.map(
-                      (verification: VerificationDto) => (
-                        <ProductCard
-                          key={verification.id}
-                          verification={verification}
-                        />
-                      )
-                    )}
+<div className="space-y-space-8">
+  {filteredVerifications.map((verification: VerificationDto) => (
+    <ProductCard
+      key={verification.id}
+      verification={verification}
+      onClick={() => navigate(`/verifications/${verification.id}`)}
+    />
+  ))}
                   </div>
                 )}
               </div>
