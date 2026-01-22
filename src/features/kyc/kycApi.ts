@@ -31,13 +31,25 @@ export interface CompleteSoftKycResponse {
   phoneVerified?: boolean;
 }
 
+/** 🔹 Full KYC submit types */
+export type SubmitFullKycRequest = FormData;
+
+export interface SubmitFullKycResponse {
+  message?: string;
+  success?: boolean;
+}
+
 export const kycApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getKycStatus: build.query<KycStatusResponse, void>({
       query: () => '/kyc/status',
       providesTags: ['Kyc'],
     }),
-    initiateSoftKyc: build.mutation<InitiateSoftKycResponse, InitiateSoftKycRequest>({
+
+    initiateSoftKyc: build.mutation<
+      InitiateSoftKycResponse,
+      InitiateSoftKycRequest
+    >({
       query: (body) => ({
         url: '/kyc/soft/initiate',
         method: 'POST',
@@ -45,9 +57,26 @@ export const kycApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Kyc'],
     }),
-    completeSoftKyc: build.mutation<CompleteSoftKycResponse, CompleteSoftKycRequest>({
+
+    completeSoftKyc: build.mutation<
+      CompleteSoftKycResponse,
+      CompleteSoftKycRequest
+    >({
       query: (body) => ({
         url: '/kyc/soft/complete',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Kyc'],
+    }),
+
+    /** 🔹 New: Full KYC submit */
+    submitFullKyc: build.mutation<
+      SubmitFullKycResponse,
+      SubmitFullKycRequest
+    >({
+      query: (body) => ({
+        url: '/kyc/full/submit',
         method: 'POST',
         body,
       }),
@@ -61,5 +90,5 @@ export const {
   useGetKycStatusQuery,
   useInitiateSoftKycMutation,
   useCompleteSoftKycMutation,
+  useSubmitFullKycMutation, // 🔹 exported hook
 } = kycApi;
-
