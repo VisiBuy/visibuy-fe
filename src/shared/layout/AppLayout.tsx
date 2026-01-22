@@ -37,9 +37,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children, showSidebar = tr
       <div className="flex flex-col h-screen bg-neutral-100">
         {/* FULL-WIDTH BLACK TOP BANNER */}
         <div className="w-full bg-neutral-black text-neutral-white text-body-small px-space-24 py-space-8 text-center shrink-0">
-          We just released the referral code feature on our dashboard →{" "}
+          {/* We just released the referral code feature on our dashboard →{" "} */}
           <span className="text-primary-blue underline cursor-pointer hover:text-primary-blue/80 transition-standard">
-            To earn delivery point, Try it out.
+            {/* To earn delivery point, Try it out. */}
           </span>
         </div>
 
