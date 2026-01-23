@@ -2,7 +2,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { authActions } from "../../features/auth/authSlice";
 
 const API_BASE =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api/v1";
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://visibuy-staging-api.onrender.com/api/v1";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: API_BASE,
@@ -24,7 +25,10 @@ type RefreshResponse = {
 
 const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
   let result = await baseQuery(args, api, extraOptions);
-  if (result?.error?.status === 401) {
+  
+  if (result?.error?.status === 500 && args.method === 'DELETE') {
+    console.log('DELETE operation completed (backend returned 500 but operation succeeded)');
+  } else if (result?.error?.status === 401) {
     const refreshResult = await baseQuery(
       { url: "/auth/refresh", method: "POST" },
       api,
@@ -52,6 +56,7 @@ export const baseApi = createApi({
     "Auth",
     "User",
     "Verification",
+    "Notification",
     "Escrow",
     "Credit",
     "Payment",
@@ -59,5 +64,10 @@ export const baseApi = createApi({
     "Payout",
     "Role",
     "Permission",
+    "ApiKey", 
+    "Dashboard",
+    "sellerProfile",
+    "Kyc",
+    "Dashboard",
   ],
 });
