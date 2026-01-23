@@ -26,8 +26,6 @@ interface UploadBoxProps {
 
 /* ============================================================
                      UPLOAD BOX
-                     UPLOAD BOX
-
 ============================================================ */
 function UploadBox({
   label,
