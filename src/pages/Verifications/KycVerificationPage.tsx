@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, X } from "lucide-react";
 import DocumentIcon from "../../assets/icons/line-md_document.svg";
+import { toast } from "react-hot-toast";
+import { useSubmitFullKycMutation } from "@/features/kyc/kycApi"; // ✅ make sure this path is correct
 
 interface FileState {
   file?: File | null;
@@ -23,7 +25,11 @@ interface UploadBoxProps {
 }
 
 /* ============================================================
+<<<<<<< HEAD
+                     UPLOAD BOX
+=======
                        UPLOAD BOX
+>>>>>>> staging
 ============================================================ */
 function UploadBox({
   label,
@@ -48,11 +54,8 @@ function UploadBox({
           cursor-pointer
           transition text-center relative
           flex flex-col items-center justify-center
-
-          /* 🔥 Slightly faint cell styling */
           bg-[#FAFAFA]
           border ${error ? "border-red-500" : "border-[#ECECEC] hover:border-[#D5D5D5]"}
-
           h-[150px] md:h-[160px] lg:h-[170px]
         `}
       >
@@ -92,7 +95,14 @@ function UploadBox({
           <div className="flex flex-col items-center">
             <div className="relative w-14 h-14 mb-2">
               <svg className="w-full h-full">
-                <circle cx="28" cy="28" r="24" stroke="#E5E7EB" strokeWidth="4" fill="none" />
+                <circle
+                  cx="28"
+                  cy="28"
+                  r="24"
+                  stroke="#E5E7EB"
+                  strokeWidth="4"
+                  fill="none"
+                />
                 <circle
                   cx="28"
                   cy="28"
@@ -120,18 +130,19 @@ function UploadBox({
               alt="uploaded"
               className="w-10 h-10 mx-auto opacity-70 mb-2"
             />
-
             <p className="text-[13px] font-medium">{state.file?.name}</p>
             <p className="text-[12px] text-gray-500 mb-2">Upload completed</p>
 
             <div className="flex gap-3">
               <button
+                type="button"
                 onClick={onView}
                 className="text-[13px] px-4 py-[6px] rounded-md border border-[#ECECEC] bg-gray-50"
               >
                 View
               </button>
               <button
+                type="button"
                 onClick={onEdit}
                 className="text-[13px] px-4 py-[6px] rounded-md border border-[#ECECEC] bg-gray-50"
               >
@@ -150,10 +161,13 @@ function UploadBox({
 }
 
 /* ============================================================
-                       MAIN PAGE
+                     MAIN PAGE
 ============================================================ */
 export default function KycVerificationPage() {
   const navigate = useNavigate();
+
+  const [fullName, setFullName] = useState("");
+  const [bvnOrNin, setBvnOrNin] = useState("");
 
   const [validId, setValidId] = useState<FileState>({
     uploading: false,
@@ -176,7 +190,9 @@ export default function KycVerificationPage() {
 
   const [previewFile, setPreviewFile] = useState<string | null>(null);
 
-  /* Upload Simulation */
+  const [submitFullKyc, { isLoading: isSubmitting }] = useSubmitFullKycMutation();
+
+  /* Upload Simulation (only UI – file is still stored in state.file) */
   const simulateUpload = (
     file: File | null,
     setState: React.Dispatch<React.SetStateAction<FileState>>
@@ -219,9 +235,52 @@ export default function KycVerificationPage() {
     }, 150);
   };
 
+  const handleSubmit = async () => {
+    // 🛡 Basic validation
+    if (!fullName.trim()) {
+      toast.error("Please enter your full name.");
+      return;
+    }
+    if (!bvnOrNin.trim()) {
+      toast.error("Please enter your BVN or NIN.");
+      return;
+    }
+    if (!validId.file) {
+      toast.error("Please upload a valid ID.");
+      return;
+    }
+    if (!selfie.file) {
+      toast.error("Please upload a selfie.");
+      return;
+    }
+
+    try {
+      // ✅ Build FormData to match submitFullKyc (FormData)
+      const formData = new FormData();
+      formData.append("fullName", fullName.trim());
+      formData.append("nin", bvnOrNin.trim());  // Future todo: differentiate BVN vs NIN
+      formData.append("validId", validId.file as File);
+      if (cacDoc.file) {
+        formData.append("cacDocument", cacDoc.file as File);
+      }
+      formData.append("selfie", selfie.file as File);
+
+      await submitFullKyc(formData).unwrap();
+
+      toast.success("KYC submitted successfully!");
+      navigate("/verifications/kyc/success");
+    } catch (error: any) {
+      console.error("Full KYC submission failed:", error);
+      toast.error(
+        error?.data?.message?.[0] ||
+          error?.data?.message ||
+          "Failed to submit KYC. Please try again."
+      );
+    }
+  };
+
   return (
     <div className="min-h-screen w-full bg-[#F8F9FB] flex justify-center px-4 md:px-6 lg:px-8 py-10">
-
       {/* OUTER CONTAINER */}
       <div
         className="
@@ -236,6 +295,7 @@ export default function KycVerificationPage() {
         {/* HEADER */}
         <div className="flex items-center gap-3 mb-6 md:mb-10">
           <button
+            type="button"
             onClick={() => navigate(-1)}
             className="p-2 rounded-full hover:bg-gray-200 transition"
           >
@@ -256,17 +316,15 @@ export default function KycVerificationPage() {
             shadow-sm 
             space-y-6 
             border border-gray-100 
-
             md:px-8 md:py-8
             lg:px-10 lg:py-10
             xl:px-12 xl:py-12
-
             max-w-[760px]
             xl:max-w-[820px]
             mx-auto
           "
         >
-          {/* INPUT FIELD TEMPLATE */}
+          {/* Full Name */}
           <div className="space-y-2">
             <label className="text-[14px] md:text-[15px] font-medium">
               Full Name <span className="text-red-500">*</span>
@@ -274,6 +332,8 @@ export default function KycVerificationPage() {
             <input
               type="text"
               placeholder="Enter full name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
               className="
                 w-full px-4 py-3 text-[14px] rounded-xl
                 bg-[#FAFAFA] 
@@ -284,7 +344,7 @@ export default function KycVerificationPage() {
             />
           </div>
 
-          {/* BVN */}
+          {/* BVN / NIN */}
           <div className="space-y-2">
             <label className="text-[14px] md:text-[15px] font-medium">
               BVN / NIN <span className="text-red-500">*</span>
@@ -292,6 +352,8 @@ export default function KycVerificationPage() {
             <input
               type="text"
               placeholder="Enter BVN or NIN"
+              value={bvnOrNin}
+              onChange={(e) => setBvnOrNin(e.target.value)}
               className="
                 w-full px-4 py-3 text-[14px] rounded-xl
                 bg-[#FAFAFA] 
@@ -302,14 +364,20 @@ export default function KycVerificationPage() {
             />
           </div>
 
-          {/* UPLOAD BOXES */}
+          {/* Upload Boxes */}
           <UploadBox
             label="Valid ID Upload"
             description="Upload your NIN slip / Driver’s license / Passport here."
             state={validId}
             onFileSelect={(f) => simulateUpload(f, setValidId)}
             onEdit={() =>
-              setValidId({ uploading: false, progress: 0, uploaded: false, error: null })
+              setValidId({
+                uploading: false,
+                progress: 0,
+                uploaded: false,
+                error: null,
+                file: null,
+              })
             }
             onView={() =>
               setPreviewFile(validId.file ? URL.createObjectURL(validId.file) : null)
@@ -318,11 +386,17 @@ export default function KycVerificationPage() {
 
           <UploadBox
             label="CAC Document"
-            description="Upload file here or browse"
+            description="Upload file here or browse (optional)"
             state={cacDoc}
             onFileSelect={(f) => simulateUpload(f, setCacDoc)}
             onEdit={() =>
-              setCacDoc({ uploading: false, progress: 0, uploaded: false, error: null })
+              setCacDoc({
+                uploading: false,
+                progress: 0,
+                uploaded: false,
+                error: null,
+                file: null,
+              })
             }
             onView={() =>
               setPreviewFile(cacDoc.file ? URL.createObjectURL(cacDoc.file) : null)
@@ -335,31 +409,41 @@ export default function KycVerificationPage() {
             state={selfie}
             onFileSelect={(f) => simulateUpload(f, setSelfie)}
             onEdit={() =>
-              setSelfie({ uploading: false, progress: 0, uploaded: false, error: null })
+              setSelfie({
+                uploading: false,
+                progress: 0,
+                uploaded: false,
+                error: null,
+                file: null,
+              })
             }
             onView={() =>
               setPreviewFile(selfie.file ? URL.createObjectURL(selfie.file) : null)
             }
           />
 
-          {/* SUBMIT */}
+          {/* Submit */}
           <button
-            onClick={() => navigate("/verifications/kyc/success")}
+            type="button"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
             className="
               w-full bg-[#001021] text-white py-3 rounded-xl 
               text-[15px] font-medium mt-4 hover:bg-[#001a33]
+              disabled:opacity-60 disabled:cursor-not-allowed
             "
           >
-            Submit
+            {isSubmitting ? "Submitting..." : "Submit"}
           </button>
         </div>
       </div>
 
-      {/* PREVIEW */}
+      {/* Preview Modal */}
       {previewFile && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] px-4">
           <div className="bg-white rounded-xl p-4 max-w-[90%] max-h-[90%] relative">
             <button
+              type="button"
               onClick={() => setPreviewFile(null)}
               className="absolute top-3 right-3 p-1 bg-gray-200 rounded-full"
             >
