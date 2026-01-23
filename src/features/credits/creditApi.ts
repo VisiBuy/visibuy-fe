@@ -10,7 +10,7 @@ import type {
 const creditApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getCreditPackages: build.query<CreditPackageDto[], void>({
-      query: () => "/verification-credits/packages",
+      query: () => "/credits/pricing",
       transformResponse: (response: ApiResult<CreditPackageDto[]>) => {
         return response.success ? response.data : [];
       },
