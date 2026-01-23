@@ -91,6 +91,7 @@ export interface VerificationDto {
 
 export interface ProductCardProps {
   verification: VerificationDto;
+  onClick?: () => void;
 }
 
 export interface CreateVerificationRequest {

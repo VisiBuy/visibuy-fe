@@ -48,7 +48,7 @@ export default function SecurityPage(): JSX.Element {
           <div className='w-full'>
             <ChangePassword />
             <TwoFactorAuth />
-            <RecentLoginActivity />
+            {/* <RecentLoginActivity /> */}
           </div>
         </main>
       </div>

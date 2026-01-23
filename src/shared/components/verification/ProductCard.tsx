@@ -4,7 +4,7 @@ import { ProductCardProps } from "@/types/api";
 import { Copy, Check } from "lucide-react";
 import { toast } from "react-hot-toast";
 
-export default function ProductCard({ verification }: ProductCardProps) {
+export default function ProductCard({ verification, onClick }: ProductCardProps) {
   const [copied, setCopied] = useState(false);
 
   const getStatusColor = (status: string) => {
@@ -28,7 +28,7 @@ export default function ProductCard({ verification }: ProductCardProps) {
   const imageUrl = imageMedia?.thumbnailUrl || imageMedia?.url;
 
   // Generate verification link
-  const verificationLink = `${window.location.origin}/verify/${verification.publicToken}`;
+  const verificationLink = `https://verify.visibuy.com.ng/v/${verification.publicToken}`;
 
   // Format verification code (e.g., "VB-2024-001" from publicToken)
   const formatVerificationCode = (publicToken: string): string => {
@@ -52,7 +52,15 @@ export default function ProductCard({ verification }: ProductCardProps) {
   };
 
   return (
-    <div className="border border-neutral-300 p-card-md rounded-card bg-neutral-white shadow-card">
+    <div onClick={onClick}
+    className="border border-neutral-300 p-card-md rounded-card bg-neutral-white shadow-card cursor-pointer"
+    role="button"
+    tabIndex={0}
+    onKeyDown={(e) => {
+      if ((e.key === "Enter" || e.key === " ") && onClick) {
+        onClick();
+      }
+    }}>
       <div className="space-y-space-16">
         {/* Top Row: Image, Product Details, Price/Date */}
         <div className="flex items-center justify-between gap-space-16">
@@ -130,16 +138,19 @@ export default function ProductCard({ verification }: ProductCardProps) {
                 className="flex-1 bg-transparent outline-none text-caption text-neutral-700 truncate"
               />
               <button
-                onClick={handleCopyLink}
-                className="flex-shrink-0 p-space-4 hover:bg-neutral-200 rounded-input transition-standard min-h-tap-target min-w-tap-target flex items-center justify-center"
-                title="Copy verification link"
-              >
-                {copied ? (
-                  <Check className="w-4 h-4 text-primary-green" />
-                ) : (
-                  <Copy className="w-4 h-4 text-neutral-600" />
-                )}
-              </button>
+  onClick={(e) => {
+    e.stopPropagation(); // 🚫 Prevent card click from firing
+    handleCopyLink();
+  }}
+  className="flex-shrink-0 p-space-4 hover:bg-neutral-200 rounded-input transition-standard min-h-tap-target min-w-tap-target flex items-center justify-center"
+  title="Copy verification link"
+>
+  {copied ? (
+    <Check className="w-4 h-4 text-primary-green" />
+  ) : (
+    <Copy className="w-4 h-4 text-neutral-600" />
+  )}
+</button>
             </div>
           </div>
 
