@@ -149,7 +149,7 @@ const SignupScreen = () => {
               Create your account.
             </h2>
             <p className="text-gray-600 text-sm font-[400] animate-pulse-slow">
-              Shop with certainty using VisiBuy.
+              Sell with confidence using VisiBuy.
             </p>
           </div>
 
@@ -199,7 +199,7 @@ const SignupScreen = () => {
               rules={[
                 {
                   required: true,
-                  message: "Please input your organization email!",
+                  message: "Please input your email!",
                 },
                 {
                   type: "email",
@@ -211,7 +211,7 @@ const SignupScreen = () => {
                 suffix={
                   <MailOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
                 }
-                placeholder="Enter your organization email"
+                placeholder="Enter your email"
                 className="rounded-lg transition-all h-[51px] duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isLoading}
               />
@@ -335,11 +335,11 @@ const SignupScreen = () => {
             >
               <Checkbox>
                 I agree to the{" "}
-                <Link to="/terms" className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300">
+                <Link to="https://visibuy.com.ng/terms" className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300">
                   Terms of Service
                 </Link>{" "}
                 and{" "}
-                <Link to="/privacy" className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300">
+                <Link to="https://visibuy.com.ng/privacy" className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300">
                   Privacy Policy
                 </Link>
                 .
