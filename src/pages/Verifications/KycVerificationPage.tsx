@@ -25,11 +25,7 @@ interface UploadBoxProps {
 }
 
 /* ============================================================
-<<<<<<< HEAD
                      UPLOAD BOX
-=======
-                       UPLOAD BOX
->>>>>>> staging
 ============================================================ */
 function UploadBox({
   label,
