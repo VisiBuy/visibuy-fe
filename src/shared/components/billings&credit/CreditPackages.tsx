@@ -134,7 +134,7 @@ const CreditPackages = () => {
         setPaymentStatus("idle");
         setPaymentMessage("");
       } else {
-        throw new Error("Invalid payment response from server");
+        throw new Error("Invalid payment response");
       }
     } catch (error: any) {
       console.error("[CreditPackages] topup error:", error);
