@@ -14,8 +14,13 @@ export default function CreateVerificationPage() {
   const [showError, setShowError] = useState(false);
   const [verificationLink, setVerificationLink] = useState("");
   const [newVerificationId, setNewVerificationId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // 🔹 NEW
 
   const handleSubmit = async (data: CreateVerificationFormData) => {
+    // reset previous error state on new submit
+    setShowError(false);
+    setErrorMessage(null);
+
     try {
       const formData = new FormData();
 
@@ -47,8 +52,31 @@ export default function CreateVerificationPage() {
       setVerificationLink(`https://verify.visibuy.com.ng/v/${result.publicToken}`);
 
       setShowSuccess(true);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Verification failed:", err);
+
+      // 🔹 Try to extract a meaningful backend message
+      let message = "Something went wrong. Please check the details and try again.";
+
+      // RTK Query error shape (err.data comes from backend)
+      if (err?.data) {
+        const data = err.data as any;
+
+        if (Array.isArray(data?.message)) {
+          // e.g. NestJS validation errors: { message: ["...","..."] }
+          message = data.message.join(", ");
+        } else if (typeof data?.message === "string") {
+          message = data.message;
+        } else if (typeof data?.error === "string") {
+          // sometimes backend uses "error" instead of "message"
+          message = data.error;
+        }
+      } else if (typeof err?.message === "string") {
+        // fallback if we threw a plain Error(...)
+        message = err.message;
+      }
+
+      setErrorMessage(message);
       setShowError(true);
     }
   };
@@ -61,7 +89,6 @@ export default function CreateVerificationPage() {
       {showSuccess && (
         <div className="fixed inset-0 bg-neutral-black/50 flex items-center justify-center z-50 p-space-16">
           <div className="bg-neutral-white rounded-card p-space-32 max-w-md w-full text-center shadow-elevation-3 relative">
-
             <button
               onClick={() => setShowSuccess(false)}
               className="absolute top-4 right-4 p-2 hover:bg-neutral-100 rounded-full transition"
@@ -97,7 +124,6 @@ export default function CreateVerificationPage() {
               </button>
             </div>
 
-            {/* ✅ REAL NAVIGATION TO VERIFICATION DETAILS */}
             <button
               onClick={() => {
                 if (newVerificationId) {
@@ -129,7 +155,9 @@ export default function CreateVerificationPage() {
             </h2>
 
             <p className="text-body-medium text-neutral-600 mb-space-24">
-              Something went wrong. Please check the details and try again.
+              {errorMessage
+                ? errorMessage
+                : "Something went wrong. Please check the details and try again."}
             </p>
 
             <div className="flex gap-space-16 justify-center">
