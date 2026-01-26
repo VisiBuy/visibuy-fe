@@ -36,8 +36,10 @@ const FALLBACK_PACKAGES: CreditPackageDto[] = [
 ];
 
 const CreditPackages = () => {
-  const { data: apiPackages = [], isLoading: isLoadingPackages } =
-    useGetCreditPackagesQuery();
+  const {
+    data: apiPackages = [],
+    isLoading: isLoadingPackages,
+  } = useGetCreditPackagesQuery();
 
   // 👉 Use API packages if available, otherwise fallback
   const packages: CreditPackageDto[] =
@@ -68,7 +70,9 @@ const CreditPackages = () => {
   const ngnPerCredit = useMemo(() => {
     if (apiPackages.length > 0) {
       const first = apiPackages[0];
-      return first.amount / first.credits;
+      if (first.credits > 0) {
+        return first.amount / first.credits;
+      }
     }
     return 500; // fallback price per credit
   }, [apiPackages]);
@@ -100,7 +104,9 @@ const CreditPackages = () => {
   const handleInitiatePayment = async () => {
     if (!selectedPackage || selectedPackage.id.startsWith("fallback-")) {
       setPaymentStatus("error");
-      setPaymentMessage("This pricing is offline only. Select a real package when online.");
+      setPaymentMessage(
+        "This pricing is offline only. Select a real package when online."
+      );
       return;
     }
 
@@ -109,25 +115,35 @@ const CreditPackages = () => {
     setPaymentMessage("Initiating payment...");
 
     try {
+      // 🔹 Call the mutation – now returns TopupPaymentResponse directly
       const response = await topupCredits({
-        packageId: selectedPackageId,
-        method: "card",
+        packageId: selectedPackage.id,
+        method: "bank_transfer",
         provider: "flutterwave",
       }).unwrap();
 
-      if (response.success && response.data?.paymentUrl) {
-        setPaymentUrl(response.data.paymentUrl);
-        setPaymentReference(response.data.reference);
+      // console.log("[CreditPackages] topup response:", response);
+
+      const paymentUrl = response.paymentUrl;
+      const reference = response.reference;
+
+      if (paymentUrl && reference) {
+        setPaymentUrl(paymentUrl);
+        setPaymentReference(reference);
         setIsModalOpen(true);
         setPaymentStatus("idle");
+        setPaymentMessage("");
       } else {
-        throw new Error("Invalid payment response");
+        throw new Error("Invalid payment response from server");
       }
     } catch (error: any) {
+      console.error("[CreditPackages] topup error:", error);
+
+      const backendMessage =
+        error?.data?.message || error?.message || "Payment failed";
+
       setPaymentStatus(paymentAttempts >= 3 ? "error" : "retry");
-      setPaymentMessage(
-        error?.data?.message || error?.message || "Payment failed"
-      );
+      setPaymentMessage(backendMessage);
     }
   };
 
