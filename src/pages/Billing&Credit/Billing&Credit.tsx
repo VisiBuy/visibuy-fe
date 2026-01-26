@@ -1,60 +1,103 @@
 import { Menu } from "lucide-react";
-// import Sidebar from "./components/Sidebar";
+import { PageWrapper } from "@/shared/components/layout/PageWrapper";
+
 import BalanceCard from "@/shared/components/billings&credit/BalanceCard";
 import CreditPackages from "@/shared/components/billings&credit/CreditPackages";
 import TransactionHistory from "@/shared/components/billings&credit/TransactionHistory";
-import BottomNav from "@/shared/components/billings&credit/BottomNav";
-import { PageWrapper } from "@/shared/components/layout/PageWrapper";
+// import BottomNav from "@/shared/components/billings&credit/BottomNav";
+
+import {
+  useGetCreditBalanceQuery,
+  useGetCreditPackagesQuery,
+  useGetCreditHistoryQuery,
+  useTopupVerificationCreditsMutation,
+} from "@/features/credits/creditApi"; // 🔁 adjust path if different
+
+import type {
+  CreditBalanceDto,
+  CreditPackageDto,
+  CreditHistoryDto,
+  TopupVerificationCreditsRequest,
+} from "@/types/api";
 
 function BillingAndCredit() {
+  // 🔹 Fetch current balance
+  const {
+    data: balanceData,
+    isLoading: isBalanceLoading,
+    isError: isBalanceError,
+  } = useGetCreditBalanceQuery();
+
+  // 🔹 Fetch available packages
+  const {
+    data: packagesData = [],
+    isLoading: isPackagesLoading,
+    isError: isPackagesError,
+  } = useGetCreditPackagesQuery();
+
+  // 🔹 Fetch credit / transaction history
+  const {
+    data: historyData = [],
+    isLoading: isHistoryLoading,
+    isError: isHistoryError,
+  } = useGetCreditHistoryQuery();
+
+  // 🔹 Top-up mutation
+  const [topupVerificationCredits, { isLoading: isTopupLoading }] =
+    useTopupVerificationCreditsMutation();
+
+  // Handler to pass into CreditPackages
+  const handleTopup = async (payload: TopupVerificationCreditsRequest) => {
+    const res = await topupVerificationCredits(payload).unwrap();
+    // res: ApiResult<{ paymentUrl: string; reference: string }>
+    if (res.success && res.data?.paymentUrl) {
+      window.location.href = res.data.paymentUrl;
+    }
+    return res;
+  };
+
   return (
     <PageWrapper isScrollable={true}>
-      {/* <div className="min-h-screen bg-gray-50 flex font-['Inter']"> */}
-      {/* Main Content */}
-      <div className='flex-1 flex flex-col overflow-hidden relative'>
-        {/* Desktop Blue Header Background */}
-        {/* <div className='hidden md:block absolute top-0 left-0 right-0 h-64 bg-blue-600 z-0'></div> */}
+      <div className="flex-1 flex flex-col overflow-hidden relative">
+        {/* If you later want a blue header, you can re-enable it here */}
 
-        {/* Mobile Header */}
-        {/* <header className='bg-blue-600 text-white p-6 flex justify-between items-center md:hidden z-40 relative shadow-md'>
-          <button className='p-2'>
-            <Menu className='w-8 h-8' />
-          </button>
-          <h1 className='text-2xl font-bold'>Billing & Credits</h1>
-          {/* Placeholder for balance width 
-          <div className='w-10'></div>
-        </header> */}
-
-        {/* Scrollable Content Area */}
-        {/* overflow-y-auto */}
-        <main
-          className='flex-1 
-         z-10 relative'
-        >
-          <div className='pb-12 md:pb-12 max-w-7xl mx-auto space-y-4 md:space-y-6'>
+        <main className="flex-1 z-10 relative">
+          <div className="pb-12 md:pb-12 max-w-7xl mx-auto space-y-4 md:space-y-6">
             {/* Balance Section */}
-            <section
-            // className='mt-4 md:mt-8'
-            >
-              <BalanceCard />
+            <section>
+              <BalanceCard
+                balance={balanceData as CreditBalanceDto | undefined}
+                isLoading={isBalanceLoading}
+                isError={!!isBalanceError}
+              />
             </section>
 
-            {/* Content Stack */}
-            <div className='space-y-4 md:space-y-6'>
+            {/* Packages + History */}
+            <div className="space-y-4 md:space-y-6">
               <section>
-                <CreditPackages />
+                <CreditPackages
+                  packages={packagesData as CreditPackageDto[]}
+                  isLoading={isPackagesLoading}
+                  isError={!!isPackagesError}
+                  onTopup={handleTopup}
+                  isTopupLoading={isTopupLoading}
+                />
               </section>
+
               <section>
-                <TransactionHistory />
+                <TransactionHistory
+                  history={historyData as CreditHistoryDto[]}
+                  isLoading={isHistoryLoading}
+                  isError={!!isHistoryError}
+                />
               </section>
             </div>
           </div>
         </main>
 
-        {/* Bottom Nav - Mobile Only */}
+        {/* If you want bottom nav later */}
         {/* <BottomNav /> */}
       </div>
-      {/* </div> */}
     </PageWrapper>
   );
 }

@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Upload, X, CheckCircle } from "lucide-react";
@@ -5,6 +7,7 @@ import {
   createVerificationSchema,
   CreateVerificationFormData,
 } from "@/schemas/createVerificationSchema";
+import { useGetKycStatusQuery } from "@/features/kyc/kycApi";
 
 interface Props {
   onSubmit: (data: CreateVerificationFormData) => Promise<void>;
@@ -37,6 +40,20 @@ export const CreateVerificationForm: React.FC<Props> = ({
   const photos = watch("photos");
   const video = watch("video");
 
+  // 🔹 Fetch KYC status
+  const { data: kycStatus, isLoading: isKycLoading } = useGetKycStatusQuery();
+
+  // 🔹 Only FULL + APPROVED should be allowed to use escrow
+  const canUseEscrow =
+    kycStatus?.level === "full" && kycStatus?.status === "approved";
+
+  // If user is not allowed to use escrow, force it to false
+  useEffect(() => {
+    if (!canUseEscrow) {
+      setValue("enableEscrow", false, { shouldValidate: isSubmitted });
+    }
+  }, [canUseEscrow, setValue, isSubmitted]);
+
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     const remaining = 5 - photos.length;
@@ -58,9 +75,19 @@ export const CreateVerificationForm: React.FC<Props> = ({
     await onSubmit(data);
   };
 
+  const kycLabel = (() => {
+    if (isKycLoading) return "Checking KYC status...";
+    if (!kycStatus) return "KYC: Not available";
+    if (kycStatus.level === "none") return "KYC Level: None";
+    if (kycStatus.level === "soft") return "KYC Level: Soft";
+    if (kycStatus.level === "full") {
+      return `KYC Level: Full (${kycStatus.status})`;
+    }
+    return "KYC: Unknown";
+  })();
+
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-space-32">
-      
       {/* Title */}
       <div>
         <label className="block text-body-small font-medium text-neutral-700 mb-gap-label-input">
@@ -72,7 +99,9 @@ export const CreateVerificationForm: React.FC<Props> = ({
           className="w-full h-input px-space-16 py-space-12 rounded-input border border-neutral-300 focus:ring-2 focus:ring-primary-blue focus:border-primary-blue focus:outline-none text-body-medium font-secondary transition-standard"
         />
         {errors.title && (
-          <p className="text-danger text-body-small mt-space-8">{errors.title.message}</p>
+          <p className="text-danger text-body-small mt-space-8">
+            {errors.title.message}
+          </p>
         )}
       </div>
 
@@ -88,7 +117,9 @@ export const CreateVerificationForm: React.FC<Props> = ({
           className="w-full px-space-16 py-space-12 rounded-input border border-neutral-300 focus:ring-2 focus:ring-primary-blue focus:border-primary-blue focus:outline-none text-body-medium font-secondary transition-standard resize-none"
         />
         {errors.description && (
-          <p className="text-danger text-body-small mt-space-8">{errors.description.message}</p>
+          <p className="text-danger text-body-small mt-space-8">
+            {errors.description.message}
+          </p>
         )}
       </div>
 
@@ -104,7 +135,9 @@ export const CreateVerificationForm: React.FC<Props> = ({
           className="w-full h-input px-space-16 py-space-12 rounded-input border border-neutral-300 focus:ring-2 focus:ring-primary-blue focus:border-primary-blue focus:outline-none text-body-medium font-secondary transition-standard"
         />
         {errors.price && (
-          <p className="text-danger text-body-small mt-space-8">{errors.price.message}</p>
+          <p className="text-danger text-body-small mt-space-8">
+            {errors.price.message}
+          </p>
         )}
       </div>
 
@@ -192,7 +225,9 @@ export const CreateVerificationForm: React.FC<Props> = ({
                 All 5 photos uploaded — ready!
               </span>
             ) : (
-              <>You need <strong>{5 - photos.length} more</strong> photo(s)</>
+              <>
+                You need <strong>{5 - photos.length} more</strong> photo(s)
+              </>
             )}
           </p>
         </div>
@@ -247,16 +282,39 @@ export const CreateVerificationForm: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* Escrow */}
-      <div className="flex items-center gap-space-12">
-        <input
-          type="checkbox"
-          {...register("enableEscrow")}
-          className="w-5 h-5 text-primary-blue rounded"
-        />
-        <label className="text-body-medium font-medium text-neutral-700">
-          Enable Escrow Protection
-        </label>
+      {/* Escrow + KYC gating */}
+      <div className="space-y-space-8">
+        <div className="flex items-center gap-space-12">
+          <input
+            type="checkbox"
+            {...register("enableEscrow")}
+            className="w-5 h-5 text-primary-blue rounded disabled:opacity-40 disabled:cursor-not-allowed"
+            disabled={isKycLoading || !canUseEscrow}
+          />
+          <label className="text-body-medium font-medium text-neutral-700">
+            Enable Escrow Protection
+          </label>
+        </div>
+
+        {/* KYC State Display */}
+        <p className="text-caption text-neutral-600">
+          {kycLabel}
+        </p>
+
+        {/* If not allowed, show upgrade message */}
+        {!isKycLoading && !canUseEscrow && (
+          <p className="text-body-small text-danger font-medium">
+            You need to complete{" "}
+            <span className="font-semibold">Full KYC</span> to enable escrow
+            protection.{" "}
+            <Link
+              to="/verifications/kyc"
+              className="text-primary-blue underline underline-offset-2"
+            >
+              Upgrade to full KYC
+            </Link>
+          </p>
+        )}
       </div>
 
       {/* Submit */}
