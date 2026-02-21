@@ -71,6 +71,15 @@ const SignupScreen = () => {
         password: values.password,
       } as any).unwrap();
 
+      // 🔥 FIRE FB PIXEL EVENT HERE
+    if (window.fbq) {
+      window.fbq("track", "CompleteRegistration", {
+        value: 0.0,
+        currency: "USD",
+        content_name: "Visibuy Signup",
+      });
+}
+
       showSuccessNotification(values.name);
 
       setTimeout(() => {
