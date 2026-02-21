@@ -53,32 +53,35 @@ export default function CreateVerificationPage() {
 
       setShowSuccess(true);
     } catch (err: any) {
-      console.error("Verification failed:", err);
+  console.error("Verification failed:", err);
 
-      // 🔹 Try to extract a meaningful backend message
-      let message = "Something went wrong. Please check the details and try again.";
+  let message = "Something went wrong. Please check the details and try again.";
 
-      // RTK Query error shape (err.data comes from backend)
-      if (err?.data) {
-        const data = err.data as any;
+  // NEW: Handle network errors (server unreachable)
+  if (err?.status === "FETCH_ERROR") {
+    message =
+      "We couldn’t connect to the server. This looks like a network or server issue, not your form. Please check your internet or try again.";
+  }
+  // Handle backend error format
+  else if (err?.data) {
+    const data = err.data as any;
 
-        if (Array.isArray(data?.message)) {
-          // e.g. NestJS validation errors: { message: ["...","..."] }
-          message = data.message.join(", ");
-        } else if (typeof data?.message === "string") {
-          message = data.message;
-        } else if (typeof data?.error === "string") {
-          // sometimes backend uses "error" instead of "message"
-          message = data.error;
-        }
-      } else if (typeof err?.message === "string") {
-        // fallback if we threw a plain Error(...)
-        message = err.message;
-      }
-
-      setErrorMessage(message);
-      setShowError(true);
+    if (Array.isArray(data?.message)) {
+      message = data.message.join(", ");
+    } else if (typeof data?.message === "string") {
+      message = data.message;
+    } else if (typeof data?.error === "string") {
+      message = data.error;
     }
+  }
+  // Handle generic JS errors
+  else if (typeof err?.message === "string") {
+    message = err.message;
+  }
+
+  setErrorMessage(message);
+  setShowError(true);
+}
   };
 
   return (
