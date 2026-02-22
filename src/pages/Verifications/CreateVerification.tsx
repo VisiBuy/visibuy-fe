@@ -20,6 +20,27 @@ export default function CreateVerificationPage() {
     // reset previous error state on new submit
     setShowError(false);
     setErrorMessage(null);
+    // 👉 FRONTEND UPLOAD LIMIT (e.g., 25 MB)
+const MAX_UPLOAD_MB = 25;
+const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
+
+// Calculate total size of photos + video
+const photosTotal = data.photos?.reduce((sum, file) => sum + file.size, 0) ?? 0;
+const videoSize = data.video ? data.video.size : 0;
+const totalBytes = photosTotal + videoSize;
+
+// Debug log for your dev tools
+console.log("Total upload size (MB):", (totalBytes / (1024 * 1024)).toFixed(2));
+
+if (totalBytes > MAX_UPLOAD_BYTES) {
+  setErrorMessage(
+    `Your photos and video are too large (${(
+      totalBytes / (1024 * 1024)
+    ).toFixed(1)} MB). Please keep total uploads under ${MAX_UPLOAD_MB} MB.`
+  );
+  setShowError(true);
+  return;
+}
 
     try {
       const formData = new FormData();
