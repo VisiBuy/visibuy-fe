@@ -49,7 +49,7 @@ export function DashboardTour({
       {
         id: "tour-trust-score",
         title: "Trust Score",
-        body: "Your trust score reflects how reliable your proofs are. Buyers can see this before they pay.",
+        body: "Your trust score grows with approved proofs and can be shown on your verification pages.",
       },
       {
         id: "tour-create-verification",

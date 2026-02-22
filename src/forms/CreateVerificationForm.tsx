@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,10 +39,26 @@ export const CreateVerificationForm: React.FC<Props> = ({
   const title = watch("title");
   const description = watch("description");
   const price = watch("price");
-  const enableEscrow = watch("enableEscrow");
+  // const enableEscrow = watch("enableEscrow");
 
   const photos = watch("photos");
   const video = watch("video");
+
+  // For calm “this is taking a bit longer” message
+const [showSlowMessage, setShowSlowMessage] = useState(false);
+
+useEffect(() => {
+  if (!isLoading) {
+    setShowSlowMessage(false);
+    return;
+  }
+
+  const timer = setTimeout(() => {
+    setShowSlowMessage(true);
+  }, 5000); // 5 seconds
+
+  return () => clearTimeout(timer);
+}, [isLoading]);
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -299,52 +315,34 @@ export const CreateVerificationForm: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* ✅ Escrow (subtle + optional, no gating) */}
-      <details className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md">
-        <summary className="cursor-pointer list-none flex items-center justify-between">
-          <div>
-            <div className="text-body-medium font-semibold text-neutral-900">
-              Optional: Escrow Protection
-            </div>
-            <div className="text-body-small text-neutral-600 mt-space-4">
-              Enable escrow if you want extra payment assurance for this transaction.
-            </div>
-          </div>
-          <span className="text-neutral-500 text-body-small">Toggle</span>
-        </summary>
+<div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md">
+  <div className="text-body-medium font-semibold text-neutral-900">
+    Escrow Protection (Limited rollout)
+  </div>
 
-        <div className="mt-space-16 space-y-space-12">
-          <div className="flex items-center gap-space-12">
-            <input
-              type="checkbox"
-              {...register("enableEscrow")}
-              className="w-5 h-5 text-primary-blue rounded"
-            />
-            <label className="text-body-medium font-medium text-neutral-700">
-              Enable Escrow for this verification
-            </label>
-          </div>
+  <p className="mt-space-8 text-body-small text-neutral-600">
+    Escrow lets buyers pay into a secure Visibuy account. Funds are only released
+    after delivery is confirmed on Visibuy.
+  </p>
 
-          {enableEscrow && (
-            <p className="text-body-small text-neutral-600">
-              Buyer pays into escrow and funds are released after delivery is confirmed.
-            </p>
-          )}
+  <p className="mt-space-12 text-body-small text-neutral-600">
+    We’re currently testing escrow with a small group of sellers while we refine
+    the experience.
+  </p>
 
-          <p className="text-caption text-neutral-500">
-            Learn more about escrow{" "}
-            <a
-  href="https://visibuy.com.ng/payment-terms"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="text-primary-blue underline underline-offset-2"
->
-  here
-</a>
-            .
-          </p>
-        </div>
-      </details>
+  <p className="mt-space-12 text-caption text-neutral-500">
+    Want early access? Learn more about how escrow works{" "}
+    <a
+      href="https://visibuy.com.ng/payment-terms"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-primary-blue underline underline-offset-2"
+    >
+      here
+    </a>{" "}
+    or contact support.
+  </p>
+</div>
 
       {/* ✅ Readiness (micro feedback loop) */}
       <div className="rounded-card border border-neutral-200 bg-neutral-white p-card-md">
@@ -397,6 +395,23 @@ export const CreateVerificationForm: React.FC<Props> = ({
       >
         {isLoading ? "Generating Link..." : "Generate Verification Link"}
       </button>
+      {isLoading && (
+  <div className="rounded-card border border-neutral-200 bg-neutral-white p-card-md mt-space-16 animate-fade-in">
+    <p className="text-body-small text-neutral-700">
+      We’re generating your verification link and securing your proof.
+    </p>
+
+    <p className="text-caption text-neutral-500 mt-space-8">
+      This may take a few seconds depending on your video and photo sizes.
+    </p>
+
+    {showSlowMessage && (
+      <p className="text-caption text-neutral-500 mt-space-12 animate-fade-in">
+        Still working — large medias can take a little longer. Thanks for your patience.
+      </p>
+    )}
+  </div>
+)}
 
       {/* Bottom Error */}
       {isSubmitted && (photos.length !== 5 || !video) && (
