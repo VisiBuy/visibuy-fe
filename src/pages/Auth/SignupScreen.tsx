@@ -248,7 +248,7 @@ const SignupScreen = () => {
                 suffix={
                   <PhoneOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
                 }
-                placeholder="Enter your phone number"
+                placeholder="e.g. +2348123456789"
                 className="rounded-lg transition-all h-[51px] duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isLoading}
               />
