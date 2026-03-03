@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Input, Button, message, Spin, notification, Checkbox } from "antd";
+import { Form, Input, Button, Spin, notification, Checkbox } from "antd";
 import {
   EyeInvisibleOutlined,
   EyeTwoTone,
@@ -21,6 +21,7 @@ const SignupScreen = () => {
   const [register, { isLoading }] = useRegisterMutation();
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const [phoneValue, setPhoneValue] = useState("+234"); // 👈 enforce +234
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -30,7 +31,7 @@ const SignupScreen = () => {
         <span className="font-semibold text-green-900">Welcome aboard!</span>
       ),
       description: `Welcome ${name}! Your account has been created successfully. Redirecting...`,
-      placement: 'topRight',
+      placement: "topRight",
       icon: <CheckCircleOutlined className="text-green-500" />,
       className: "custom-success-notification",
       style: {
@@ -49,7 +50,7 @@ const SignupScreen = () => {
         <span className="font-semibold text-red-900">Registration Failed</span>
       ),
       description: errorMessage,
-      placement: 'topRight',
+      placement: "topRight",
       icon: <CloseCircleOutlined className="text-red-500" />,
       className: "custom-error-notification",
       style: {
@@ -67,18 +68,18 @@ const SignupScreen = () => {
       await register({
         name: values.name,
         email: values.email,
-        phone: values.phone,
+        phone: values.phone, // 👈 already formatted as +234XXXXXXXXXX
         password: values.password,
       } as any).unwrap();
 
       // 🔥 FIRE FB PIXEL EVENT HERE
-    if (window.fbq) {
-      window.fbq("track", "CompleteRegistration", {
-        value: 0.0,
-        currency: "USD",
-        content_name: "Visibuy Signup",
-      });
-}
+      if (window.fbq) {
+        window.fbq("track", "CompleteRegistration", {
+          value: 0.0,
+          currency: "USD",
+          content_name: "Visibuy Signup",
+        });
+      }
 
       showSuccessNotification(values.name);
 
@@ -86,15 +87,15 @@ const SignupScreen = () => {
         navigate("/");
       }, 2000);
     } catch (err: any) {
-      let message = "Registration failed. Please try again.";
+      let errorMsg = "Registration failed. Please try again.";
       if (err?.data?.message) {
-        message = err.data.message;
+        errorMsg = err.data.message;
       } else if (err?.status === 409) {
-        message = "Account already exists. Try signing in instead?";
+        errorMsg = "Account already exists. Try signing in instead?";
       } else if (err?.status >= 500) {
-        message = "Server error. Please try again later.";
+        errorMsg = "Server error. Please try again later.";
       }
-      showErrorNotification(message);
+      showErrorNotification(errorMsg);
     }
   };
 
@@ -108,10 +109,31 @@ const SignupScreen = () => {
     />
   );
 
+  // 👇 phone change handler that enforces +234 and digits only
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let val = e.target.value;
+
+    // If user removes or changes prefix, restore it
+    if (!val.startsWith("+234")) {
+      // strip all non-digits and re-attach +234
+      const digitsOnly = val.replace(/\D/g, "");
+      val = "+234" + digitsOnly;
+    }
+
+    // Extract digits after +234 and enforce max 10 digits
+    const digitsAfterPrefix = val.replace("+234", "").replace(/\D/g, "");
+    const limitedDigits = digitsAfterPrefix.slice(0, 10);
+
+    const finalValue = "+234" + limitedDigits;
+
+    setPhoneValue(finalValue);
+    form.setFieldsValue({ phone: finalValue });
+  };
+
   return (
     <div className="min-h-screen flex transition-all duration-300 ease-in-out">
       {contextHolder}
-      
+
       {isLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300">
           <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center space-y-4 transform scale-105 transition-transform duration-300">
@@ -125,7 +147,7 @@ const SignupScreen = () => {
 
       <div className="hidden md:flex md:w-2/5 bg-[#007AFF] flex-col p-10 py-20 px-14 transition-all duration-500 ease-out fixed left-0 top-0 h-full overflow-y-auto">
         <div className="flex items-center space-x-2 text-white transform hover:scale-105 transition-transform duration-300">
-          <img src={Logo} alt="logo" className="transition-all duration-300" draggable='false' />
+          <img src={Logo} alt="logo" className="transition-all duration-300" draggable="false" />
         </div>
 
         <div className="flex gap-2 mt-20 items-center animate-fade-in-up">
@@ -133,7 +155,7 @@ const SignupScreen = () => {
             src={lock}
             alt="lock"
             className="w-[51px] h-[51px] transform hover:scale-110 transition-transform duration-300"
-          draggable='false'
+            draggable="false"
           />
           <div className="flex justify-center items-center">
             <h4 className="text-xl text-white font-semibold animate-pulse-slow">
@@ -169,6 +191,9 @@ const SignupScreen = () => {
             layout="vertical"
             size="large"
             className="space-y-6 border border-[#E3E3E3] rounded-2xl shadow-sm p-8 hover:shadow-sm"
+            initialValues={{
+              phone: phoneValue, // 👈 default +234 in form state
+            }}
           >
             <Form.Item
               name="name"
@@ -226,6 +251,7 @@ const SignupScreen = () => {
               />
             </Form.Item>
 
+            {/* 🔐 Enforced +234 phone input */}
             <Form.Item
               name="phone"
               label={
@@ -239,16 +265,20 @@ const SignupScreen = () => {
                   message: "Please input your phone number!",
                 },
                 {
-                  pattern: /^[+]?[\d\s\-()]+$/,
-                  message: "Please enter a valid phone number (e.g. +2348012345678)."
+                  pattern: /^\+234\d{10}$/,
+                  message:
+                    "Please enter a valid Nigerian phone number (e.g. +2348123456789).",
                 },
               ]}
             >
               <Input
-                suffix={
+                value={phoneValue}
+                onChange={handlePhoneChange}
+                prefix={
                   <PhoneOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
                 }
                 placeholder="e.g. +2348123456789"
+                maxLength={14} // +234 + 10 digits
                 className="rounded-lg transition-all h-[51px] duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isLoading}
               />
@@ -344,11 +374,17 @@ const SignupScreen = () => {
             >
               <Checkbox>
                 I agree to the{" "}
-                <Link to="https://visibuy.com.ng/terms" className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300">
+                <Link
+                  to="https://visibuy.com.ng/terms"
+                  className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300"
+                >
                   Terms of Service
                 </Link>{" "}
                 and{" "}
-                <Link to="https://visibuy.com.ng/privacy" className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300">
+                <Link
+                  to="https://visibuy.com.ng/privacy"
+                  className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300"
+                >
                   Privacy Policy
                 </Link>
                 .
@@ -390,7 +426,6 @@ const SignupScreen = () => {
               Password must be at least 8 characters long.
             </div>
           </div>
-
         </div>
       </div>
     </div>
