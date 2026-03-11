@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import { Form, Input, Button, message, Spin, notification, Checkbox } from "antd";
+import React from "react";
+import { Form, Input, Button, Spin, notification, Checkbox } from "antd";
 import {
   EyeInvisibleOutlined,
   EyeTwoTone,
   MailOutlined,
-  PhoneOutlined,
   LoadingOutlined,
   UserOutlined,
   CheckCircleOutlined,
@@ -12,10 +11,12 @@ import {
   LockOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
+import { isValidPhoneNumber } from "react-phone-number-input";
 import Logo from "../../public/images/VisiBuy-White Colored 1.svg";
 import lock from "../../public/icons/lock.svg";
 import { useRegisterMutation } from "@/features/auth/authApi";
 import { SignupFormValues } from "@/types/types";
+import { PhoneInputField } from "@/shared/components/ui/PhoneInputField";
 
 const SignupScreen = () => {
   const [register, { isLoading }] = useRegisterMutation();
@@ -64,6 +65,7 @@ const SignupScreen = () => {
 
   const onFinish = async (values: SignupFormValues) => {
     try {
+      // values.phone is E.164 (e.g. +2348012345678) from PhoneInputField
       await register({
         name: values.name,
         email: values.email,
@@ -239,18 +241,23 @@ const SignupScreen = () => {
                   message: "Please input your phone number!",
                 },
                 {
-                  pattern: /^[+]?[\d\s\-()]+$/,
-                  message: "Please enter a valid phone number (e.g. +2348012345678)."
+                  validator(_, value) {
+                    if (!value) return Promise.resolve();
+                    if (isValidPhoneNumber(value)) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("Please enter a valid phone number with country code.")
+                    );
+                  },
                 },
               ]}
             >
-              <Input
-                suffix={
-                  <PhoneOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
-                }
-                placeholder="e.g. +2348123456789"
-                className="rounded-lg transition-all h-[51px] duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
+              <PhoneInputField
+                defaultCountry="NG"
+                placeholder="e.g. 801 234 5678"
                 disabled={isLoading}
+                className="w-full"
               />
             </Form.Item>
 
