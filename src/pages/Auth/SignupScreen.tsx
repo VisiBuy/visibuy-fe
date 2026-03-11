@@ -256,7 +256,7 @@ const SignupScreen = () => {
               name="phone"
               label={
                 <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Phone Number *
+                  Phone Number (e.g use +234XXXXXXXXXX)*
                 </span>
               }
               rules={[
