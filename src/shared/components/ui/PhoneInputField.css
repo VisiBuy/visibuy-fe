@@ -1,0 +1,34 @@
+/* Scoped overrides so PhoneInputField matches app form styling (e.g. SignupScreen). */
+.PhoneInputField.PhoneInput {
+  --PhoneInputCountryFlag-height: 1.25em;
+  --PhoneInput-color--focus: #007aff;
+  --PhoneInputCountryFlag-borderColor--focus: #007aff;
+  height: 51px;
+  padding: 0 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.PhoneInputField.PhoneInput:hover {
+  border-color: #007aff;
+}
+
+.PhoneInputField.PhoneInput:focus-within,
+.PhoneInputField.PhoneInput.PhoneInput--focus {
+  border-color: #007aff;
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
+}
+
+.PhoneInputField .PhoneInputInput {
+  height: 100%;
+  padding: 0 8px;
+  font-size: 14px;
+  border: none;
+  outline: none;
+}
+
+.PhoneInputField.PhoneInput--disabled {
+  background-color: rgba(0, 0, 0, 0.04);
+  cursor: not-allowed;
+}
