@@ -23,7 +23,7 @@ export default function EmailVerificationSuccessPage() {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(countdownInterval);
-          navigate(ROUTES.DASHBOARD);
+          navigate(ROUTES.VERIFICATIONS.CREATE);
           return 0;
         }
         return prev - 1;
@@ -32,7 +32,7 @@ export default function EmailVerificationSuccessPage() {
 
     // Auto-redirect to dashboard after countdown
     const redirectTimer = setTimeout(() => {
-      navigate(ROUTES.DASHBOARD);
+      navigate(ROUTES.VERIFICATIONS.CREATE);
     }, REDIRECT_DELAY * 1000);
 
     return () => {
@@ -47,7 +47,7 @@ export default function EmailVerificationSuccessPage() {
   }
 
   const handleProceed = () => {
-    navigate(ROUTES.DASHBOARD);
+    navigate(ROUTES.VERIFICATIONS.CREATE);
   };
 
   return (
@@ -79,12 +79,17 @@ export default function EmailVerificationSuccessPage() {
 
         {/* Success Message */}
         <h2 className="text-h2-desktop md:text-h2-mobile font-bold text-neutral-900 mb-space-16">
-          Email Verification Successful!
+          You're All Set!
         </h2>
+        
+        {/* Helper sentence */}
+        <p className="text-body-medium text-neutral-600 mb-space-16">
+          Create your first product verification to start building trust with buyers.
+        </p>
 
         {/* Countdown Message */}
         <p className="text-body-medium text-neutral-600 mb-space-32">
-          Redirecting to dashboard in{" "}
+          Redirecting you to create your first verification in{" "}
           <span className="font-semibold text-primary-blue">{countdown}</span>{" "}
           second{countdown !== 1 ? "s" : ""}...
         </p>
@@ -94,7 +99,7 @@ export default function EmailVerificationSuccessPage() {
           onClick={handleProceed}
           className="w-full h-btn-medium rounded-btn-medium bg-primary-blue hover:bg-primary-blue/90 active:opacity-90 text-neutral-white font-semibold text-body-medium transition-standard shadow-elevation-2 min-h-tap-target"
         >
-          Proceed Now
+          Create My First Verification
         </button>
       </div>
     </div>
