@@ -315,7 +315,7 @@ useEffect(() => {
         </div>
       </div>
 
-<div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md">
+{/* <div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md">
   <div className="text-body-medium font-semibold text-neutral-900">
     Escrow Protection (Limited rollout)
   </div>
@@ -342,7 +342,7 @@ useEffect(() => {
     </a>{" "}
     or contact support.
   </p>
-</div>
+</div> */}
 
       {/* ✅ Readiness (micro feedback loop) */}
       <div className="rounded-card border border-neutral-200 bg-neutral-white p-card-md">
