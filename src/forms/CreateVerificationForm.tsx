@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,7 +7,6 @@ import {
   createVerificationSchema,
   CreateVerificationFormData,
 } from "@/schemas/createVerificationSchema";
-import { useGetKycStatusQuery } from "@/features/kyc/kycApi";
 
 interface Props {
   onSubmit: (data: CreateVerificationFormData) => Promise<void>;
@@ -21,7 +20,7 @@ export const CreateVerificationForm: React.FC<Props> = ({
   const {
     register,
     handleSubmit,
-    formState: { errors, touchedFields, isSubmitted },
+    formState: { errors, isSubmitted },
     setValue,
     watch,
     trigger,
@@ -37,22 +36,29 @@ export const CreateVerificationForm: React.FC<Props> = ({
     },
   });
 
+  const title = watch("title");
+  const description = watch("description");
+  const price = watch("price");
+  // const enableEscrow = watch("enableEscrow");
+
   const photos = watch("photos");
   const video = watch("video");
 
-  // 🔹 Fetch KYC status
-  const { data: kycStatus, isLoading: isKycLoading } = useGetKycStatusQuery();
+  // For calm “this is taking a bit longer” message
+const [showSlowMessage, setShowSlowMessage] = useState(false);
 
-  // 🔹 Only FULL + APPROVED should be allowed to use escrow
-  const canUseEscrow =
-    kycStatus?.level === "full" && kycStatus?.status === "approved";
+useEffect(() => {
+  if (!isLoading) {
+    setShowSlowMessage(false);
+    return;
+  }
 
-  // If user is not allowed to use escrow, force it to false
-  useEffect(() => {
-    if (!canUseEscrow) {
-      setValue("enableEscrow", false, { shouldValidate: isSubmitted });
-    }
-  }, [canUseEscrow, setValue, isSubmitted]);
+  const timer = setTimeout(() => {
+    setShowSlowMessage(true);
+  }, 5000); // 5 seconds
+
+  return () => clearTimeout(timer);
+}, [isLoading]);
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -75,85 +81,108 @@ export const CreateVerificationForm: React.FC<Props> = ({
     await onSubmit(data);
   };
 
-  const kycLabel = (() => {
-    if (isKycLoading) return "Checking KYC status...";
-    if (!kycStatus) return "KYC: Not available";
-    if (kycStatus.level === "none") return "KYC Level: None";
-    if (kycStatus.level === "soft") return "KYC Level: Soft";
-    if (kycStatus.level === "full") {
-      return `KYC Level: Full (${kycStatus.status})`;
-    }
-    return "KYC: Unknown";
-  })();
+  const readiness = useMemo(() => {
+    const detailsReady =
+      Boolean(title?.trim()) && Boolean(description?.trim()) && Number(price) > 0;
+    const photosReady = photos.length === 5;
+    const videoReady = Boolean(video);
+    return { detailsReady, photosReady, videoReady };
+  }, [title, description, price, photos.length, video]);
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-space-32">
-      {/* Title */}
-      <div>
-        <label className="block text-body-small font-medium text-neutral-700 mb-gap-label-input">
-          Product Title
-        </label>
-        <input
-          {...register("title")}
-          placeholder="Enter product title"
-          className="w-full h-input px-space-16 py-space-12 rounded-input border border-neutral-300 focus:ring-2 focus:ring-primary-blue focus:border-primary-blue focus:outline-none text-body-medium font-secondary transition-standard"
-        />
-        {errors.title && (
-          <p className="text-danger text-body-small mt-space-8">
-            {errors.title.message}
-          </p>
-        )}
+      {/* ✅ Purpose Header (reinforce without slowing) */}
+      <div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md">
+        <h2 className="text-h4-desktop font-semibold text-neutral-900">
+          Create a Verification
+        </h2>
+        <p className="mt-space-8 text-body-medium text-neutral-700">
+          Upload real-time proof of the exact product your buyer is interested in.
+        </p>
+        <p className="mt-space-8 text-body-small text-neutral-600">
+          Every approved verification increases your trust score and helps you close
+          faster.
+        </p>
       </div>
 
-      {/* Description */}
-      <div>
-        <label className="block text-body-small font-medium text-neutral-700 mb-gap-label-input">
-          Description
-        </label>
-        <textarea
-          {...register("description")}
-          rows={6}
-          placeholder="Enter product description"
-          className="w-full px-space-16 py-space-12 rounded-input border border-neutral-300 focus:ring-2 focus:ring-primary-blue focus:border-primary-blue focus:outline-none text-body-medium font-secondary transition-standard resize-none"
-        />
-        {errors.description && (
-          <p className="text-danger text-body-small mt-space-8">
-            {errors.description.message}
+      {/* Product Details */}
+      <div className="space-y-space-24">
+        <div>
+          <label className="block text-body-small font-medium text-neutral-700 mb-gap-label-input">
+            Product Title
+          </label>
+          <input
+            {...register("title")}
+            placeholder="e.g. Adidas ZX 8000 Light Aqua (Size 10)"
+            className="w-full h-input px-space-16 py-space-12 rounded-input border border-neutral-300 focus:ring-2 focus:ring-primary-blue focus:border-primary-blue focus:outline-none text-body-medium font-secondary transition-standard"
+          />
+          {errors.title && (
+            <p className="text-danger text-body-small mt-space-8">
+              {errors.title.message}
+            </p>
+          )}
+          <p className="text-body-small text-neutral-600 mt-space-8">
+            Be specific — buyers compare this to what you deliver.
           </p>
-        )}
-      </div>
+        </div>
 
-      {/* Price */}
-      <div>
-        <label className="block text-body-small font-medium text-neutral-700 mb-gap-label-input">
-          Price
-        </label>
-        <input
-          type="number"
-          step="0.01"
-          {...register("price")}
-          className="w-full h-input px-space-16 py-space-12 rounded-input border border-neutral-300 focus:ring-2 focus:ring-primary-blue focus:border-primary-blue focus:outline-none text-body-medium font-secondary transition-standard"
-        />
-        {errors.price && (
-          <p className="text-danger text-body-small mt-space-8">
-            {errors.price.message}
-          </p>
-        )}
+        <div>
+          <label className="block text-body-small font-medium text-neutral-700 mb-gap-label-input">
+            Description
+          </label>
+          <textarea
+            {...register("description")}
+            rows={6}
+            placeholder="Describe condition, key details, what’s included, and any visible flaws."
+            className="w-full px-space-16 py-space-12 rounded-input border border-neutral-300 focus:ring-2 focus:ring-primary-blue focus:border-primary-blue focus:outline-none text-body-medium font-secondary transition-standard resize-none"
+          />
+          {errors.description && (
+            <p className="text-danger text-body-small mt-space-8">
+              {errors.description.message}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-body-small font-medium text-neutral-700 mb-gap-label-input">
+            Price (₦)
+          </label>
+          <input
+            type="number"
+            step="0.01"
+            placeholder="e.g. 45000"
+            {...register("price")}
+            className="w-full h-input px-space-16 py-space-12 rounded-input border border-neutral-300 focus:ring-2 focus:ring-primary-blue focus:border-primary-blue focus:outline-none text-body-medium font-secondary transition-standard"
+          />
+          {errors.price && (
+            <p className="text-danger text-body-small mt-space-8">
+              {errors.price.message}
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Media Upload */}
-      <div>
-        <label className="block text-body-small font-medium text-neutral-700 mb-space-16">
-          Media Upload <span className="text-danger">*</span>
+      <div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md">
+        <label className="block text-body-small font-medium text-neutral-700 mb-space-12">
+          Upload Proof <span className="text-danger">*</span>
         </label>
 
-        <p className="text-body-small text-neutral-600 mb-space-24">
-          You must upload <strong>exactly 5 photos</strong> of your product.
-          Video is also required.
+        <p className="text-body-small text-neutral-700">
+          Upload <strong>5 clear photos</strong> and a <strong>short video</strong>{" "}
+          so your buyer can approve confidently.
         </p>
 
+        <ul className="mt-space-12 text-body-small text-neutral-600 list-disc pl-space-24 space-y-space-8">
+          <li>Front view</li>
+          <li>Side view</li>
+          <li>Close-up of key details</li>
+          <li>Label/serial (if any)</li>
+          <li>Any flaws (if any)</li>
+        </ul>
+
         {/* Photos */}
-        <div className="mb-8">
+        <div className="mt-space-24">
           <input
             type="file"
             accept="image/*"
@@ -194,10 +223,13 @@ export const CreateVerificationForm: React.FC<Props> = ({
                         alt={`Photo ${index + 1}`}
                         className="w-full h-full object-cover"
                       />
+
+                      {/* ✅ Better mobile UX: visible on mobile, hover on desktop */}
                       <button
                         type="button"
                         onClick={() => removePhoto(index)}
-                        className="absolute top-space-8 right-space-8 bg-danger text-neutral-white rounded-full p-space-12 opacity-0 hover:opacity-100 transition-standard shadow-elevation-2"
+                        className="absolute top-space-8 right-space-8 bg-danger text-neutral-white rounded-full p-space-12 shadow-elevation-2 opacity-100 md:opacity-0 md:hover:opacity-100 transition-standard"
+                        aria-label={`Remove photo ${index + 1}`}
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -212,7 +244,6 @@ export const CreateVerificationForm: React.FC<Props> = ({
             })}
           </div>
 
-          {/* Photo validation (after submit) */}
           {isSubmitted && errors.photos && (
             <p className="text-danger text-body-small mt-space-12 font-medium animate-fade-in">
               {errors.photos.message}
@@ -222,7 +253,7 @@ export const CreateVerificationForm: React.FC<Props> = ({
           <p className="text-body-small text-neutral-600 mt-space-12">
             {photos.length === 5 ? (
               <span className="text-primary-green font-medium">
-                All 5 photos uploaded — ready!
+                Photos ready — great.
               </span>
             ) : (
               <>
@@ -232,11 +263,14 @@ export const CreateVerificationForm: React.FC<Props> = ({
           </p>
         </div>
 
-        {/* Video (Required) */}
-        <div>
-          <label className="block text-body-small font-medium text-neutral-700 mb-space-12">
+        {/* Video */}
+        <div className="mt-space-24">
+          <label className="block text-body-small font-medium text-neutral-700 mb-space-8">
             Upload Video <span className="text-danger">*</span>
           </label>
+          <p className="text-body-small text-neutral-600 mb-space-12">
+            Keep it short (max 30s). A slow 360° scan works best.
+          </p>
 
           <input
             type="file"
@@ -264,10 +298,9 @@ export const CreateVerificationForm: React.FC<Props> = ({
               {video.name}
               <button
                 type="button"
-                onClick={() =>
-                  setValue("video", undefined, { shouldValidate: true })
-                }
+                onClick={() => setValue("video", undefined, { shouldValidate: true })}
                 className="min-h-tap-target min-w-tap-target flex items-center justify-center"
+                aria-label="Remove video"
               >
                 <X className="w-4 h-4 ml-space-8 hover:bg-primary-green/20 rounded-full p-space-4 transition-standard" />
               </button>
@@ -282,39 +315,72 @@ export const CreateVerificationForm: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* Escrow + KYC gating */}
-      <div className="space-y-space-8">
-        <div className="flex items-center gap-space-12">
-          <input
-            type="checkbox"
-            {...register("enableEscrow")}
-            className="w-5 h-5 text-primary-blue rounded disabled:opacity-40 disabled:cursor-not-allowed"
-            disabled={isKycLoading || !canUseEscrow}
-          />
-          <label className="text-body-medium font-medium text-neutral-700">
-            Enable Escrow Protection
-          </label>
+<div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md">
+  <div className="text-body-medium font-semibold text-neutral-900">
+    Escrow Protection (Limited rollout)
+  </div>
+
+  <p className="mt-space-8 text-body-small text-neutral-600">
+    Escrow lets buyers pay into a secure Visibuy account. Funds are only released
+    after delivery is confirmed on Visibuy.
+  </p>
+
+  <p className="mt-space-12 text-body-small text-neutral-600">
+    We’re currently testing escrow with a small group of sellers while we refine
+    the experience.
+  </p>
+
+  <p className="mt-space-12 text-caption text-neutral-500">
+    Want early access? Learn more about how escrow works{" "}
+    <a
+      href="https://visibuy.com.ng/payment-terms"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-primary-blue underline underline-offset-2"
+    >
+      here
+    </a>{" "}
+    or contact support.
+  </p>
+</div>
+
+      {/* ✅ Readiness (micro feedback loop) */}
+      <div className="rounded-card border border-neutral-200 bg-neutral-white p-card-md">
+        <div className="text-body-small font-medium text-neutral-700 mb-space-12">
+          Verification readiness
         </div>
-
-        {/* KYC State Display */}
-        <p className="text-caption text-neutral-600">
-          {kycLabel}
-        </p>
-
-        {/* If not allowed, show upgrade message */}
-        {!isKycLoading && !canUseEscrow && (
-          <p className="text-body-small text-danger font-medium">
-            You need to complete{" "}
-            <span className="font-semibold">Full KYC</span> to enable escrow
-            protection.{" "}
-            <Link
-              to="/verifications/kyc"
-              className="text-primary-blue underline underline-offset-2"
+        <div className="space-y-space-8 text-body-small">
+          <div className="flex items-center justify-between">
+            <span className="text-neutral-700">Product details</span>
+            <span
+              className={
+                readiness.detailsReady ? "text-primary-green font-medium" : "text-neutral-500"
+              }
             >
-              Upgrade to full KYC
-            </Link>
-          </p>
-        )}
+              {readiness.detailsReady ? "Ready" : "In progress"}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-neutral-700">Photos</span>
+            <span
+              className={
+                readiness.photosReady ? "text-primary-green font-medium" : "text-neutral-500"
+              }
+            >
+              {readiness.photosReady ? "5/5 ready" : `${photos.length}/5`}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-neutral-700">Video</span>
+            <span
+              className={
+                readiness.videoReady ? "text-primary-green font-medium" : "text-neutral-500"
+              }
+            >
+              {readiness.videoReady ? "Ready" : "Not added"}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Submit */}
@@ -327,17 +393,34 @@ export const CreateVerificationForm: React.FC<Props> = ({
             : "bg-neutral-400 cursor-not-allowed"
         }`}
       >
-        {isLoading ? "Creating Verification..." : "Submit Verification"}
+        {isLoading ? "Generating Link..." : "Generate Verification Link"}
       </button>
+      {isLoading && (
+  <div className="rounded-card border border-neutral-200 bg-neutral-white p-card-md mt-space-16 animate-fade-in">
+    <p className="text-body-small text-neutral-700">
+      We’re generating your verification link and securing your proof.
+    </p>
+
+    <p className="text-caption text-neutral-500 mt-space-8">
+      This may take a few seconds depending on your video and photo sizes.
+    </p>
+
+    {showSlowMessage && (
+      <p className="text-caption text-neutral-500 mt-space-12 animate-fade-in">
+        Still working — large medias can take a little longer. Thanks for your patience.
+      </p>
+    )}
+  </div>
+)}
 
       {/* Bottom Error */}
       {isSubmitted && (photos.length !== 5 || !video) && (
         <p className="text-center text-danger font-medium text-body-small mt-space-16 animate-pulse">
           {photos.length !== 5 && !video
-            ? "Please upload exactly 5 photos and a video before submitting"
+            ? "Please upload 5 photos and a video before generating the link"
             : photos.length !== 5
-            ? "Please upload exactly 5 photos before submitting"
-            : "Please upload a video before submitting"}
+            ? "Please upload 5 photos before generating the link"
+            : "Please upload a video before generating the link"}
         </p>
       )}
     </form>
