@@ -1,7 +1,6 @@
 import { baseApi } from "@/services/api/baseApi";
 import type {
   VerificationDto,
-  CreateVerificationRequest,
   UpdateVerificationRequest,
 } from "@/types/api";
 
@@ -12,6 +11,31 @@ export interface PaginatedVerificationResponse {
   hasMore: boolean;
   offset: number;
   limit: number;
+}
+
+export interface PrepareUploadResponse {
+  uploadUrl: string;
+  params: Record<string, string>;
+  sessionId: string;
+}
+
+export interface FinalizeVerificationAsset {
+  publicId: string;
+  resourceType: "image" | "video";
+}
+
+export interface FinalizeVerificationDto {
+  productTitle: string;
+  description: string;
+  price: number;
+  escrowEnabled: boolean;
+  expiresAt: string;
+}
+
+export interface FinalizeVerificationPayload {
+  sessionId: string;
+  dto: FinalizeVerificationDto;
+  assets: FinalizeVerificationAsset[];
 }
 
 export const verificationApi = baseApi.injectEndpoints({
@@ -61,11 +85,22 @@ export const verificationApi = baseApi.injectEndpoints({
       query: (id) => `/verifications/${id}`,
       providesTags: (r, e, id) => [{ type: "Verification" as const, id }],
     }),
-    createVerification: build.mutation<
+    prepareUpload: build.mutation<PrepareUploadResponse, void>({
+      query: () => ({
+        url: "/verifications/uploads/prepare",
+        method: "POST",
+        body: {},
+      }),
+    }),
+    finalizeVerification: build.mutation<
       VerificationDto,
-      CreateVerificationRequest
+      FinalizeVerificationPayload
     >({
-      query: (body) => ({ url: "/verifications", method: "POST", body }),
+      query: ({ sessionId, dto, assets }) => ({
+        url: "/verifications/finalize",
+        method: "POST",
+        body: { sessionId, ...dto, assets },
+      }),
       invalidatesTags: ["Verification", "Credit"],
     }),
     updateVerification: build.mutation<
@@ -91,7 +126,8 @@ export const verificationApi = baseApi.injectEndpoints({
 export const {
   useGetVerificationsQuery,
   useGetVerificationByIdQuery,
-  useCreateVerificationMutation,
+  usePrepareUploadMutation,
+  useFinalizeVerificationMutation,
   useUpdateVerificationMutation,
   useDeleteVerificationMutation,
 } = verificationApi;

@@ -1,70 +1,147 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCreateVerificationMutation } from "@/features";
+import {
+  usePrepareUploadMutation,
+  useFinalizeVerificationMutation,
+} from "@/features";
 import { toast } from "react-hot-toast";
 import { CheckCircle, XCircle, X } from "lucide-react";
 import { CreateVerificationForm } from "@/forms/CreateVerificationForm";
 import { CreateVerificationFormData } from "@/schemas/createVerificationSchema";
+import { uploadToCloudinary } from "@/shared/utils/uploadToCloudinary";
 
 export default function CreateVerificationPage() {
   const navigate = useNavigate();
-  const [createVerification, { isLoading }] = useCreateVerificationMutation();
+  const [prepareUpload, { isLoading: isPreparingUpload }] =
+    usePrepareUploadMutation();
+  const [finalizeVerification, { isLoading: isFinalizing }] =
+    useFinalizeVerificationMutation();
+  const isLoading = isPreparingUpload || isFinalizing;
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
   const [verificationLink, setVerificationLink] = useState("");
   const [newVerificationId, setNewVerificationId] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); // 🔹 NEW
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
 
   const handleSubmit = async (data: CreateVerificationFormData) => {
+    if (uploading || isLoading) return;
+
     // reset previous error state on new submit
     setShowError(false);
     setErrorMessage(null);
     // 👉 FRONTEND UPLOAD LIMIT (e.g., 25 MB)
-const MAX_UPLOAD_MB = 50;
-const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
+    const MAX_UPLOAD_MB = 50;
+    const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
 
-// Calculate total size of photos + video
-const photosTotal = data.photos?.reduce((sum, file) => sum + file.size, 0) ?? 0;
-const videoSize = data.video ? data.video.size : 0;
-const totalBytes = photosTotal + videoSize;
+    // Calculate total size of photos + video
+    const photosTotal = data.photos?.reduce((sum, file) => sum + file.size, 0) ?? 0;
+    const videoSize = data.video ? data.video.size : 0;
+    const totalBytes = photosTotal + videoSize;
 
-// Debug log for your dev tools
-console.log("Total upload size (MB):", (totalBytes / (1024 * 1024)).toFixed(2));
+    // Debug log for your dev tools
+    console.log("Total upload size (MB):", (totalBytes / (1024 * 1024)).toFixed(2));
 
-if (totalBytes > MAX_UPLOAD_BYTES) {
-  setErrorMessage(
-    `Your photos and video are too large (${(
-      totalBytes / (1024 * 1024)
-    ).toFixed(1)} MB). Please keep total uploads under ${MAX_UPLOAD_MB} MB.`
-  );
-  setShowError(true);
-  return;
-}
+    if (totalBytes > MAX_UPLOAD_BYTES) {
+      setErrorMessage(
+        `Your photos and video are too large (${(
+          totalBytes / (1024 * 1024)
+        ).toFixed(1)} MB). Please keep total uploads under ${MAX_UPLOAD_MB} MB.`
+      );
+      setShowError(true);
+      return;
+    }
+
+    const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+    const allowedVideoTypes = new Set(["video/mp4", "video/webm", "video/quicktime"]);
+
+    const hasInvalidPhotoType = data.photos.some(
+      (photo) => !allowedImageTypes.has(photo.type)
+    );
+    if (hasInvalidPhotoType) {
+      setErrorMessage("Only JPG, PNG, or WEBP images are allowed for photos.");
+      setShowError(true);
+      return;
+    }
+
+    if (data.video && !allowedVideoTypes.has(data.video.type)) {
+      setErrorMessage("Only MP4, WEBM, or MOV files are allowed for video.");
+      setShowError(true);
+      return;
+    }
 
     try {
-      const formData = new FormData();
+      const uploadConfig = await prepareUpload().unwrap();
+      const filesToUpload = data.video ? [...data.photos, data.video] : data.photos;
+      const getFileKey = (file: File) => `${file.name}-${file.size}-${file.lastModified}`;
 
-      formData.append("productTitle", data.title);
-      formData.append("description", data.description);
+      setUploading(true);
+      setUploadProgress(
+        filesToUpload.reduce<Record<string, number>>((acc, file) => {
+          acc[getFileKey(file)] = 0;
+          return acc;
+        }, {})
+      );
 
-      if (data.enableEscrow) {
-        formData.append("price", data.price.toString());
-      } else if (data.price > 0) {
-        formData.append("price", data.price.toString());
+      const uploadResults = await Promise.allSettled(
+        filesToUpload.map(async (file) => {
+          const uploaded = await uploadToCloudinary(
+            file,
+            {
+              uploadUrl: uploadConfig.uploadUrl,
+              params: uploadConfig.params,
+            },
+            (percent) => {
+              setUploadProgress((prev) => ({
+                ...prev,
+                [getFileKey(file)]: percent,
+              }));
+            }
+          );
+          const resourceType: "image" | "video" =
+            uploaded.resourceType === "video" ? "video" : "image";
+
+          return {
+            publicId: uploaded.publicId,
+            resourceType,
+          };
+        })
+      );
+
+      const failedUploads = uploadResults.filter(
+        (result): result is PromiseRejectedResult => result.status === "rejected"
+      );
+      if (failedUploads.length > 0) {
+        throw new Error(
+          `${failedUploads.length} file upload(s) failed. Please try again.`
+        );
       }
+      const assets = uploadResults
+        .filter(
+          (
+            result
+          ): result is PromiseFulfilledResult<{
+            publicId: string;
+            resourceType: "image" | "video";
+          }> => result.status === "fulfilled"
+        )
+        .map((result) => result.value);
 
-      if (data.enableEscrow) {
-        formData.append("escrowEnabled", "true");
-      }
+      const expiresAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
 
-      data.photos.forEach((photo) => {
-        formData.append("files", photo);
-      });
-
-      formData.append("files", data.video);
-
-      const result = await createVerification(formData as any).unwrap();
+      const result = await finalizeVerification({
+        sessionId: uploadConfig.sessionId,
+        dto: {
+          productTitle: data.title,
+          description: data.description,
+          price: data.price,
+          escrowEnabled: data.enableEscrow,
+          expiresAt,
+        },
+        assets,
+      }).unwrap();
 
       // SAVE ID FOR REDIRECT
       setNewVerificationId(result.id);
@@ -74,40 +151,45 @@ if (totalBytes > MAX_UPLOAD_BYTES) {
 
       setShowSuccess(true);
     } catch (err: any) {
-  console.error("Verification failed:", err);
+      console.error("Verification failed:", err);
 
-  let message = "Something went wrong. Please check the details and try again.";
+      let message = "Something went wrong. Please check the details and try again.";
 
-  // NEW: Handle network errors (server unreachable)
-  if (err?.status === "FETCH_ERROR") {
-    message =
-      "We couldn’t connect to the server. This looks like a network or server issue, not your form. Please check your internet or try again.";
-  }
-  // Handle backend error format
-  else if (err?.data) {
-    const data = err.data as any;
+      // NEW: Handle network errors (server unreachable)
+      if (err?.status === "FETCH_ERROR") {
+        message =
+          "We couldn’t connect to the server. This looks like a network or server issue, not your form. Please check your internet or try again.";
+      }
+      // Handle backend error format
+      else if (err?.data) {
+        const data = err.data as any;
 
-    if (Array.isArray(data?.message)) {
-      message = data.message.join(", ");
-    } else if (typeof data?.message === "string") {
-      message = data.message;
-    } else if (typeof data?.error === "string") {
-      message = data.error;
+        if (Array.isArray(data?.message)) {
+          message = data.message.join(", ");
+        } else if (typeof data?.message === "string") {
+          message = data.message;
+        } else if (typeof data?.error === "string") {
+          message = data.error;
+        }
+      }
+      // Handle generic JS errors
+      else if (typeof err?.message === "string") {
+        message = err.message;
+      }
+
+      setErrorMessage(message);
+      setShowError(true);
+    } finally {
+      setUploading(false);
     }
-  }
-  // Handle generic JS errors
-  else if (typeof err?.message === "string") {
-    message = err.message;
-  }
-
-  setErrorMessage(message);
-  setShowError(true);
-}
   };
 
   return (
     <div className="max-w-3xl mx-auto p-space-32 pt-space-8">
-      <CreateVerificationForm onSubmit={handleSubmit} isLoading={isLoading} />
+      <CreateVerificationForm
+        onSubmit={handleSubmit}
+        isLoading={isLoading || uploading}
+      />
 
       {/* Success Modal */}
       {showSuccess && (
