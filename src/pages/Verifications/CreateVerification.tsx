@@ -33,7 +33,7 @@ export default function CreateVerificationPage() {
     setShowError(false);
     setErrorMessage(null);
     // 👉 FRONTEND UPLOAD LIMIT (e.g., 25 MB)
-    const MAX_UPLOAD_MB = 50;
+    const MAX_UPLOAD_MB = 100;
     const MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
 
     // Calculate total size of photos + video
