@@ -386,9 +386,9 @@ useEffect(() => {
       {/* Submit */}
       <button
         type="submit"
-        disabled={isLoading || photos.length !== 5 || !video}
+        disabled={isLoading || photos.length !== 5 }
         className={`w-full h-btn-medium px-btn-medium-x rounded-btn-medium font-semibold text-neutral-white transition-standard shadow-elevation-2 ${
-          photos.length === 5 && video && !isLoading
+          photos.length === 5  && !isLoading
             ? "bg-primary-blue hover:bg-primary-blue/90"
             : "bg-neutral-400 cursor-not-allowed"
         }`}
@@ -414,7 +414,7 @@ useEffect(() => {
 )}
 
       {/* Bottom Error */}
-      {isSubmitted && (photos.length !== 5 || !video) && (
+      {isSubmitted && (photos.length !== 5) && (
         <p className="text-center text-danger font-medium text-body-small mt-space-16 animate-pulse">
           {photos.length !== 5 && !video
             ? "Please upload 5 photos and a video before generating the link"
