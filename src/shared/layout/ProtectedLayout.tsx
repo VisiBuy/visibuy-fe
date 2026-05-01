@@ -46,9 +46,13 @@ export const ProtectedLayout: React.FC = () => {
     location.pathname === ROUTES.AUTH.SOFT_KYC ||
     location.pathname === ROUTES.AUTH.EMAIL_VERIFICATION_SUCCESS;
 
+  // 🔥 ADD THIS (whitelist route)
+  const allowUnverifiedPaths = ["/verifications/create"];
+  const isAllowedUnverified = allowUnverifiedPaths.includes(location.pathname);
+
   // Check KYC status and redirect if needed (only for authenticated users on non-auth pages)
   // Don't redirect if already on the soft KYC page or success page
-  if (user && !isAuthPage && kycStatus) {
+  if (user && !isAuthPage && kycStatus && !isAllowedUnverified) {
     const kycRedirectPath = getKycRedirectPath(kycStatus);
     if (
       kycRedirectPath &&
