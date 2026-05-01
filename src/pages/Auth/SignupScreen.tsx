@@ -86,7 +86,7 @@ const SignupScreen = () => {
       showSuccessNotification(values.name);
 
       setTimeout(() => {
-        navigate("/");
+        navigate("/verifications/create");
       }, 2000);
     } catch (err: any) {
       let errorMsg = "Registration failed. Please try again.";
