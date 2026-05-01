@@ -179,12 +179,47 @@ const SignupScreen = () => {
 
           <div className="mb-8 text-center animate-fade-in-up">
             <h2 className="text-3xl font-semibold text-gray-900 mb-2 transform hover:scale-105 transition-transform duration-300 tracking-[1%]">
-              Create your account.
+              Create my first verification
             </h2>
             <p className="text-gray-600 text-sm font-[400] animate-pulse-slow">
-              Sell with confidence using VisiBuy.
+              It takes 30 seconds. No app needed. Free to start
             </p>
           </div>
+<div className="mb-6">
+  <div className="flex items-center justify-between text-sm text-gray-700">
+
+    {/* Step 1 */}
+    <div className="flex items-center space-x-2">
+      <div className="w-6 h-6 flex items-center justify-center rounded-full bg-[#007BFF] text-white text-xs font-semibold">
+        1
+      </div>
+      <span>Upload product</span>
+    </div>
+
+    {/* Divider */}
+    <div className="flex-1 h-px bg-gray-200 mx-2"></div>
+
+    {/* Step 2 */}
+    <div className="flex items-center space-x-2">
+      <div className="w-6 h-6 flex items-center justify-center rounded-full bg-[#28A745] text-white text-xs font-semibold">
+        2
+      </div>
+      <span>Get verification link</span>
+    </div>
+
+    {/* Divider */}
+    <div className="flex-1 h-px bg-gray-200 mx-2"></div>
+
+    {/* Step 3 */}
+    <div className="flex items-center space-x-2">
+      <div className="w-6 h-6 flex items-center justify-center rounded-full bg-[#007BFF] text-white text-xs font-semibold">
+        3
+      </div>
+      <span>Send to buyer</span>
+    </div>
+
+  </div>
+</div>
 
           <Form
             form={form}
@@ -404,7 +439,7 @@ const SignupScreen = () => {
                 disabled={isLoading}
                 icon={isLoading ? <LoadingOutlined spin /> : null}
               >
-                {isLoading ? "Creating Account..." : "Create Account"}
+                {isLoading ? "Creating..." : "Create my first verification →"}
               </Button>
             </Form.Item>
           </Form>
