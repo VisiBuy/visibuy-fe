@@ -68,11 +68,11 @@ const SignupScreen = () => {
     try {
       // values.phone is E.164 (e.g. +2348012345678) from PhoneInputField
       await register({
-        name: values.name,
-        email: values.email,
-        phone: values.phone, // 👈 already formatted as +234XXXXXXXXXX
+        name: "Visibuy Seller",
+        email: `${values.phone}@visibuy.app`,
+        phone: values.phone,
         password: values.password,
-      } as any).unwrap();
+    }).unwrap();
 
       // 🔥 FIRE FB PIXEL EVENT HERE
       if (window.fbq) {
@@ -83,7 +83,7 @@ const SignupScreen = () => {
         });
       }
 
-      showSuccessNotification(values.name);
+      showSuccessNotification("Visibuy Seller");
 
       setTimeout(() => {
         navigate("/verifications/create");
@@ -179,12 +179,15 @@ const SignupScreen = () => {
 
           <div className="mb-8 text-center animate-fade-in-up">
             <h2 className="text-3xl font-semibold text-gray-900 mb-2 transform hover:scale-105 transition-transform duration-300 tracking-[1%]">
-              Create my first verification
+              Stop time-wasters. Get paid.
             </h2>
             <p className="text-gray-600 text-sm font-[400] animate-pulse-slow">
-              It takes 30 seconds. No app needed. Free to start
+              Create proof your buyer can trust in 30 seconds
             </p>
           </div>
+          <p className="text-xs text-gray-500 text-center mb-4">
+  No app. Works with WhatsApp.
+</p>
 <div className="mb-6">
   <div className="flex items-center justify-between text-sm text-gray-700">
 
@@ -232,7 +235,7 @@ const SignupScreen = () => {
               phone: phoneValue, // 👈 default +234 in form state
             }}
           >
-            <Form.Item
+            {/* <Form.Item
               name="name"
               label={
                 <span className="text-gray-700 font-medium transition-colors duration-300">
@@ -286,7 +289,7 @@ const SignupScreen = () => {
                 className="rounded-lg transition-all h-[51px] duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isLoading}
               />
-            </Form.Item>
+            </Form.Item> */}
 
             {/* 🔐 Enforced +234 phone input */}
             <Form.Item
@@ -358,7 +361,7 @@ const SignupScreen = () => {
               />
             </Form.Item>
 
-            <Form.Item
+            {/* <Form.Item
               name="confirmPassword"
               label={
                 <span className="text-gray-700 font-medium transition-colors duration-300">
@@ -397,7 +400,7 @@ const SignupScreen = () => {
                 className="rounded-lg transition-all h-[51px] duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isLoading}
               />
-            </Form.Item>
+            </Form.Item> */}
 
             <Form.Item
               name="consent"
@@ -439,7 +442,7 @@ const SignupScreen = () => {
                 disabled={isLoading}
                 icon={isLoading ? <LoadingOutlined spin /> : null}
               >
-                {isLoading ? "Creating..." : "Create my first verification →"}
+                {isLoading ? "Creating..." : "Create proof & get paid →"}
               </Button>
             </Form.Item>
           </Form>
