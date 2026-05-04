@@ -94,14 +94,17 @@ useEffect(() => {
       {/* ✅ Purpose Header (reinforce without slowing) */}
       <div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md">
         <h2 className="text-h4-desktop font-semibold text-neutral-900">
-          Create a Verification
+          Create proof your buyer will trust
         </h2>
         <p className="mt-space-8 text-body-medium text-neutral-700">
-          Upload real-time proof of the exact product your buyer is interested in.
+          Show your buyer exactly what they’ll receive — and close the sale faster.
         </p>
         <p className="mt-space-8 text-body-small text-neutral-600">
           Every approved verification increases your trust score and helps you close
           faster.
+        </p>
+        <p className="mt-space-8 text-body-small text-neutral-600">
+          Takes less than 1 minute.
         </p>
       </div>
 
@@ -169,8 +172,7 @@ useEffect(() => {
         </label>
 
         <p className="text-body-small text-neutral-700">
-          Upload <strong>5 clear photos</strong> and a <strong>short video</strong>{" "}
-          so your buyer can approve confidently.
+          Start by uploading your product photos (you’ll need 5 in total) and a short video so your buyer can approve confidently.
         </p>
 
         <ul className="mt-space-12 text-body-small text-neutral-600 list-disc pl-space-24 space-y-space-8">
@@ -257,7 +259,7 @@ useEffect(() => {
               </span>
             ) : (
               <>
-                You need <strong>{5 - photos.length} more</strong> photo(s)
+                Great — just <strong>{5 - photos.length}</strong> more to go
               </>
             )}
           </p>
@@ -382,7 +384,9 @@ useEffect(() => {
           </div>
         </div>
       </div>
-
+      <p className="text-center text-body-small text-neutral-600 mb-space-12">
+        You’ll get a link you can send to your buyer to prove it’s the exact item.
+      </p>
       {/* Submit */}
       <button
         type="submit"
@@ -393,7 +397,7 @@ useEffect(() => {
             : "bg-neutral-400 cursor-not-allowed"
         }`}
       >
-        {isLoading ? "Generating Link..." : "Generate Verification Link"}
+        {isLoading ? "Generating Link..." : "Get your verification link →"}
       </button>
       {isLoading && (
   <div className="rounded-card border border-neutral-200 bg-neutral-white p-card-md mt-space-16 animate-fade-in">
