@@ -13,7 +13,7 @@ export const createVerificationSchema = z.object({
     }),
   video: z.instanceof(File, {
     message: "Video is required",
-  }),
+  }).optional(),
 });
 
 export type CreateVerificationFormData = z.infer<
