@@ -204,11 +204,15 @@ export default function CreateVerificationPage() {
 
             <CheckCircle className="w-20 h-20 text-primary-green mx-auto mb-space-16" />
             <h2 className="text-h3-desktop md:text-h3-mobile font-bold text-neutral-900 mb-space-8">
-              Verification Created Successfully
+              Your proof is ready — send it to your buyer
             </h2>
 
             <p className="text-body-medium text-neutral-600 mb-space-24">
-              Verification link has been generated for your product
+              Send this to your buyer now so they can confirm it’s the exact item before paying.
+            </p>
+
+            <p className="text-body-small text-neutral-600 mb-space-24">
+              This helps your buyer trust you and pay faster.
             </p>
 
             <div className="flex items-center gap-space-8 bg-neutral-100 p-space-12 rounded-input mb-space-24">
@@ -226,9 +230,19 @@ export default function CreateVerificationPage() {
                 }}
                 className="bg-primary-blue text-neutral-white px-space-16 py-space-8 rounded-input text-body-small hover:bg-primary-blue/90 transition-standard min-h-tap-target"
               >
-                Copy Link
+                Copy link
               </button>
             </div>
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(
+                "Hi, this is the exact item you asked for. Please confirm it matches before payment: " + verificationLink
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full mt-space-24 bg-primary-green text-neutral-white px-space-32 py-space-12 rounded-btn-medium font-medium text-center hover:bg-primary-green/90 transition-standard"
+            >
+              Send to buyer on WhatsApp →
+            </a>
 
             <button
               onClick={() => {
@@ -236,9 +250,9 @@ export default function CreateVerificationPage() {
                   navigate(`/verifications/${newVerificationId}`);
                 }
               }}
-              className="bg-primary-blue text-neutral-white px-space-32 py-space-12 rounded-btn-medium font-medium hover:bg-primary-blue/90 transition-standard min-h-tap-target"
+              className="mt-space-16 text-primary-blue underline text-body-small"
             >
-              Go to Verification Details
+              View details later
             </button>
           </div>
         </div>
