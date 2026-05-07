@@ -149,6 +149,14 @@ export default function CreateVerificationPage() {
       // PUBLIC LINK
       setVerificationLink(`https://verify.visibuy.com.ng/v/${result.publicToken}`);
 
+      if (typeof window !== "undefined" && (window as any).fbq) {
+        (window as any).fbq("trackCustom", "VerificationCreated", {
+          product_title: data.title,
+          photo_count: data.photos.length,
+          has_video: Boolean(data.video),
+        });
+      }
+
       setShowSuccess(true);
     } catch (err: any) {
       console.error("Verification failed:", err);
