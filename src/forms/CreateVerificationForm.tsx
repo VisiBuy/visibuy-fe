@@ -46,6 +46,7 @@ export const CreateVerificationForm: React.FC<Props> = ({
 
   // For calm “this is taking a bit longer” message
 const [showSlowMessage, setShowSlowMessage] = useState(false);
+const [step, setStep] = useState(1);
 
 useEffect(() => {
   if (!isLoading) {
@@ -89,19 +90,45 @@ useEffect(() => {
     return { detailsReady, photosReady, videoReady };
   }, [title, description, price, photos.length, video]);
 
+  const handleStepOne = async () => {
+  const valid = await trigger(["title", "description", "price"]);
+
+    if (valid) {
+      setStep(2);
+    }
+  };
+
+  const handleStepTwo = async () => {
+    const valid = await trigger(["photos", "video"]);
+
+    if (valid && photos.length === 5 && video) {
+      setStep(3);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-space-32">
+    {step === 1 && (
+  <div className="space-y-space-32">
       {/* ✅ Purpose Header (reinforce without slowing) */}
+      
       <div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md">
-        <h2 className="text-h4-desktop font-semibold text-neutral-900">
-          Create proof your buyer will trust
+        <p className="text-body-small text-primary-blue font-medium">
+          Step 1 of 3
+        </p>
+
+        <h2 className="mt-space-8 text-h4-desktop font-semibold text-neutral-900">
+          🤝 Create proof your buyer will trust
         </h2>
         <p className="mt-space-8 text-body-medium text-neutral-700">
           Show your buyer exactly what they’ll receive — and close the sale faster.
         </p>
-        <p className="mt-space-8 text-body-small text-neutral-600">
+        {/* <p className="mt-space-8 text-body-small text-neutral-600">
           Every approved verification increases your trust score and helps you close
           faster.
+        </p> */}
+        <p className="mt-space-8 text-body-small text-neutral-600">
+          Takes less than 1 minute.
         </p>
         <p className="mt-space-8 text-body-small text-neutral-600">
           Takes less than 1 minute.
@@ -110,6 +137,9 @@ useEffect(() => {
 
       {/* Product Details */}
       <div className="space-y-space-24">
+        <h3 className="text-body-medium font-semibold text-neutral-900">
+          Tell your buyer what they’re getting
+        </h3>
         <div>
           <label className="block text-body-small font-medium text-neutral-700 mb-gap-label-input">
             Product Title
@@ -164,16 +194,37 @@ useEffect(() => {
           )}
         </div>
       </div>
-
+              <button
+      type="button"
+      onClick={handleStepOne}
+      className="w-full h-btn-medium px-btn-medium-x rounded-btn-medium font-semibold text-neutral-white transition-standard shadow-elevation-2 bg-primary-blue hover:bg-primary-blue/90"
+    >
+      Continue →
+    </button>
+  </div>
+)}
+    {step === 2 && (
+  <div className="space-y-space-32">
       {/* Media Upload */}
       <div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md">
+        <p className="text-body-small text-primary-blue font-medium mb-space-8">
+          Step 2 of 3
+        </p>
+
+        <h2 className="text-h4-desktop font-semibold text-neutral-900">
+          📸 Show the exact item
+        </h2>
+
+        <p className="mt-space-8 text-body-medium text-neutral-700 mb-space-24">
+          Upload real photos and a short video of the exact item your buyer will receive.
+        </p>
         <label className="block text-body-small font-medium text-neutral-700 mb-space-12">
           Upload Proof <span className="text-danger">*</span>
         </label>
 
-        <p className="text-body-small text-neutral-700">
+        {/* <p className="text-body-small text-neutral-700">
           Start by uploading your product photos (you’ll need 5 in total) and a short video so your buyer can approve confidently.
-        </p>
+        </p> */}
 
         <ul className="mt-space-12 text-body-small text-neutral-600 list-disc pl-space-24 space-y-space-8">
           <li>Front view</li>
@@ -316,6 +367,25 @@ useEffect(() => {
           )}
         </div>
       </div>
+          <div className="flex gap-space-16">
+      <button
+        type="button"
+        onClick={() => setStep(1)}
+        className="flex-1 h-btn-medium rounded-btn-medium border border-neutral-300 text-neutral-700 font-semibold"
+      >
+        ← Back
+      </button>
+
+      <button
+        type="button"
+        onClick={handleStepTwo}
+        className="flex-1 h-btn-medium rounded-btn-medium bg-primary-blue text-neutral-white font-semibold"
+      >
+        Continue →
+      </button>
+    </div>
+  </div>
+)}
 
 {/* <div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md">
   <div className="text-body-medium font-semibold text-neutral-900">
@@ -345,12 +415,21 @@ useEffect(() => {
     or contact support.
   </p>
 </div> */}
-
+        {step === 3 && (
+  <div className="space-y-space-32">
       {/* ✅ Readiness (micro feedback loop) */}
       <div className="rounded-card border border-neutral-200 bg-neutral-white p-card-md">
-        <div className="text-body-small font-medium text-neutral-700 mb-space-12">
-          Verification readiness
-        </div>
+        <p className="text-body-small text-primary-blue font-medium">
+          Step 3 of 3
+        </p>
+
+        <h2 className="mt-space-8 text-h4-desktop font-semibold text-neutral-900">
+          🔗 Send proof to your buyer
+        </h2>
+
+        <p className="mt-space-8 text-body-medium text-neutral-700 mb-space-24">
+          Your proof is ready. Generate your verification link and send it to your buyer.
+        </p>
         <div className="space-y-space-8 text-body-small">
           <div className="flex items-center justify-between">
             <span className="text-neutral-700">Product details</span>
@@ -384,21 +463,33 @@ useEffect(() => {
           </div>
         </div>
       </div>
-      <p className="text-center text-body-small text-neutral-600 mb-space-12">
+      {/* <p className="text-center text-body-small text-neutral-600 mb-space-12">
         You’ll get a link you can send to your buyer to prove it’s the exact item.
-      </p>
+      </p> */}
       {/* Submit */}
-      <button
-        type="submit"
-        disabled={isLoading || photos.length !== 5 }
-        className={`w-full h-btn-medium px-btn-medium-x rounded-btn-medium font-semibold text-neutral-white transition-standard shadow-elevation-2 ${
-          photos.length === 5  && !isLoading
-            ? "bg-primary-blue hover:bg-primary-blue/90"
-            : "bg-neutral-400 cursor-not-allowed"
-        }`}
-      >
-        {isLoading ? "Generating Link..." : "Get your verification link →"}
-      </button>
+      <div className="flex gap-space-16">
+  <button
+    type="button"
+    onClick={() => setStep(2)}
+    className="flex-1 h-btn-medium rounded-btn-medium border border-neutral-300 text-neutral-700 font-semibold"
+  >
+    ← Back
+  </button>
+
+  <button
+    type="submit"
+    disabled={isLoading || photos.length !== 5}
+    className={`flex-1 h-btn-medium px-btn-medium-x rounded-btn-medium font-semibold text-neutral-white transition-standard shadow-elevation-2 ${
+      photos.length === 5 && !isLoading
+        ? "bg-primary-blue hover:bg-primary-blue/90"
+        : "bg-neutral-400 cursor-not-allowed"
+    }`}
+  >
+    {isLoading
+      ? "Generating Link..."
+      : "Get your verification link →"}
+  </button>
+</div>
       {isLoading && (
   <div className="rounded-card border border-neutral-200 bg-neutral-white p-card-md mt-space-16 animate-fade-in">
     <p className="text-body-small text-neutral-700">
@@ -416,9 +507,11 @@ useEffect(() => {
     )}
   </div>
 )}
+  </div>
+)}
 
       {/* Bottom Error */}
-      {isSubmitted && (photos.length !== 5) && (
+      {/* {isSubmitted && (photos.length !== 5) && (
         <p className="text-center text-danger font-medium text-body-small mt-space-16 animate-pulse">
           {photos.length !== 5 && !video
             ? "Please upload 5 photos and a video before generating the link"
@@ -426,7 +519,7 @@ useEffect(() => {
             ? "Please upload 5 photos before generating the link"
             : "Please upload a video before generating the link"}
         </p>
-      )}
+      )} */}
     </form>
   );
 };
