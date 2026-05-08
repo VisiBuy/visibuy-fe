@@ -69,7 +69,7 @@ const SignupScreen = () => {
       // values.phone is E.164 (e.g. +2348012345678) from PhoneInputField
       await register({
         name: "Visibuy Seller",
-        email: `${values.phone}@visibuy.app`,
+        email: values.email,
         phone: values.phone,
         password: values.password,
     }).unwrap();
@@ -261,7 +261,7 @@ const SignupScreen = () => {
                 className="rounded-lg transition-all duration-300 h-[51px] hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isLoading}
               />
-            </Form.Item>
+            </Form.Item> */}
 
             <Form.Item
               name="email"
@@ -289,7 +289,7 @@ const SignupScreen = () => {
                 className="rounded-lg transition-all h-[51px] duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
                 disabled={isLoading}
               />
-            </Form.Item> */}
+            </Form.Item>
 
             {/* 🔐 Enforced +234 phone input */}
             <Form.Item
