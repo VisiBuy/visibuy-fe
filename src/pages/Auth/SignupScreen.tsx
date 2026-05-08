@@ -182,7 +182,7 @@ const SignupScreen = () => {
               Stop time-wasters. Get paid.
             </h2>
             <p className="text-gray-600 text-sm font-[400] animate-pulse-slow">
-              Create proof your buyer can trust in 30 seconds
+              Turn your photos into buyer proof — in under 30 seconds.
             </p>
           </div>
           <p className="text-xs text-gray-500 text-center mb-4">
@@ -196,7 +196,7 @@ const SignupScreen = () => {
       <div className="w-6 h-6 flex items-center justify-center rounded-full bg-[#007BFF] text-white text-xs font-semibold">
         1
       </div>
-      <span>Upload product</span>
+      <span>Create buyer proof</span>
     </div>
 
     {/* Divider */}
@@ -218,7 +218,7 @@ const SignupScreen = () => {
       <div className="w-6 h-6 flex items-center justify-center rounded-full bg-[#007BFF] text-white text-xs font-semibold">
         3
       </div>
-      <span>Send to buyer</span>
+      <span>Send proof to buyer</span>
     </div>
 
   </div>
