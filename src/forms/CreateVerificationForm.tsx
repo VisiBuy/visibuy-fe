@@ -125,7 +125,7 @@ useEffect(() => {
           🤝 Create proof your buyer will trust
         </h2>
         <p className="mt-space-8 text-body-medium text-neutral-700">
-          Show your buyer exactly what they’ll receive — and close the sale faster.
+          Turn your photos into proof your buyer can trust — and close the sale faster.
         </p>
         {/* <p className="mt-space-8 text-body-small text-neutral-600">
           Every approved verification increases your trust score and helps you close
@@ -139,7 +139,7 @@ useEffect(() => {
       {/* Product Details */}
       <div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md space-y-space-24">
         <h3 className="text-body-medium font-semibold text-neutral-900">
-          What are you proving?
+          What exact item are you proving?
         </h3>
         <div>
           <label className="block text-body-small font-medium text-neutral-700 mb-gap-label-input">
@@ -220,7 +220,7 @@ useEffect(() => {
           Upload real photos and a short video of the exact item your buyer will receive.
         </p>
         <label className="block text-body-small font-medium text-neutral-700 mb-space-12">
-          Upload Proof <span className="text-danger">*</span>
+          Upload buyer proof <span className="text-danger">*</span>
         </label>
 
         {/* <p className="text-body-small text-neutral-700">
