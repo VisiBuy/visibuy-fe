@@ -130,9 +130,6 @@ useEffect(() => {
         <p className="mt-space-8 text-body-small text-neutral-600">
           Takes less than 1 minute.
         </p>
-        <p className="mt-space-8 text-body-small text-neutral-600">
-          Takes less than 1 minute.
-        </p>
       </div>
 
       {/* Product Details */}
