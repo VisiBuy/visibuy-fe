@@ -91,6 +91,10 @@ useEffect(() => {
   }, [title, description, price, photos.length, video]);
 
   const handleStepOne = async () => {
+  setValue(
+    "description",
+    `Proof created for ${title || "item"}`
+  );
   const valid = await trigger(["title", "description", "price"]);
 
     if (valid) {
@@ -133,13 +137,13 @@ useEffect(() => {
       </div>
 
       {/* Product Details */}
-      <div className="space-y-space-24">
+      <div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md space-y-space-24">
         <h3 className="text-body-medium font-semibold text-neutral-900">
-          Tell your buyer what they’re getting
+          What are you proving?
         </h3>
         <div>
           <label className="block text-body-small font-medium text-neutral-700 mb-gap-label-input">
-            Product Title
+            Proof title
           </label>
           <input
             {...register("title")}
@@ -156,7 +160,7 @@ useEffect(() => {
           </p>
         </div>
 
-        <div>
+        {/* <div>
           <label className="block text-body-small font-medium text-neutral-700 mb-gap-label-input">
             Description
           </label>
@@ -171,11 +175,11 @@ useEffect(() => {
               {errors.description.message}
             </p>
           )}
-        </div>
+        </div> */}
 
         <div>
           <label className="block text-body-small font-medium text-neutral-700 mb-gap-label-input">
-            Price (₦)
+            Amount buyer will pay (₦)
           </label>
           <input
             type="number"
