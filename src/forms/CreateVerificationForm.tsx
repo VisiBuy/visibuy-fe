@@ -47,6 +47,7 @@ export const CreateVerificationForm: React.FC<Props> = ({
   // For calm “this is taking a bit longer” message
 const [showSlowMessage, setShowSlowMessage] = useState(false);
 const [step, setStep] = useState(1);
+const [showPriceField, setShowPriceField] = useState(false);
 
 useEffect(() => {
   if (!isLoading) {
@@ -84,7 +85,7 @@ useEffect(() => {
 
   const readiness = useMemo(() => {
     const detailsReady =
-      Boolean(title?.trim()) && Boolean(description?.trim()) && Number(price) > 0;
+      Boolean(title?.trim()) && Boolean(description?.trim());
     const photosReady = photos.length === 5;
     const videoReady = Boolean(video);
     return { detailsReady, photosReady, videoReady };
@@ -95,7 +96,7 @@ useEffect(() => {
     "description",
     `Proof created for ${title || "item"}`
   );
-  const valid = await trigger(["title", "description", "price"]);
+  const valid = await trigger(["title", "description"]);
 
     if (valid) {
       setStep(2);
@@ -122,28 +123,28 @@ useEffect(() => {
         </p>
 
         <h2 className="mt-space-8 text-h4-desktop font-semibold text-neutral-900">
-          🤝 Create proof your buyer will trust
+          🤝 What exact item are you proving?
         </h2>
         <p className="mt-space-8 text-body-medium text-neutral-700">
-          Turn your photos into proof your buyer can trust — and close the sale faster.
+          Add the exact item details before uploading photos and video.
         </p>
         {/* <p className="mt-space-8 text-body-small text-neutral-600">
           Every approved verification increases your trust score and helps you close
           faster.
         </p> */}
-        <p className="mt-space-8 text-body-small text-neutral-600">
+        {/* <p className="mt-space-8 text-body-small text-neutral-600">
           Takes less than 1 minute.
-        </p>
+        </p> */}
       </div>
 
       {/* Product Details */}
       <div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md space-y-space-24">
-        <h3 className="text-body-medium font-semibold text-neutral-900">
+        {/* <h3 className="text-body-medium font-semibold text-neutral-900">
           What exact item are you proving?
-        </h3>
+        </h3> */}
         <div>
           <label className="block text-body-small font-medium text-neutral-700 mb-gap-label-input">
-            Proof title
+            Item Name
           </label>
           <input
             {...register("title")}
@@ -156,7 +157,7 @@ useEffect(() => {
             </p>
           )}
           <p className="text-body-small text-neutral-600 mt-space-8">
-            Be specific — buyers compare this to what you deliver.
+            Be specific — this should match the exact item you deliver.
           </p>
         </div>
 
@@ -177,23 +178,54 @@ useEffect(() => {
           )}
         </div> */}
 
-        <div>
-          <label className="block text-body-small font-medium text-neutral-700 mb-gap-label-input">
-            Amount buyer will pay (₦)
-          </label>
-          <input
-            type="number"
-            step="0.01"
-            placeholder="e.g. 45000"
-            {...register("price")}
-            className="w-full h-input px-space-16 py-space-12 rounded-input border border-neutral-300 focus:ring-2 focus:ring-primary-blue focus:border-primary-blue focus:outline-none text-body-medium font-secondary transition-standard"
-          />
-          {errors.price && (
-            <p className="text-danger text-body-small mt-space-8">
-              {errors.price.message}
-            </p>
-          )}
-        </div>
+        <div className="border-t border-neutral-200 pt-space-24">
+  {!showPriceField ? (
+    <button
+      type="button"
+      onClick={() => setShowPriceField(true)}
+      className="text-body-small font-medium text-primary-blue hover:underline"
+    >
+      + Add price (optional)
+    </button>
+  ) : (
+    <div className="space-y-space-12">
+      <div className="flex items-center justify-between">
+        <label className="block text-body-small font-medium text-neutral-700">
+          Price (₦)
+        </label>
+
+        <button
+          type="button"
+          onClick={() => {
+            setShowPriceField(false);
+            setValue("price", 0);
+          }}
+          className="text-body-small text-neutral-500 hover:text-neutral-700"
+        >
+          Hide
+        </button>
+      </div>
+
+      <input
+        type="number"
+        step="0.01"
+        placeholder="e.g. 45000"
+        {...register("price")}
+        className="w-full h-input px-space-16 py-space-12 rounded-input border border-neutral-300 focus:ring-2 focus:ring-primary-blue focus:border-primary-blue focus:outline-none text-body-medium font-secondary transition-standard"
+      />
+
+      {errors.price && (
+        <p className="text-danger text-body-small">
+          {errors.price.message}
+        </p>
+      )}
+
+      <p className="text-body-small text-neutral-600">
+        Add a price if you want it shown in the verification.
+      </p>
+    </div>
+  )}
+</div>
       </div>
               <button
       type="button"
@@ -213,14 +245,14 @@ useEffect(() => {
         </p>
 
         <h2 className="text-h4-desktop font-semibold text-neutral-900">
-          📸 Show the exact item
+          📸 Prove the exact item
         </h2>
 
         <p className="mt-space-8 text-body-medium text-neutral-700 mb-space-24">
           Upload real photos and a short video of the exact item your buyer will receive.
         </p>
         <label className="block text-body-small font-medium text-neutral-700 mb-space-12">
-          Upload buyer proof <span className="text-danger">*</span>
+          Upload item photos <span className="text-danger">*</span>
         </label>
 
         {/* <p className="text-body-small text-neutral-700">
@@ -231,7 +263,7 @@ useEffect(() => {
           <li>Front view</li>
           <li>Side view</li>
           <li>Close-up of key details</li>
-          <li>Label/serial (if any)</li>
+          <li>Tags, labels, or key details</li>
           <li>Any flaws (if any)</li>
         </ul>
 
@@ -320,7 +352,7 @@ useEffect(() => {
         {/* Video */}
         <div className="mt-space-24">
           <label className="block text-body-small font-medium text-neutral-700 mb-space-8">
-            Upload Video <span className="text-danger">*</span>
+            Upload Item Video <span className="text-danger">*</span>
           </label>
           <p className="text-body-small text-neutral-600 mb-space-12">
             Keep it short (max 30s). A slow 360° scan works best.
@@ -425,15 +457,15 @@ useEffect(() => {
         </p>
 
         <h2 className="mt-space-8 text-h4-desktop font-semibold text-neutral-900">
-          🔗 Send proof to your buyer
+          🔗 Get verification link
         </h2>
 
         <p className="mt-space-8 text-body-medium text-neutral-700 mb-space-24">
-          Your proof is ready. Generate your verification link and send it to your buyer.
+          Everything looks good. Get your verification link to send to your buyer before payment.
         </p>
         <div className="space-y-space-8 text-body-small">
           <div className="flex items-center justify-between">
-            <span className="text-neutral-700">Product details</span>
+            <span className="text-neutral-700">Item details</span>
             <span
               className={
                 readiness.detailsReady ? "text-primary-green font-medium" : "text-neutral-500"
@@ -487,14 +519,14 @@ useEffect(() => {
     }`}
   >
     {isLoading
-      ? "Generating Link..."
+      ? "Generating verification link..."
       : "Get your verification link →"}
   </button>
 </div>
       {isLoading && (
   <div className="rounded-card border border-neutral-200 bg-neutral-white p-card-md mt-space-16 animate-fade-in">
     <p className="text-body-small text-neutral-700">
-      We’re generating your verification link and securing your proof.
+      We’re generating your verification link and processing your photos and video.
     </p>
 
     <p className="text-caption text-neutral-500 mt-space-8">

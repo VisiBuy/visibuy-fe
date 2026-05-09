@@ -182,7 +182,7 @@ const SignupScreen = () => {
               Stop time-wasters. Get paid.
             </h2>
             <p className="text-gray-600 text-sm font-[400] animate-pulse-slow">
-              Turn your photos into buyer proof — in under 30 seconds.
+              Prove the exact item before payment — in under 30 seconds.
             </p>
           </div>
           <p className="text-xs text-gray-500 text-center mb-4">
@@ -196,7 +196,7 @@ const SignupScreen = () => {
       <div className="w-6 h-6 flex items-center justify-center rounded-full bg-[#007BFF] text-white text-xs font-semibold">
         1
       </div>
-      <span>Create buyer proof</span>
+      <span>Upload the exact item</span>
     </div>
 
     {/* Divider */}
@@ -267,7 +267,7 @@ const SignupScreen = () => {
               name="email"
               label={
                 <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Email *
+                  Email 
                 </span>
               }
               rules={[
@@ -442,7 +442,7 @@ const SignupScreen = () => {
                 disabled={isLoading}
                 icon={isLoading ? <LoadingOutlined spin /> : null}
               >
-                {isLoading ? "Creating..." : "Create proof & get paid →"}
+                {isLoading ? "Creating..." : "Create verification link →"}
               </Button>
             </Form.Item>
           </Form>
