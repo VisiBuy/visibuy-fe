@@ -212,16 +212,16 @@ export default function CreateVerificationPage() {
 
             <CheckCircle className="w-20 h-20 text-primary-green mx-auto mb-space-16" />
             <h2 className="text-h3-desktop md:text-h3-mobile font-bold text-neutral-900 mb-space-8">
-              Your proof is ready — send it to your buyer
+              Your verification link is ready — send it to your buyer
             </h2>
 
             <p className="text-body-medium text-neutral-600 mb-space-24">
-              Send this to your buyer now so they can confirm it’s the exact item before paying.
+              Send this to your buyer so they can confirm it’s the exact item before payment.
             </p>
 
-            <p className="text-body-small text-neutral-600 mb-space-24">
+            {/* <p className="text-body-small text-neutral-600 mb-space-24">
               This helps your buyer trust you and pay faster.
-            </p>
+            </p> */}
 
             <div className="flex items-center gap-space-8 bg-neutral-100 p-space-12 rounded-input mb-space-24">
               <input
@@ -243,7 +243,7 @@ export default function CreateVerificationPage() {
             </div>
             <a
               href={`https://wa.me/?text=${encodeURIComponent(
-                "Hi, this is the exact item you asked for. Please confirm it matches before payment: " + verificationLink
+                "Hi, here’s the verification link for the exact item you asked for. Please confirm before payment: " + verificationLink
               )}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -260,7 +260,7 @@ export default function CreateVerificationPage() {
               }}
               className="mt-space-16 text-primary-blue underline text-body-small"
             >
-              View details later
+              View verification details
             </button>
           </div>
         </div>
@@ -279,7 +279,7 @@ export default function CreateVerificationPage() {
 
             <XCircle className="w-20 h-20 text-danger mx-auto mb-space-16" />
             <h2 className="text-h3-desktop md:text-h3-mobile font-bold text-neutral-900 mb-space-8">
-              Verification Failed
+              Couldn’t create verification
             </h2>
 
             <p className="text-body-medium text-neutral-600 mb-space-24">
