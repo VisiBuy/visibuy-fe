@@ -218,7 +218,7 @@ const SignupScreen = () => {
       <div className="w-6 h-6 flex items-center justify-center rounded-full bg-[#007BFF] text-white text-xs font-semibold">
         3
       </div>
-      <span>Send proof to buyer</span>
+      <span>Send to buyer</span>
     </div>
 
   </div>
@@ -444,6 +444,9 @@ const SignupScreen = () => {
               >
                 {isLoading ? "Creating..." : "Create verification link →"}
               </Button>
+               <p className="text-sm text-gray-500 text-center mt-3">
+                  Free to start.
+                </p>
             </Form.Item>
           </Form>
 
