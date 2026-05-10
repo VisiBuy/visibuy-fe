@@ -444,6 +444,9 @@ const SignupScreen = () => {
               >
                 {isLoading ? "Creating..." : "Create verification link →"}
               </Button>
+               <p className="text-sm text-gray-500 text-center mt-3">
+                  Free to start.
+                </p>
             </Form.Item>
           </Form>
 
