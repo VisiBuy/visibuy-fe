@@ -530,7 +530,7 @@ export const CreateVerificationForm: React.FC<
                 transition-transform
               "
             >
-              Start Recording
+              Start Proving
             </button>
           </div>
         </div>
