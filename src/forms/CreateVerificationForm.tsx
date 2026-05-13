@@ -39,11 +39,11 @@ const imageCaptureFlow = [
       "Tag, logo, serial number, texture, etc.",
   },
   {
-    title: "Show another angle",
+    title: "Show the left side",
     helper: "",
   },
   {
-    title: "Capture final image",
+    title: "Show the right side",
     helper: "",
   },
 ];
