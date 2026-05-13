@@ -196,7 +196,7 @@ const SignupScreen = () => {
       <div className="w-6 h-6 flex items-center justify-center rounded-full bg-[#007BFF] text-white text-xs font-semibold">
         1
       </div>
-      <span>Upload the exact item</span>
+      <span>Record the exact item</span>
     </div>
 
     {/* Divider */}
