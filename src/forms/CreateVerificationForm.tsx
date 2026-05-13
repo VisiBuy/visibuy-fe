@@ -1,22 +1,61 @@
-import { useMemo, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Upload, X, CheckCircle } from "lucide-react";
+import {
+  Camera,
+  CheckCircle,
+  Video,
+  X,
+  ChevronLeft,
+} from "lucide-react";
+
 import {
   createVerificationSchema,
   CreateVerificationFormData,
 } from "@/schemas/createVerificationSchema";
 
+import proofPlaceIllustration from "@/assets/proof-place.png";
+import proofHoldIllustration from "@/assets/proof-hold.png";
+
 interface Props {
-  onSubmit: (data: CreateVerificationFormData) => Promise<void>;
+  onSubmit: (
+    data: CreateVerificationFormData
+  ) => Promise<void>;
   isLoading: boolean;
 }
 
-export const CreateVerificationForm: React.FC<Props> = ({
-  onSubmit,
-  isLoading,
-}) => {
+const imageCaptureFlow = [
+  {
+    title: "Show the front side",
+    helper: "",
+  },
+  {
+    title: "Turn to the back side",
+    helper: "",
+  },
+  {
+    title: "Show important details",
+    helper:
+      "Tag, logo, serial number, texture, etc.",
+  },
+  {
+    title: "Show another angle",
+    helper: "",
+  },
+  {
+    title: "Capture final image",
+    helper: "",
+  },
+];
+
+const proofSlides = [
+  proofPlaceIllustration,
+  proofHoldIllustration,
+];
+
+export const CreateVerificationForm: React.FC<
+  Props
+> = ({ onSubmit, isLoading }) => {
   const {
     register,
     handleSubmit,
@@ -25,7 +64,9 @@ export const CreateVerificationForm: React.FC<Props> = ({
     watch,
     trigger,
   } = useForm<CreateVerificationFormData>({
-    resolver: zodResolver(createVerificationSchema),
+    resolver: zodResolver(
+      createVerificationSchema
+    ),
     mode: "onBlur",
     reValidateMode: "onSubmit",
     defaultValues: {
@@ -36,523 +77,1312 @@ export const CreateVerificationForm: React.FC<Props> = ({
     },
   });
 
-  const title = watch("title");
-  const description = watch("description");
-  const price = watch("price");
-  // const enableEscrow = watch("enableEscrow");
+  const [step, setStep] = useState<
+    | "prep"
+    | "capture"
+    | "video"
+    | "details"
+    | "review"
+  >("prep");
+
+  const [currentSlide, setCurrentSlide] =
+    useState(0);
+
+  const [captureIndex, setCaptureIndex] =
+    useState(0);
+
+  const [showPriceField, setShowPriceField] =
+    useState(false);
+
+  const [showSlowMessage, setShowSlowMessage] =
+    useState(false);
+
+  const [isRecordingVideo, setIsRecordingVideo] =
+    useState(false);
+
+  const [recordingTime, setRecordingTime] =
+    useState(0);
+
+  const liveVideoRef =
+    useRef<HTMLVideoElement>(null);
+
+  const canvasRef =
+    useRef<HTMLCanvasElement>(null);
+
+  const streamRef =
+    useRef<MediaStream | null>(null);
+
+  const mediaRecorderRef =
+    useRef<MediaRecorder | null>(null);
+
+  const recordedChunksRef =
+    useRef<Blob[]>([]);
+
+  const recordingIntervalRef =
+    useRef<NodeJS.Timeout | null>(null);
 
   const photos = watch("photos");
+
   const video = watch("video");
 
-  // For calm “this is taking a bit longer” message
-const [showSlowMessage, setShowSlowMessage] = useState(false);
-const [step, setStep] = useState(1);
-const [showPriceField, setShowPriceField] = useState(false);
+  const title = watch("title");
 
-useEffect(() => {
-  if (!isLoading) {
-    setShowSlowMessage(false);
-    return;
-  }
+  // AUTO ROTATE ILLUSTRATIONS
+  useEffect(() => {
+    if (step !== "prep") return;
 
-  const timer = setTimeout(() => {
-    setShowSlowMessage(true);
-  }, 5000); // 5 seconds
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) =>
+        prev === proofSlides.length - 1
+          ? 0
+          : prev + 1
+      );
+    }, 4500);
 
-  return () => clearTimeout(timer);
-}, [isLoading]);
+    return () => clearInterval(interval);
+  }, [step]);
 
-  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    const remaining = 5 - photos.length;
-    const newPhotos = [...photos, ...files.slice(0, remaining)];
+  // LOADING FEEDBACK
+  useEffect(() => {
+    if (!isLoading) {
+      setShowSlowMessage(false);
 
-    setValue("photos", newPhotos, { shouldValidate: isSubmitted });
+      return;
+    }
 
-    if (isSubmitted) await trigger("photos");
+    const timer = setTimeout(() => {
+      setShowSlowMessage(true);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (step === "capture") {
+      startPhotoCamera();
+    }
+
+    if (step === "video") {
+      startVideoCamera();
+    }
+
+    return () => {
+      stopCamera();
+    };
+  }, [step]);
+
+  const readiness = useMemo(() => {
+    return {
+      photosReady: photos.length === 5,
+      videoReady: Boolean(video),
+      detailsReady: Boolean(title?.trim()),
+    };
+  }, [photos, video, title]);
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current
+        .getTracks()
+        .forEach((track) => {
+          track.stop();
+        });
+
+      streamRef.current = null;
+    }
+
+    if (liveVideoRef.current) {
+      liveVideoRef.current.srcObject = null;
+    }
+
+    if (recordingIntervalRef.current) {
+      clearInterval(
+        recordingIntervalRef.current
+      );
+    }
   };
 
-  const removePhoto = async (index: number) => {
-    const newPhotos = photos.filter((_, i) => i !== index);
-    setValue("photos", newPhotos, { shouldValidate: isSubmitted });
+  const attachStreamToVideo = async (
+    stream: MediaStream
+  ) => {
+    const videoElement =
+      liveVideoRef.current;
 
-    if (isSubmitted) await trigger("photos");
+    if (!videoElement) return;
+
+    videoElement.srcObject = stream;
+
+    videoElement.playsInline = true;
+
+    videoElement.muted = true;
+
+    await videoElement.play();
   };
 
-  const onFormSubmit = async (data: CreateVerificationFormData) => {
+  const startPhotoCamera = async () => {
+    try {
+      stopCamera();
+
+      const stream =
+        await navigator.mediaDevices.getUserMedia(
+          {
+            video: {
+              facingMode: {
+                ideal: "environment",
+              },
+              width: {
+                ideal: 1080,
+              },
+              height: {
+                ideal: 1920,
+              },
+            },
+            audio: false,
+          }
+        );
+
+      streamRef.current = stream;
+
+      await attachStreamToVideo(stream);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const startVideoCamera = async () => {
+    try {
+      stopCamera();
+
+      const stream =
+        await navigator.mediaDevices.getUserMedia(
+          {
+            video: {
+              facingMode: {
+                ideal: "environment",
+              },
+              width: {
+                ideal: 1080,
+              },
+              height: {
+                ideal: 1920,
+              },
+            },
+            audio: true,
+          }
+        );
+
+      streamRef.current = stream;
+
+      await attachStreamToVideo(stream);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handlePhotoCapture = async () => {
+    if (
+      !liveVideoRef.current ||
+      !canvasRef.current
+    ) {
+      return;
+    }
+
+    const videoElement =
+      liveVideoRef.current;
+
+    const canvas = canvasRef.current;
+
+    const width = videoElement.videoWidth;
+
+    const height = videoElement.videoHeight;
+
+    if (!width || !height) return;
+
+    canvas.width = width;
+
+    canvas.height = height;
+
+    const ctx = canvas.getContext("2d");
+
+    if (!ctx) return;
+
+    ctx.drawImage(
+      videoElement,
+      0,
+      0,
+      width,
+      height
+    );
+
+    canvas.toBlob(
+      async (blob) => {
+        if (!blob) return;
+
+        const file = new File(
+          [blob],
+          `capture-${captureIndex + 1}.jpg`,
+          {
+            type: "image/jpeg",
+          }
+        );
+
+        const updatedPhotos = [
+          ...photos,
+          file,
+        ];
+
+        setValue("photos", updatedPhotos, {
+          shouldValidate: isSubmitted,
+        });
+
+        if (captureIndex < 4) {
+          setTimeout(() => {
+            setCaptureIndex(
+              (prev) => prev + 1
+            );
+          }, 500);
+        } else {
+          stopCamera();
+
+          setTimeout(() => {
+            setStep("video");
+          }, 700);
+        }
+
+        if (isSubmitted) {
+          await trigger("photos");
+        }
+      },
+      "image/jpeg",
+      0.95
+    );
+  };
+
+  const handleVideoCapture = async () => {
+    if (!streamRef.current) return;
+
+    if (isRecordingVideo) {
+      mediaRecorderRef.current?.stop();
+
+      setIsRecordingVideo(false);
+
+      if (recordingIntervalRef.current) {
+        clearInterval(
+          recordingIntervalRef.current
+        );
+      }
+
+      return;
+    }
+
+    recordedChunksRef.current = [];
+
+    const mediaRecorder = new MediaRecorder(
+      streamRef.current
+    );
+
+    mediaRecorderRef.current = mediaRecorder;
+
+    mediaRecorder.ondataavailable = (
+      event
+    ) => {
+      if (event.data.size > 0) {
+        recordedChunksRef.current.push(
+          event.data
+        );
+      }
+    };
+
+    mediaRecorder.onstop = async () => {
+      const blob = new Blob(
+        recordedChunksRef.current,
+        {
+          type: "video/webm",
+        }
+      );
+
+      const file = new File(
+        [blob],
+        "proof-video.webm",
+        {
+          type: "video/webm",
+        }
+      );
+
+      setValue("video", file, {
+        shouldValidate: true,
+      });
+
+      stopCamera();
+
+      setTimeout(() => {
+        setStep("details");
+      }, 700);
+    };
+
+    mediaRecorder.start(200);
+
+    setIsRecordingVideo(true);
+
+    setRecordingTime(0);
+
+    recordingIntervalRef.current =
+      setInterval(() => {
+        setRecordingTime((prev) => {
+           const nextTime = prev + 1;
+          if (nextTime >= 30) {
+            mediaRecorder.stop();
+
+            setIsRecordingVideo(false);
+
+            if (
+              recordingIntervalRef.current
+            ) {
+              clearInterval(
+                recordingIntervalRef.current
+              );
+            }
+
+            return 30;
+          }
+
+          return nextTime;
+        });
+      }, 1000);
+  };
+
+  const handleDetailsContinue =
+    async () => {
+      setValue(
+        "description",
+        `Proof created for ${
+          title || "item"
+        }`
+      );
+
+      const valid = await trigger([
+        "title",
+        "description",
+      ]);
+
+      if (valid) {
+        setStep("review");
+      }
+    };
+
+  const onFormSubmit = async (
+    data: CreateVerificationFormData
+  ) => {
     await onSubmit(data);
   };
 
-  const readiness = useMemo(() => {
-    const detailsReady =
-      Boolean(title?.trim()) && Boolean(description?.trim());
-    const photosReady = photos.length === 5;
-    const videoReady = Boolean(video);
-    return { detailsReady, photosReady, videoReady };
-  }, [title, description, price, photos.length, video]);
-
-  const handleStepOne = async () => {
-  setValue(
-    "description",
-    `Proof created for ${title || "item"}`
-  );
-  const valid = await trigger(["title", "description"]);
-
-    if (valid) {
-      setStep(2);
-    }
-  };
-
-  const handleStepTwo = async () => {
-    const valid = await trigger(["photos", "video"]);
-
-    if (valid && photos.length === 5 && video) {
-      setStep(3);
-    }
-  };
-
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-space-32">
-    {step === 1 && (
-  <div className="space-y-space-32">
-      {/* ✅ Purpose Header (reinforce without slowing) */}
-      
-      <div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md">
-        <p className="text-body-small text-primary-blue font-medium">
-          Step 1 of 3
-        </p>
+    <form
+      onSubmit={handleSubmit(onFormSubmit)}
+      className="min-h-screen bg-black overflow-hidden"
+    >
+      {/* ===================================================== */}
+      {/* PREP */}
+      {/* ===================================================== */}
 
-        <h2 className="mt-space-8 text-h4-desktop font-semibold text-neutral-900">
-          🤝 What exact item are you proving?
+      {step === "prep" && (
+        <div className="fixed inset-0 bg-white overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <img
+              src={proofSlides[currentSlide]}
+              alt="Proof preparation"
+              className="
+                w-full
+                h-full
+                object-contain
+                transition-opacity
+                duration-700
+                ease-out
+              "
+            />
+          </div>
+
+          <div
+            className="
+              absolute
+              bottom-0
+              left-0
+              right-0
+              z-20
+              px-space-24
+              pb-[max(24px,env(safe-area-inset-bottom))]
+            "
+          >
+            <button
+              type="button"
+              onClick={() => {
+                setStep("capture");
+              }}
+              className="
+                w-full
+                h-[58px]
+                rounded-[18px]
+                bg-primary-blue
+                text-white
+                font-semibold
+                text-body-medium
+                shadow-elevation-2
+                active:scale-[0.98]
+                transition-transform
+              "
+            >
+              Start Recording
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ===================================================== */}
+      {/* IMAGE CAPTURE */}
+      {/* ===================================================== */}
+
+      {step === "capture" && (
+        <div className="fixed inset-0 bg-black overflow-hidden">
+          <video
+            ref={liveVideoRef}
+            autoPlay
+            playsInline
+            muted
+            className="
+              absolute
+              inset-0
+              w-full
+              h-full
+              object-cover
+              z-0
+            "
+          />
+
+          <canvas
+            ref={canvasRef}
+            className="hidden"
+          />
+
+          <div className="absolute inset-0 bg-black/20 z-10" />
+
+          <div
+            className="
+              absolute
+              top-0
+              left-0
+              right-0
+              z-30
+              flex
+              items-center
+              justify-between
+              px-5
+              pt-[max(90px,env(safe-area-inset-top))]
+            "
+          >
+            <button
+              type="button"
+              onClick={() => {
+                stopCamera();
+
+                setStep("prep");
+
+                setCaptureIndex(0);
+              }}
+              className="
+                w-11
+                h-11
+                rounded-full
+                bg-black/40
+                backdrop-blur-md
+                flex
+                items-center
+                justify-center
+              "
+            >
+              <X className="w-5 h-5 text-white" />
+            </button>
+
+            <div
+              className="
+                px-4
+                py-2
+                rounded-full
+                bg-black/40
+                backdrop-blur-md
+              "
+            >
+              <span className="text-white text-sm font-medium">
+                {captureIndex + 1}/5
+              </span>
+            </div>
+          </div>
+
+          <div
+            className="
+              absolute
+              inset-0
+              z-20
+              flex
+              flex-col
+              items-center
+              justify-center
+              text-center
+              px-8
+              pointer-events-none
+            "
+          >
+            <h2
+              className="
+                text-white
+                text-[34px]
+                leading-[1.1]
+                font-semibold
+                max-w-[320px]
+              "
+            >
+              {imageCaptureFlow[captureIndex].title}
+            </h2>
+
+            {imageCaptureFlow[captureIndex]
+              .helper && (
+              <p
+                className="
+                  mt-4
+                  text-white/80
+                  text-base
+                  leading-relaxed
+                  max-w-[260px]
+                "
+              >
+                {
+                  imageCaptureFlow[
+                    captureIndex
+                  ].helper
+                }
+              </p>
+            )}
+
+            {photos[captureIndex] && (
+              <div
+                className="
+                  mt-6
+                  flex
+                  items-center
+                  gap-2
+                  text-primary-green
+                "
+              >
+                <CheckCircle className="w-5 h-5" />
+
+                <span className="font-medium">
+                  Captured
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div
+            className="
+              absolute
+              bottom-0
+              left-0
+              right-0
+              z-30
+              pb-[max(30px,env(safe-area-inset-bottom))]
+            "
+          >
+            <div className="flex flex-col items-center">
+              <button
+                type="button"
+                onClick={handlePhotoCapture}
+                className="
+                  relative
+                  w-[92px]
+                  h-[92px]
+                  rounded-full
+                  bg-white
+                  flex
+                  items-center
+                  justify-center
+                  active:scale-95
+                  transition-transform
+                  cursor-pointer
+                "
+              >
+                <div
+                  className="
+                    w-[74px]
+                    h-[74px]
+                    rounded-full
+                    border-[6px]
+                    border-black
+                  "
+                />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  stopCamera();
+
+                  setStep("prep");
+
+                  setCaptureIndex(0);
+                }}
+                className="
+                  mt-6
+                  text-white/75
+                  text-sm
+                  font-medium
+                "
+              >
+                Stop Recording
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===================================================== */}
+      {/* VIDEO */}
+      {/* ===================================================== */}
+
+      {step === "video" && (
+        <div className="fixed inset-0 bg-black overflow-hidden">
+          <video
+            ref={liveVideoRef}
+            autoPlay
+            playsInline
+            muted
+            className="
+              absolute
+              inset-0
+              w-full
+              h-full
+              object-cover
+              z-0
+            "
+          />
+
+          <div className="absolute inset-0 bg-black/20 z-10" />
+
+          <div
+            className="
+              absolute
+              top-0
+              left-0
+              right-0
+              z-30
+              flex
+              items-center
+              justify-between
+              px-5
+              pt-[max(90px,env(safe-area-inset-top))]
+            "
+          >
+            <button
+              type="button"
+              onClick={() => {
+                stopCamera();
+
+                setStep("prep");
+
+                setCaptureIndex(0);
+              }}
+              className="
+                w-11
+                h-11
+                rounded-full
+                bg-black/40
+                backdrop-blur-md
+                flex
+                items-center
+                justify-center
+              "
+            >
+              <X className="w-5 h-5 text-white" />
+            </button>
+
+            <div
+              className="
+                px-4
+                py-2
+                rounded-full
+                bg-black/40
+                backdrop-blur-md
+              "
+            >
+              <span className="text-white text-sm font-medium">
+                {isRecordingVideo
+                  ? `${recordingTime}s / 30s`
+                  : "Video Proof"}
+              </span>
+            </div>
+          </div>
+
+          <div
+            className="
+              absolute
+              inset-0
+              z-20
+              flex
+              flex-col
+              items-center
+              justify-center
+              text-center
+              px-8
+              pointer-events-none
+            "
+          >
+            <h2
+              className="
+                text-white
+                text-[34px]
+                leading-[1.1]
+                font-semibold
+                max-w-[320px]
+              "
+            >
+              Record a short proof video
+            </h2>
+
+            <p
+              className="
+                mt-4
+                text-white/80
+                text-base
+                leading-relaxed
+                max-w-[260px]
+              "
+            >
+              Slowly show the exact item clearly.
+            </p>
+
+            <p
+              className="
+                mt-2
+                text-white/60
+                text-sm
+              "
+            >
+              Recommended: 10–30 seconds
+            </p>
+
+            {video && (
+              <div
+                className="
+                  mt-6
+                  flex
+                  items-center
+                  gap-2
+                  text-primary-green
+                "
+              >
+                <CheckCircle className="w-5 h-5" />
+
+                <span className="font-medium">
+                  Proof video recorded
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div
+            className="
+              absolute
+              bottom-0
+              left-0
+              right-0
+              z-30
+              pb-[max(30px,env(safe-area-inset-bottom))]
+            "
+          >
+            <div className="flex flex-col items-center">
+              <button
+                type="button"
+                onClick={handleVideoCapture}
+                className={`
+                  relative
+                  w-[92px]
+                  h-[92px]
+                  rounded-full
+                  flex
+                  items-center
+                  justify-center
+                  active:scale-95
+                  transition-transform
+                  cursor-pointer
+                  ${
+                    isRecordingVideo
+                      ? "bg-red-500"
+                      : "bg-white"
+                  }
+                `}
+              >
+                {isRecordingVideo ? (
+                  <div
+                    className="
+                      w-[34px]
+                      h-[34px]
+                      rounded-[8px]
+                      bg-white
+                    "
+                  />
+                ) : (
+                  <div
+                    className="
+                      w-[38px]
+                      h-[38px]
+                      rounded-full
+                      bg-red-500
+                    "
+                  />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===================================================== */}
+      {/* DETAILS */}
+      {/* ===================================================== */}
+
+      {step === "details" && (
+        <div className="fixed inset-0 bg-white overflow-hidden">
+          <div
+            className="
+              absolute
+              top-0
+              left-0
+              right-0
+              z-20
+              flex
+              items-center
+              px-5
+              pt-[max(90px,env(safe-area-inset-top))]
+            "
+          >
+            <button
+              type="button"
+              onClick={() => setStep("video")}
+              className="
+                w-11
+                h-11
+                rounded-full
+                bg-black/5
+                flex
+                items-center
+                justify-center
+              "
+            >
+              <ChevronLeft className="w-5 h-5 text-neutral-900" />
+            </button>
+          </div>
+
+          <div
+            className="
+              absolute
+              inset-0
+              flex
+              flex-col
+              justify-center
+              px-6
+            "
+          >
+            <div className="w-full">
+              <h2
+                className="
+                  text-[36px]
+                  leading-[1.05]
+                  font-semibold
+                  text-neutral-900
+                  max-w-[320px]
+                "
+              >
+                Add item details
+              </h2>
+
+              <p
+                className="
+                  mt-4
+                  text-neutral-600
+                  text-base
+                  leading-relaxed
+                  max-w-[300px]
+                "
+              >
+                Add the exact item shown in the proof.
+              </p>
+
+              <div className="mt-12">
+                <input
+                  {...register("title")}
+                  placeholder="e.g. Adidas ZX 8000 Light Aqua (Size 10)"
+                  className="
+                    w-full
+                    h-[60px]
+                    px-5
+                    rounded-[18px]
+                    bg-neutral-100
+                    border
+                    border-neutral-200
+                    text-neutral-900
+                    placeholder:text-neutral-400
+                    focus:outline-none
+                    focus:ring-2
+                    focus:ring-primary-blue
+                    text-base
+                  "
+                />
+
+                {errors.title && (
+                  <p className="mt-3 text-danger text-sm">
+                    {errors.title.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-6">
+                {!showPriceField ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowPriceField(true)
+                    }
+                    className="
+                      text-primary-blue
+                      text-sm
+                      font-medium
+                    "
+                  >
+                    + Add price (optional)
+                  </button>
+                ) : (
+                  <div>
+                    <input
+                      type="number"
+                      step="0.01"
+                      {...register("price")}
+                      placeholder="Price (₦)"
+                      className="
+                        w-full
+                        h-[60px]
+                        px-5
+                        rounded-[18px]
+                        bg-neutral-100
+                        border
+                        border-neutral-200
+                        text-neutral-900
+                        placeholder:text-neutral-400
+                        focus:outline-none
+                        focus:ring-2
+                        focus:ring-primary-blue
+                        text-base
+                      "
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div
+            className="
+              absolute
+              bottom-0
+              left-0
+              right-0
+              z-20
+              px-6
+              pb-[max(24px,env(safe-area-inset-bottom))]
+            "
+          >
+            <button
+              type="button"
+              onClick={handleDetailsContinue}
+              className="
+                w-full
+                h-[58px]
+                rounded-[18px]
+                bg-primary-blue
+                text-white
+                font-semibold
+                text-base
+                active:scale-[0.98]
+                transition-transform
+              "
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ===================================================== */}
+{/* REVIEW */}
+{/* ===================================================== */}
+
+{step === "review" && (
+  <div className="fixed inset-0 bg-white overflow-hidden">
+
+    {/* TOP BAR */}
+    <div
+      className="
+        absolute
+        top-0
+        left-0
+        right-0
+        z-20
+        flex
+        items-center
+        px-5
+        pt-[max(90px,env(safe-area-inset-top))]
+      "
+    >
+      <button
+        type="button"
+        onClick={() => setStep("details")}
+        className="
+          w-11
+          h-11
+          rounded-full
+          bg-black/5
+          flex
+          items-center
+          justify-center
+        "
+      >
+        <ChevronLeft className="w-5 h-5 text-neutral-900" />
+      </button>
+    </div>
+
+    {/* CONTENT */}
+    <div
+      className="
+        absolute
+        inset-0
+        overflow-y-auto
+        px-6
+        pt-[110px]
+        pb-[170px]
+      "
+    >
+      {/* HEADER */}
+      <div>
+        <h2
+          className="
+            text-[36px]
+            leading-[1.05]
+            font-semibold
+            text-neutral-900
+            max-w-[320px]
+          "
+        >
+          Your proof is ready
         </h2>
-        <p className="mt-space-8 text-body-medium text-neutral-700">
-          Add the exact item details before uploading photos and video.
+
+        <p
+          className="
+            mt-4
+            text-neutral-600
+            text-base
+            leading-relaxed
+            max-w-[300px]
+          "
+        >
+          Review your proof before generating the verification link.
         </p>
-        {/* <p className="mt-space-8 text-body-small text-neutral-600">
-          Every approved verification increases your trust score and helps you close
-          faster.
-        </p> */}
-        {/* <p className="mt-space-8 text-body-small text-neutral-600">
-          Takes less than 1 minute.
-        </p> */}
       </div>
 
-      {/* Product Details */}
-      <div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md space-y-space-24">
-        {/* <h3 className="text-body-medium font-semibold text-neutral-900">
-          What exact item are you proving?
-        </h3> */}
-        <div>
-          <label className="block text-body-small font-medium text-neutral-700 mb-gap-label-input">
-            Item Name
-          </label>
-          <input
-            {...register("title")}
-            placeholder="e.g. Adidas ZX 8000 Light Aqua (Size 10)"
-            className="w-full h-input px-space-16 py-space-12 rounded-input border border-neutral-300 focus:ring-2 focus:ring-primary-blue focus:border-primary-blue focus:outline-none text-body-medium font-secondary transition-standard"
-          />
-          {errors.title && (
-            <p className="text-danger text-body-small mt-space-8">
-              {errors.title.message}
+      {/* PHOTOS */}
+      <div className="grid grid-cols-2 gap-4 mt-10">
+        {photos.map((photo, index) => (
+          <div
+            key={index}
+            className="
+              aspect-square
+              rounded-[24px]
+              overflow-hidden
+              bg-neutral-100
+            "
+          >
+            <img
+              src={URL.createObjectURL(photo)}
+              alt={`Proof ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* VIDEO */}
+      {video && (
+        <div
+          className="
+            mt-6
+            rounded-[24px]
+            bg-neutral-100
+            p-5
+            flex
+            items-center
+            gap-4
+          "
+        >
+          <div
+            className="
+              w-12
+              h-12
+              rounded-full
+              bg-primary-blue/10
+              flex
+              items-center
+              justify-center
+            "
+          >
+            <Video className="w-5 h-5 text-primary-blue" />
+          </div>
+
+          <div className="min-w-0">
+            <p className="font-medium text-neutral-900">
+              Proof video ready
             </p>
-          )}
-          <p className="text-body-small text-neutral-600 mt-space-8">
-            Be specific — this should match the exact item you deliver.
-          </p>
+
+            <p className="text-sm text-neutral-500 truncate">
+              {video.name}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* STATUS */}
+      <div className="mt-8 space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-neutral-600 text-sm">
+            Photos
+          </span>
+
+          <span className="text-primary-green text-sm font-medium">
+            {photos.length}/5 ready
+          </span>
         </div>
 
-        {/* <div>
-          <label className="block text-body-small font-medium text-neutral-700 mb-gap-label-input">
-            Description
-          </label>
-          <textarea
-            {...register("description")}
-            rows={6}
-            placeholder="Describe condition, key details, what’s included, and any visible flaws."
-            className="w-full px-space-16 py-space-12 rounded-input border border-neutral-300 focus:ring-2 focus:ring-primary-blue focus:border-primary-blue focus:outline-none text-body-medium font-secondary transition-standard resize-none"
-          />
-          {errors.description && (
-            <p className="text-danger text-body-small mt-space-8">
-              {errors.description.message}
-            </p>
-          )}
-        </div> */}
+        <div className="flex items-center justify-between">
+          <span className="text-neutral-600 text-sm">
+            Video
+          </span>
 
-        <div className="border-t border-neutral-200 pt-space-24">
-  {!showPriceField ? (
-    <button
-      type="button"
-      onClick={() => setShowPriceField(true)}
-      className="text-body-small font-medium text-primary-blue hover:underline"
+          <span className="text-primary-green text-sm font-medium">
+            Ready
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between">
+          <span className="text-neutral-600 text-sm">
+            Item details
+          </span>
+
+          <span className="text-primary-green text-sm font-medium">
+            Ready
+          </span>
+        </div>
+      </div>
+    </div>
+
+    {/* CTA AREA */}
+    <div
+      className="
+        absolute
+        bottom-0
+        left-0
+        right-0
+        z-20
+        px-6
+        pb-[max(24px,env(safe-area-inset-bottom))]
+        bg-white
+      "
     >
-      + Add price (optional)
-    </button>
-  ) : (
-    <div className="space-y-space-12">
-      <div className="flex items-center justify-between">
-        <label className="block text-body-small font-medium text-neutral-700">
-          Price (₦)
-        </label>
+      <div className="space-y-3">
 
+        {/* RETAKE BUTTON */}
         <button
           type="button"
           onClick={() => {
-            setShowPriceField(false);
-            setValue("price", 0);
+            setCaptureIndex(0);
+            setStep("capture");
+
+            setTimeout(() => {
+              startPhotoCamera();
+            }, 300);
           }}
-          className="text-body-small text-neutral-500 hover:text-neutral-700"
+          className="
+            w-full
+            h-[56px]
+            rounded-[18px]
+            bg-neutral-100
+            text-neutral-900
+            font-semibold
+            text-base
+            active:scale-[0.98]
+            transition-transform
+          "
         >
-          Hide
+          Retake Proof
+        </button>
+
+        {/* GENERATE BUTTON */}
+        <button
+          type="submit"
+          disabled={isLoading}
+          className={`
+            w-full
+            h-[58px]
+            rounded-[18px]
+            font-semibold
+            text-base
+            text-white
+            active:scale-[0.98]
+            transition-transform
+            ${
+              isLoading
+                ? "bg-neutral-400 cursor-not-allowed"
+                : "bg-primary-blue"
+            }
+          `}
+        >
+          {isLoading
+            ? "Generating verification link..."
+            : "Generate Verification Link"}
         </button>
       </div>
 
-      <input
-        type="number"
-        step="0.01"
-        placeholder="e.g. 45000"
-        {...register("price")}
-        className="w-full h-input px-space-16 py-space-12 rounded-input border border-neutral-300 focus:ring-2 focus:ring-primary-blue focus:border-primary-blue focus:outline-none text-body-medium font-secondary transition-standard"
-      />
-
-      {errors.price && (
-        <p className="text-danger text-body-small">
-          {errors.price.message}
-        </p>
-      )}
-
-      <p className="text-body-small text-neutral-600">
-        Add a price if you want it shown in the verification.
-      </p>
-    </div>
-  )}
-</div>
-      </div>
-              <button
-      type="button"
-      onClick={handleStepOne}
-      className="w-full h-btn-medium px-btn-medium-x rounded-btn-medium font-semibold text-neutral-white transition-standard shadow-elevation-2 bg-primary-blue hover:bg-primary-blue/90"
-    >
-      Continue →
-    </button>
-  </div>
-)}
-    {step === 2 && (
-  <div className="space-y-space-32">
-      {/* Media Upload */}
-      <div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md">
-        <p className="text-body-small text-primary-blue font-medium mb-space-8">
-          Step 2 of 3
-        </p>
-
-        <h2 className="text-h4-desktop font-semibold text-neutral-900">
-          📸 Prove the exact item
-        </h2>
-
-        <p className="mt-space-8 text-body-medium text-neutral-700 mb-space-24">
-          Upload real photos and a short video of the exact item your buyer will receive.
-        </p>
-        <label className="block text-body-small font-medium text-neutral-700 mb-space-12">
-          Upload item photos <span className="text-danger">*</span>
-        </label>
-
-        {/* <p className="text-body-small text-neutral-700">
-          Start by uploading your product photos (you’ll need 5 in total) and a short video so your buyer can approve confidently.
-        </p> */}
-
-        <ul className="mt-space-12 text-body-small text-neutral-600 list-disc pl-space-24 space-y-space-8">
-          <li>Front view</li>
-          <li>Side view</li>
-          <li>Close-up of key details</li>
-          <li>Tags, labels, or key details</li>
-          <li>Any flaws (if any)</li>
-        </ul>
-
-        {/* Photos */}
-        <div className="mt-space-24">
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handlePhotoChange}
-            className="hidden"
-            id="photo-upload"
-            disabled={photos.length >= 5}
-          />
-
-          <label
-            htmlFor="photo-upload"
-            className={`cursor-pointer inline-flex items-center gap-space-8 px-space-24 py-space-12 rounded-input font-medium transition-standard min-h-tap-target ${
-              photos.length >= 5
-                ? "bg-primary-green/10 text-primary-green cursor-not-allowed border-2 border-primary-green/30"
-                : "bg-neutral-100 hover:bg-neutral-200 border-2 border-dashed border-neutral-300"
-            }`}
-          >
-            <Upload className="w-5 h-5" />
-            {photos.length >= 5
-              ? "All 5 photos uploaded"
-              : `Upload Photos (${photos.length}/5)`}
-          </label>
-
-          {/* Photo Grid */}
-          <div className="grid grid-cols-5 gap-space-16 mt-space-24">
-            {Array.from({ length: 5 }).map((_, index) => {
-              const photo = photos[index];
-              return (
-                <div
-                  key={index}
-                  className="relative aspect-square rounded-card border-2 border-dashed border-neutral-300 overflow-hidden bg-neutral-100"
-                >
-                  {photo ? (
-                    <>
-                      <img
-                        src={URL.createObjectURL(photo)}
-                        alt={`Photo ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-
-                      {/* ✅ Better mobile UX: visible on mobile, hover on desktop */}
-                      <button
-                        type="button"
-                        onClick={() => removePhoto(index)}
-                        className="absolute top-space-8 right-space-8 bg-danger text-neutral-white rounded-full p-space-12 shadow-elevation-2 opacity-100 md:opacity-0 md:hover:opacity-100 transition-standard"
-                        aria-label={`Remove photo ${index + 1}`}
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </>
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-neutral-400">
-                      <Upload className="w-10 h-10" />
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {isSubmitted && errors.photos && (
-            <p className="text-danger text-body-small mt-space-12 font-medium animate-fade-in">
-              {errors.photos.message}
-            </p>
-          )}
-
-          <p className="text-body-small text-neutral-600 mt-space-12">
-            {photos.length === 5 ? (
-              <span className="text-primary-green font-medium">
-                Photos ready — great.
-              </span>
-            ) : (
-              <>
-                Great — just <strong>{5 - photos.length}</strong> more to go
-              </>
-            )}
-          </p>
-        </div>
-
-        {/* Video */}
-        <div className="mt-space-24">
-          <label className="block text-body-small font-medium text-neutral-700 mb-space-8">
-            Upload Item Video <span className="text-danger">*</span>
-          </label>
-          <p className="text-body-small text-neutral-600 mb-space-12">
-            Keep it short (max 30s). A slow 360° scan works best.
-          </p>
-
-          <input
-            type="file"
-            accept="video/*"
-            onChange={(e) => {
-              if (e.target.files?.[0]) {
-                setValue("video", e.target.files[0], { shouldValidate: true });
-              }
-            }}
-            className="hidden"
-            id="video-upload"
-          />
-
-          <label
-            htmlFor="video-upload"
-            className="cursor-pointer inline-flex items-center gap-space-8 px-space-20 py-space-12 bg-neutral-100 rounded-input hover:bg-neutral-200 transition-standard min-h-tap-target"
-          >
-            <Upload className="w-5 h-5" />
-            {video ? "Change Video" : "Upload Video"}
-          </label>
-
-          {video && (
-            <div className="mt-space-12 inline-flex items-center gap-space-8 bg-primary-green/10 text-primary-green px-space-16 py-space-8 rounded-full text-body-small font-medium">
-              <CheckCircle className="w-4 h-4" />
-              {video.name}
-              <button
-                type="button"
-                onClick={() => setValue("video", undefined, { shouldValidate: true })}
-                className="min-h-tap-target min-w-tap-target flex items-center justify-center"
-                aria-label="Remove video"
-              >
-                <X className="w-4 h-4 ml-space-8 hover:bg-primary-green/20 rounded-full p-space-4 transition-standard" />
-              </button>
-            </div>
-          )}
-
-          {errors.video && (
-            <p className="text-danger text-body-small mt-space-8">
-              {errors.video.message}
-            </p>
-          )}
-        </div>
-      </div>
-          <div className="flex gap-space-16">
-      <button
-        type="button"
-        onClick={() => setStep(1)}
-        className="flex-1 h-btn-medium rounded-btn-medium border border-neutral-300 text-neutral-700 font-semibold"
-      >
-        ← Back
-      </button>
-
-      <button
-        type="button"
-        onClick={handleStepTwo}
-        className="flex-1 h-btn-medium rounded-btn-medium bg-primary-blue text-neutral-white font-semibold"
-      >
-        Continue →
-      </button>
-    </div>
-  </div>
-)}
-
-{/* <div className="rounded-card border border-neutral-200 bg-neutral-white shadow-card p-card-md">
-  <div className="text-body-medium font-semibold text-neutral-900">
-    Escrow Protection (Limited rollout)
-  </div>
-
-  <p className="mt-space-8 text-body-small text-neutral-600">
-    Escrow lets buyers pay into a secure Visibuy account. Funds are only released
-    after delivery is confirmed on Visibuy.
-  </p>
-
-  <p className="mt-space-12 text-body-small text-neutral-600">
-    We’re currently testing escrow with a small group of sellers while we refine
-    the experience.
-  </p>
-
-  <p className="mt-space-12 text-caption text-neutral-500">
-    Want early access? Learn more about how escrow works{" "}
-    <a
-      href="https://visibuy.com.ng/payment-terms"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-primary-blue underline underline-offset-2"
-    >
-      here
-    </a>{" "}
-    or contact support.
-  </p>
-</div> */}
-        {step === 3 && (
-  <div className="space-y-space-32">
-      {/* ✅ Readiness (micro feedback loop) */}
-      <div className="rounded-card border border-neutral-200 bg-neutral-white p-card-md">
-        <p className="text-body-small text-primary-blue font-medium">
-          Step 3 of 3
-        </p>
-
-        <h2 className="mt-space-8 text-h4-desktop font-semibold text-neutral-900">
-          🔗 Get verification link
-        </h2>
-
-        <p className="mt-space-8 text-body-medium text-neutral-700 mb-space-24">
-          Everything looks good. Get your verification link to send to your buyer before payment.
-        </p>
-        <div className="space-y-space-8 text-body-small">
-          <div className="flex items-center justify-between">
-            <span className="text-neutral-700">Item details</span>
-            <span
-              className={
-                readiness.detailsReady ? "text-primary-green font-medium" : "text-neutral-500"
-              }
-            >
-              {readiness.detailsReady ? "Ready" : "In progress"}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-neutral-700">Photos</span>
-            <span
-              className={
-                readiness.photosReady ? "text-primary-green font-medium" : "text-neutral-500"
-              }
-            >
-              {readiness.photosReady ? "5/5 ready" : `${photos.length}/5`}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-neutral-700">Video</span>
-            <span
-              className={
-                readiness.videoReady ? "text-primary-green font-medium" : "text-neutral-500"
-              }
-            >
-              {readiness.videoReady ? "Ready" : "Not added"}
-            </span>
-          </div>
-        </div>
-      </div>
-      {/* <p className="text-center text-body-small text-neutral-600 mb-space-12">
-        You’ll get a link you can send to your buyer to prove it’s the exact item.
-      </p> */}
-      {/* Submit */}
-      <div className="flex gap-space-16">
-  <button
-    type="button"
-    onClick={() => setStep(2)}
-    className="flex-1 h-btn-medium rounded-btn-medium border border-neutral-300 text-neutral-700 font-semibold"
-  >
-    ← Back
-  </button>
-
-  <button
-    type="submit"
-    disabled={isLoading || photos.length !== 5}
-    className={`flex-1 h-btn-medium px-btn-medium-x rounded-btn-medium font-semibold text-neutral-white transition-standard shadow-elevation-2 ${
-      photos.length === 5 && !isLoading
-        ? "bg-primary-blue hover:bg-primary-blue/90"
-        : "bg-neutral-400 cursor-not-allowed"
-    }`}
-  >
-    {isLoading
-      ? "Generating verification link..."
-      : "Get your verification link →"}
-  </button>
-</div>
+      {/* LOADING */}
       {isLoading && (
-  <div className="rounded-card border border-neutral-200 bg-neutral-white p-card-md mt-space-16 animate-fade-in">
-    <p className="text-body-small text-neutral-700">
-      We’re generating your verification link and processing your photos and video.
-    </p>
+        <div
+          className="
+            mt-4
+            rounded-[20px]
+            bg-neutral-100
+            p-5
+          "
+        >
+          <p className="text-sm text-neutral-700">
+            We’re generating your verification link and processing your proof.
+          </p>
 
-    <p className="text-caption text-neutral-500 mt-space-8">
-      This may take a few seconds depending on your video and photo sizes.
-    </p>
+          <p className="text-xs text-neutral-500 mt-2">
+            This may take a few seconds depending on your media size.
+          </p>
 
-    {showSlowMessage && (
-      <p className="text-caption text-neutral-500 mt-space-12 animate-fade-in">
-        Still working — large medias can take a little longer. Thanks for your patience.
-      </p>
-    )}
+          {showSlowMessage && (
+            <p className="text-xs text-neutral-500 mt-3">
+              Still working — larger media can take a little longer.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
   </div>
 )}
-  </div>
-)}
-
-      {/* Bottom Error */}
-      {/* {isSubmitted && (photos.length !== 5) && (
-        <p className="text-center text-danger font-medium text-body-small mt-space-16 animate-pulse">
-          {photos.length !== 5 && !video
-            ? "Please upload 5 photos and a video before generating the link"
-            : photos.length !== 5
-            ? "Please upload 5 photos before generating the link"
-            : "Please upload a video before generating the link"}
-        </p>
-      )} */}
     </form>
   );
 };
