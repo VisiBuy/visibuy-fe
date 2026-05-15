@@ -157,19 +157,7 @@ export const CreateVerificationForm: React.FC<
     return () => clearTimeout(timer);
   }, [isLoading]);
 
-  useEffect(() => {
-    if (step === "capture") {
-      startPhotoCamera();
-    }
 
-    if (step === "video") {
-      startVideoCamera();
-    }
-
-    return () => {
-      stopCamera();
-    };
-  }, [step]);
 
   const readiness = useMemo(() => {
     return {
@@ -213,7 +201,7 @@ export const CreateVerificationForm: React.FC<
 
     videoElement.playsInline = true;
 
-    videoElement.muted = true;
+    videoElement.muted = false;
 
     await videoElement.play();
   };
@@ -345,6 +333,9 @@ export const CreateVerificationForm: React.FC<
 
           setTimeout(() => {
             setStep("video");
+            setTimeout(async () => {
+              await startVideoCamera();
+            }, 100);
           }, 700);
         }
 
@@ -514,8 +505,13 @@ export const CreateVerificationForm: React.FC<
           >
             <button
               type="button"
-              onClick={() => {
+              onClick={async () => {
+
                 setStep("capture");
+
+                setTimeout(async () => {
+                  await startPhotoCamera();
+                }, 50);
               }}
               className="
                 w-full
