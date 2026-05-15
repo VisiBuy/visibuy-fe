@@ -102,7 +102,10 @@ export const CreateVerificationForm: React.FC<
 
   const [recordingTime, setRecordingTime] =
     useState(0);
-
+  
+  const [cameraError, setCameraError] =
+    useState("");
+  
   const liveVideoRef =
     useRef<HTMLVideoElement>(null);
 
@@ -233,6 +236,9 @@ export const CreateVerificationForm: React.FC<
       await attachStreamToVideo(stream);
     } catch (error) {
       console.error(error);
+      setCameraError(
+        "Please allow camera access in your browser or device settings to continue."
+      );
     }
   };
 
@@ -263,6 +269,9 @@ export const CreateVerificationForm: React.FC<
       await attachStreamToVideo(stream);
     } catch (error) {
       console.error(error);
+      setCameraError(
+        "Please allow camera access in your browser or device settings to continue."
+      );
     }
   };
 
@@ -559,6 +568,53 @@ export const CreateVerificationForm: React.FC<
           />
 
           <div className="absolute inset-0 bg-black/20 z-10" />
+          {cameraError && (
+            <div
+              className="
+                absolute
+                left-1/2
+                top-1/2
+                -translate-x-1/2
+                -translate-y-1/2
+                z-50
+                w-[85%]
+                max-w-[320px]
+                rounded-[24px]
+                bg-black/75
+                backdrop-blur-xl
+                px-5
+                py-5
+                text-center
+              "
+            >
+              <p
+                className="
+                  text-white
+                  text-sm
+                  leading-relaxed
+                "
+              >
+                {cameraError}
+              </p>
+
+              <button
+                type="button"
+                onClick={() => setCameraError("")}
+                className="
+                  mt-4
+                  h-[44px]
+                  px-5
+                  rounded-full
+                  bg-white
+                  text-black
+                  text-sm
+                  font-medium
+                "
+              >
+                Got it
+              </button>
+            </div>
+          )}
 
           <div
             className="
@@ -760,6 +816,53 @@ export const CreateVerificationForm: React.FC<
           />
 
           <div className="absolute inset-0 bg-black/20 z-10" />
+          {cameraError && (
+            <div
+              className="
+                absolute
+                left-1/2
+                top-1/2
+                -translate-x-1/2
+                -translate-y-1/2
+                z-50
+                w-[85%]
+                max-w-[320px]
+                rounded-[24px]
+                bg-black/75
+                backdrop-blur-xl
+                px-5
+                py-5
+                text-center
+              "
+            >
+              <p
+                className="
+                  text-white
+                  text-sm
+                  leading-relaxed
+                "
+              >
+                {cameraError}
+              </p>
+
+              <button
+                type="button"
+                onClick={() => setCameraError("")}
+                className="
+                  mt-4
+                  h-[44px]
+                  px-5
+                  rounded-full
+                  bg-white
+                  text-black
+                  text-sm
+                  font-medium
+                "
+              >
+                Got it
+              </button>
+            </div>
+          )}
 
           <div
             className="
