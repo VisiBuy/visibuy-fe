@@ -204,7 +204,8 @@ export const CreateVerificationForm: React.FC<
 
     videoElement.playsInline = true;
 
-    videoElement.muted = false;
+    videoElement.defaultMuted = true;
+    videoElement.muted = true;
 
     await videoElement.play();
   };
@@ -212,7 +213,7 @@ export const CreateVerificationForm: React.FC<
   const startPhotoCamera = async () => {
     try {
       stopCamera();
-
+      setCameraError("");
       const stream =
         await navigator.mediaDevices.getUserMedia(
           {
@@ -237,7 +238,11 @@ export const CreateVerificationForm: React.FC<
     } catch (error) {
       console.error(error);
       setCameraError(
-        "Please allow camera access in your browser or device settings to continue."
+        `
+          Camera access is turned off.
+
+          Allow camera access in your browser settings, then return here and refresh the page.
+        `
       );
     }
   };
@@ -245,7 +250,7 @@ export const CreateVerificationForm: React.FC<
   const startVideoCamera = async () => {
     try {
       stopCamera();
-
+      setCameraError("");
       const stream =
         await navigator.mediaDevices.getUserMedia(
           {
@@ -270,7 +275,11 @@ export const CreateVerificationForm: React.FC<
     } catch (error) {
       console.error(error);
       setCameraError(
-        "Please allow camera access in your browser or device settings to continue."
+        `
+          Camera access is turned off.
+
+          Allow camera access in your browser settings, then return here and refresh the page.
+        `
       );
     }
   };
@@ -611,7 +620,29 @@ export const CreateVerificationForm: React.FC<
                   font-medium
                 "
               >
-                Got it
+                I'll enable camera access
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  setCameraError("");
+
+                  await startPhotoCamera();
+                }}
+                className="
+                  mt-3
+                  h-[44px]
+                  px-5
+                  rounded-full
+                  bg-white/10
+                  text-white
+                  text-sm
+                  font-medium
+                  border
+                  border-white/20
+                "
+              >
+                Try again
               </button>
             </div>
           )}
@@ -859,7 +890,29 @@ export const CreateVerificationForm: React.FC<
                   font-medium
                 "
               >
-                Got it
+                I'll enable camera access
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  setCameraError("");
+
+                  await startVideoCamera();
+                }}
+                className="
+                  mt-3
+                  h-[44px]
+                  px-5
+                  rounded-full
+                  bg-white/10
+                  text-white
+                  text-sm
+                  font-medium
+                  border
+                  border-white/20
+                "
+              >
+                Try again
               </button>
             </div>
           )}
