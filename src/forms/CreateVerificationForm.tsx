@@ -16,6 +16,7 @@ import {
 
 import proofPlaceIllustration from "@/assets/proof-place.png";
 import proofHoldIllustration from "@/assets/proof-hold.png";
+import cameraPermissionIllustration from "@/assets/camera-permission.png";
 
 interface Props {
   onSubmit: (
@@ -588,40 +589,53 @@ export const CreateVerificationForm: React.FC<
                 z-50
                 w-[85%]
                 max-w-[320px]
-                rounded-[24px]
+                rounded-[28px]
                 bg-black/75
                 backdrop-blur-xl
-                px-5
-                py-5
+                border
+                border-white/10
+                px-6
+                py-6
                 text-center
               "
             >
-              <p
+              <h3
                 className="
                   text-white
+                  text-[22px]
+                  leading-tight
+                  font-semibold
+                "
+              >
+                Camera Access Needed
+              </h3>
+
+              <p
+                className="
+                  mt-3
+                  text-white/75
                   text-sm
                   leading-relaxed
                 "
               >
-                {cameraError}
+                Enable camera access in your browser settings
+                to continue recording proof.
               </p>
 
-              <button
-                type="button"
-                onClick={() => setCameraError("")}
-                className="
-                  mt-4
-                  h-[44px]
-                  px-5
-                  rounded-full
-                  bg-white
-                  text-black
-                  text-sm
-                  font-medium
-                "
-              >
-                I'll enable camera access
-              </button>
+              <div className="mt-5 flex justify-center">
+                <img
+                  src={cameraPermissionIllustration}
+                  alt="Camera permission"
+                  className="
+                    h-[165px]
+                    w-auto
+                    object-contain
+                    pointer-events-none
+                    select-none
+                  "
+                />
+              </div>
+
               <button
                 type="button"
                 onClick={async () => {
@@ -630,19 +644,19 @@ export const CreateVerificationForm: React.FC<
                   await startPhotoCamera();
                 }}
                 className="
-                  mt-3
-                  h-[44px]
-                  px-5
-                  rounded-full
-                  bg-white/10
-                  text-white
+                  mt-6
+                  w-full
+                  h-[50px]
+                  rounded-[16px]
+                  bg-white
+                  text-black
                   text-sm
-                  font-medium
-                  border
-                  border-white/20
+                  font-semibold
+                  active:scale-[0.98]
+                  transition-transform
                 "
               >
-                Try again
+                I’ve Enabled Camera Access
               </button>
             </div>
           )}
@@ -858,40 +872,53 @@ export const CreateVerificationForm: React.FC<
                 z-50
                 w-[85%]
                 max-w-[320px]
-                rounded-[24px]
+                rounded-[28px]
                 bg-black/75
                 backdrop-blur-xl
-                px-5
-                py-5
+                border
+                border-white/10
+                px-6
+                py-6
                 text-center
               "
             >
-              <p
+              <h3
                 className="
                   text-white
+                  text-[22px]
+                  leading-tight
+                  font-semibold
+                "
+              >
+                Camera Access Needed
+              </h3>
+
+              <p
+                className="
+                  mt-3
+                  text-white/75
                   text-sm
                   leading-relaxed
                 "
               >
-                {cameraError}
+                Enable camera access in your browser settings
+                to continue recording proof.
               </p>
 
-              <button
-                type="button"
-                onClick={() => setCameraError("")}
-                className="
-                  mt-4
-                  h-[44px]
-                  px-5
-                  rounded-full
-                  bg-white
-                  text-black
-                  text-sm
-                  font-medium
-                "
-              >
-                I'll enable camera access
-              </button>
+              <div className="mt-5 flex justify-center">
+                <img
+                  src={cameraPermissionIllustration}
+                  alt="Camera permission"
+                  className="
+                    h-[130px]
+                    w-auto
+                    object-contain
+                    pointer-events-none
+                    select-none
+                  "
+                />
+              </div>
+
               <button
                 type="button"
                 onClick={async () => {
@@ -900,19 +927,19 @@ export const CreateVerificationForm: React.FC<
                   await startVideoCamera();
                 }}
                 className="
-                  mt-3
-                  h-[44px]
-                  px-5
-                  rounded-full
-                  bg-white/10
-                  text-white
+                  mt-6
+                  w-full
+                  h-[50px]
+                  rounded-[16px]
+                  bg-white
+                  text-black
                   text-sm
-                  font-medium
-                  border
-                  border-white/20
+                  font-semibold
+                  active:scale-[0.98]
+                  transition-transform
                 "
               >
-                Try again
+                I’ve Enabled Camera Access
               </button>
             </div>
           )}
