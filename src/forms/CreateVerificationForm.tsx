@@ -791,19 +791,23 @@ export const CreateVerificationForm: React.FC<
               <button
                 type="button"
                 onClick={handlePhotoCapture}
-                className="
+                disabled={!!cameraError}
+                className={`
                   relative
                   w-[92px]
                   h-[92px]
                   rounded-full
-                  bg-white
                   flex
                   items-center
                   justify-center
-                  active:scale-95
-                  transition-transform
-                  cursor-pointer
-                "
+                  transition-all
+                  duration-200
+                  ${
+                    cameraError
+                      ? "bg-white/40 opacity-40 pointer-events-none"
+                      : "bg-white active:scale-95 cursor-pointer"
+                  }
+                `}
               >
                 <div
                   className="
@@ -1079,6 +1083,7 @@ export const CreateVerificationForm: React.FC<
               <button
                 type="button"
                 onClick={handleVideoCapture}
+                disabled={!!cameraError}
                 className={`
                   relative
                   w-[92px]
@@ -1087,13 +1092,14 @@ export const CreateVerificationForm: React.FC<
                   flex
                   items-center
                   justify-center
-                  active:scale-95
-                  transition-transform
-                  cursor-pointer
+                  transition-all
+                  duration-200
                   ${
-                    isRecordingVideo
-                      ? "bg-red-500"
-                      : "bg-white"
+                    cameraError
+                      ? "bg-white/20 opacity-40 pointer-events-none"
+                      : isRecordingVideo
+                      ? "bg-red-500 active:scale-95 cursor-pointer"
+                      : "bg-white active:scale-95 cursor-pointer"
                   }
                 `}
               >
