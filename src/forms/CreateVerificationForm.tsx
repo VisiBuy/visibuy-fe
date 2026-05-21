@@ -528,7 +528,7 @@ export const CreateVerificationForm: React.FC<
               left-0
               right-0
               z-20
-              px-space-24
+              px-6
               pb-[max(24px,env(safe-area-inset-bottom))]
             "
           >
@@ -575,7 +575,7 @@ export const CreateVerificationForm: React.FC<
       {/* ===================================================== */}
 
       {step === "permission" && (
-        <div className="fixed inset-0 bg-white overflow-hidden animate-[fadeIn_.35s_ease-out]">
+        <div className="fixed inset-0 bg-white overflow-hidden">
 
           {/* ILLUSTRATION */}
           {/* ILLUSTRATION */}
