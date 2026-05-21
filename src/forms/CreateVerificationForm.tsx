@@ -17,6 +17,7 @@ import {
 import proofPlaceIllustration from "@/assets/proof-place.png";
 import proofHoldIllustration from "@/assets/proof-hold.png";
 import cameraPermissionIllustration from "@/assets/camera-permission.png";
+import cameraPermissionIllustrationContext from "@/assets/camera-permission-context.png";
 
 interface Props {
   onSubmit: (
@@ -78,13 +79,14 @@ export const CreateVerificationForm: React.FC<
     },
   });
 
-  const [step, setStep] = useState<
-    | "prep"
-    | "capture"
-    | "video"
-    | "details"
-    | "review"
-  >("prep");
+ const [step, setStep] = useState<
+  | "prep"
+  | "permission"
+  | "capture"
+  | "video"
+  | "details"
+  | "review"
+>("prep");
 
   const [currentSlide, setCurrentSlide] =
     useState(0);
@@ -236,6 +238,10 @@ export const CreateVerificationForm: React.FC<
       streamRef.current = stream;
 
       await attachStreamToVideo(stream);
+      localStorage.setItem(
+        "visibuy-camera-context-seen",
+        "true"
+      );
     } catch (error) {
       console.error(error);
       setCameraError(
@@ -273,6 +279,10 @@ export const CreateVerificationForm: React.FC<
       streamRef.current = stream;
 
       await attachStreamToVideo(stream);
+      localStorage.setItem(
+        "visibuy-camera-context-seen",
+        "true"
+      );
     } catch (error) {
       console.error(error);
       setCameraError(
@@ -526,11 +536,20 @@ export const CreateVerificationForm: React.FC<
               type="button"
               onClick={async () => {
 
-                setStep("capture");
+                const hasSeenPermissionContext =
+                  localStorage.getItem(
+                    "visibuy-camera-context-seen"
+                  );
 
-                setTimeout(async () => {
-                  await startPhotoCamera();
-                }, 50);
+                if (!hasSeenPermissionContext) {
+                  setStep("permission");
+                } else {
+                  setStep("capture");
+
+                  setTimeout(async () => {
+                    await startPhotoCamera();
+                  }, 50);
+}
               }}
               className="
                 w-full
@@ -546,6 +565,70 @@ export const CreateVerificationForm: React.FC<
               "
             >
               Start Proving
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ===================================================== */}
+      {/* CAMERA PERMISSION CONTEXT */}
+      {/* ===================================================== */}
+
+      {step === "permission" && (
+        <div className="fixed inset-0 bg-white overflow-hidden animate-[fadeIn_.35s_ease-out]">
+
+          {/* ILLUSTRATION */}
+          {/* ILLUSTRATION */}
+          <div className="absolute inset-0 overflow-hidden">
+            <img
+              src={cameraPermissionIllustrationContext}
+              alt="Camera permission context"
+              className="
+                w-full
+                h-full
+                object-contain
+                pointer-events-none
+                select-none
+              "
+            />
+          </div>
+
+          {/* CTA */}
+          <div
+            className="
+              absolute
+              bottom-0
+              left-0
+              right-0
+              z-20
+              px-6
+              pb-[max(24px,env(safe-area-inset-bottom))]
+            "
+          >
+            <button
+              type="button"
+              onClick={async () => {
+
+
+                setStep("capture");
+
+                setTimeout(async () => {
+                  await startPhotoCamera();
+                }, 50);
+              }}
+              className="
+                w-full
+                h-[58px]
+                rounded-[18px]
+                bg-primary-blue
+                text-white
+                font-semibold
+                text-base
+                active:scale-[0.98]
+                transition-transform
+              "
+            >
+              Continue to Allow Camera
             </button>
           </div>
         </div>
