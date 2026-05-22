@@ -18,6 +18,8 @@ import proofPlaceIllustration from "@/assets/proof-place.png";
 import proofHoldIllustration from "@/assets/proof-hold.png";
 import cameraPermissionIllustration from "@/assets/camera-permission.png";
 import cameraPermissionIllustrationContext from "@/assets/camera-permission-context.png";
+import manualProofFallbackIllustration from "@/assets/manual-proof-fallback.png";
+import manualProofGuideIllustration from "@/assets/manual-proof-guide.png";
 
 interface Props {
   onSubmit: (
@@ -47,6 +49,29 @@ const imageCaptureFlow = [
   {
     title: "Show the right side",
     helper: "",
+  },
+];
+
+const manualProofFlow = [
+  {
+    title: "Show the front side",
+    button: "Add Front Proof",
+  },
+  {
+    title: "Turn to the back side",
+    button: "Add Back Proof",
+  },
+  {
+    title: "Show important details",
+    button: "Add Detail Proof",
+  },
+  {
+    title: "Show the left side",
+    button: "Add Left Side Proof",
+  },
+  {
+    title: "Show the right side",
+    button: "Add Right Side Proof",
   },
 ];
 
@@ -82,6 +107,9 @@ export const CreateVerificationForm: React.FC<
  const [step, setStep] = useState<
   | "prep"
   | "permission"
+  | "fallback"
+  | "manual-capture"
+  | "manual-video"
   | "capture"
   | "video"
   | "details"
@@ -114,6 +142,11 @@ export const CreateVerificationForm: React.FC<
 
   const canvasRef =
     useRef<HTMLCanvasElement>(null);
+
+  const manualFileInputRef =
+    useRef<HTMLInputElement>(null);
+  const manualVideoInputRef =
+    useRef<HTMLInputElement>(null);
 
   const streamRef =
     useRef<MediaStream | null>(null);
@@ -244,13 +277,9 @@ export const CreateVerificationForm: React.FC<
       );
     } catch (error) {
       console.error(error);
-      setCameraError(
-        `
-          Camera access is turned off.
+      stopCamera();
 
-          Allow camera access in your browser settings, then return here and refresh the page.
-        `
-      );
+      setStep("fallback");
     }
   };
 
@@ -285,13 +314,9 @@ export const CreateVerificationForm: React.FC<
       );
     } catch (error) {
       console.error(error);
-      setCameraError(
-        `
-          Camera access is turned off.
+      stopCamera();
 
-          Allow camera access in your browser settings, then return here and refresh the page.
-        `
-      );
+      setStep("fallback");
     }
   };
 
@@ -376,6 +401,48 @@ export const CreateVerificationForm: React.FC<
       0.95
     );
   };
+
+  const handleManualPhotoUpload = async (
+  event: React.ChangeEvent<HTMLInputElement>
+) => {
+  const file = event.target.files?.[0];
+
+  if (!file) return;
+
+  const currentPhotos =
+    watch("photos") || [];
+
+  const updatedPhotos = [
+    ...currentPhotos,
+    file,
+  ];
+
+  setValue("photos", updatedPhotos, {
+    shouldValidate: isSubmitted,
+  });
+
+  if (captureIndex < 4) {
+    setCaptureIndex((prev) => prev + 1);
+  } else {
+    setStep("manual-video");
+  }
+
+  event.target.value = "";
+};
+
+  const handleManualVideoUpload = async (
+  event: React.ChangeEvent<HTMLInputElement>
+) => {
+  const file = event.target.files?.[0];
+
+  if (!file) return;
+
+  setValue("video", file, {
+    shouldValidate: true,
+  });
+
+  setStep("details");
+};
 
   const handleVideoCapture = async () => {
     if (!streamRef.current) return;
@@ -635,6 +702,437 @@ export const CreateVerificationForm: React.FC<
       )}
 
       {/* ===================================================== */}
+{/* MANUAL PROOF FALLBACK */}
+{/* ===================================================== */}
+
+{step === "fallback" && (
+  <div className="fixed inset-0 bg-white overflow-hidden">
+
+    {/* ILLUSTRATION */}
+    <div className="absolute inset-0">
+      <img
+        src={manualProofFallbackIllustration}
+        alt="Manual proof fallback"
+        className="
+          w-full
+          h-full
+          object-cover
+          object-top
+          pointer-events-none
+          select-none
+        "
+      />
+      <div
+  className="
+    absolute
+    inset-x-0
+    bottom-0
+    h-[55%]
+    bg-gradient-to-t
+    from-white
+    via-white/82
+    to-transparent
+  "
+/>
+    </div>
+
+    {/* CONTENT */}
+    <div
+      className="
+        absolute
+        bottom-[84px]
+        left-0
+        right-0
+        z-20
+        px-6
+      "
+    >
+      <div
+        className="
+          bg-white/52
+          backdrop-blur-[6px]
+          rounded-[32px]
+          px-5
+          py-6
+          shadow-[0_8px_30px_rgba(0,0,0,0.06)]
+        "
+      >
+      <h2
+        className="
+          text-[34px]
+          leading-[1.08]
+          font-semibold
+          text-neutral-900
+          text-center
+        "
+      >
+        Couldn’t connect to your camera
+      </h2>
+
+      <p
+        className="
+          mt-4
+          text-neutral-600
+          text-base
+          leading-relaxed
+          text-center
+          max-w-[320px]
+          mx-auto
+        "
+      >
+        Use your phone camera app to capture the proof,
+        then return here to complete verification.
+      </p>
+
+      <div
+        className="
+          mt-6
+          flex
+          gap-3
+          overflow-x-auto
+          scrollbar-hide
+          pb-1
+        "
+      >
+        {[
+          "Front side",
+          "Back side",
+          "Important details",
+          "Left side",
+          "Right side",
+          "Short proof video",
+        ].map((item) => (
+          <div
+            key={item}
+            className="
+              h-[42px]
+              px-5
+              shrink-0
+              rounded-full
+              bg-neutral-100/95
+              flex
+              items-center
+              justify-center
+              text-[13px]
+              font-medium
+              text-neutral-700
+            "
+          >
+            {item}
+          </div>
+        ))}
+        </div>
+      </div>
+    </div>
+
+    {/* CTA */}
+    <div
+      className="
+        absolute
+        bottom-0
+        left-0
+        right-0
+        z-30
+        px-6
+        pb-[max(24px,env(safe-area-inset-bottom))]
+      "
+    >
+      <button
+        type="button"
+        onClick={() => {
+          setStep("manual-capture");
+        }}
+        className="
+          w-full
+          h-[58px]
+          rounded-[18px]
+          bg-primary-blue
+          text-white
+          font-semibold
+          text-base
+          active:scale-[0.98]
+          transition-transform
+        "
+      >
+        I’ve Captured the Proof
+      </button>
+    </div>
+  </div>
+)}
+
+{/* ===================================================== */}
+{/* MANUAL CAPTURE */}
+{/* ===================================================== */}
+
+{step === "manual-capture" && (
+  <div className="fixed inset-0 bg-white overflow-hidden">
+
+    {/* TOP BAR */}
+    <div
+      className="
+        absolute
+        top-0
+        left-0
+        right-0
+        z-20
+        flex
+        items-center
+        justify-between
+        px-5
+        pt-[max(90px,env(safe-area-inset-top))]
+      "
+    >
+      <button
+        type="button"
+        onClick={() => setStep("fallback")}
+        className="
+          w-11
+          h-11
+          rounded-full
+          bg-black/5
+          flex
+          items-center
+          justify-center
+        "
+      >
+        <ChevronLeft className="w-5 h-5 text-neutral-900" />
+      </button>
+
+      <div
+        className="
+          px-4
+          py-2
+          rounded-full
+          bg-neutral-100
+        "
+      >
+        <span className="text-sm font-medium text-neutral-700">
+          {captureIndex + 1}/5
+        </span>
+      </div>
+    </div>
+
+    {/* CONTENT */}
+    <div
+      className="
+        absolute
+        inset-0
+        flex
+        flex-col
+        items-center
+        justify-center
+        px-6
+        pt-[120px]
+        pb-[150px]
+      "
+    >
+
+      {/* GUIDE ILLUSTRATION */}
+      <div
+        className="
+          relative
+          w-full
+          max-w-[320px]
+          max-h-[46vh]
+        "
+      >
+        <img
+          src={manualProofGuideIllustration}
+          alt="Manual proof guide"
+          className="
+            w-full
+            h-full
+            object-scale-down
+            pointer-events-none
+            select-none
+          "
+        />
+
+        {/* SVG OVERLAYS WILL GO HERE */}
+        <svg
+  viewBox="0 0 300 500"
+  className="
+    absolute
+    inset-0
+    w-full
+    h-full
+    pointer-events-none
+  "
+>
+
+  {/* FRONT */}
+  {captureIndex === 0 && (
+    <rect
+      x="40"
+      y="90"
+      width="220"
+      height="300"
+      rx="32"
+      fill="none"
+      stroke="#007BFF"
+      strokeWidth="4"
+      strokeDasharray="10 10"
+      opacity="0.9"
+    />
+  )}
+
+  {/* BACK */}
+  {captureIndex === 1 && (
+    <>
+      <rect
+        x="40"
+        y="90"
+        width="220"
+        height="300"
+        rx="32"
+        fill="none"
+        stroke="#007BFF"
+        strokeWidth="4"
+        opacity="0.9"
+      />
+
+      <path
+        d="M220 140 C255 170 255 260 220 300"
+        fill="none"
+        stroke="#007BFF"
+        strokeWidth="5"
+        strokeLinecap="round"
+      />
+
+      <polygon
+        points="210,300 230,300 220,320"
+        fill="#007BFF"
+      />
+    </>
+  )}
+
+  {/* DETAILS */}
+  {captureIndex === 2 && (
+    <>
+      <circle
+        cx="120"
+        cy="180"
+        r="22"
+        fill="none"
+        stroke="#007BFF"
+        strokeWidth="4"
+      />
+
+      <circle
+        cx="190"
+        cy="260"
+        r="18"
+        fill="none"
+        stroke="#007BFF"
+        strokeWidth="4"
+      />
+
+      <line
+        x1="120"
+        y1="202"
+        x2="120"
+        y2="240"
+        stroke="#007BFF"
+        strokeWidth="3"
+      />
+
+      <line
+        x1="190"
+        y1="278"
+        x2="190"
+        y2="320"
+        stroke="#007BFF"
+        strokeWidth="3"
+      />
+    </>
+  )}
+
+  {/* LEFT */}
+  {captureIndex === 3 && (
+    <path
+      d="M220 250 H100"
+      fill="none"
+      stroke="#007BFF"
+      strokeWidth="6"
+      strokeLinecap="round"
+    />
+  )}
+
+  {/* RIGHT */}
+  {captureIndex === 4 && (
+    <path
+      d="M100 250 H220"
+      fill="none"
+      stroke="#007BFF"
+      strokeWidth="6"
+      strokeLinecap="round"
+    />
+  )}
+</svg>
+      </div>
+
+      {/* TITLE */}
+      <h2
+        className="
+          mt-5
+          text-[clamp(26px,5vw,32px)]
+          leading-[1.08]
+          font-semibold
+          text-neutral-900
+          text-center
+          max-w-[320px]
+        "
+      >
+        {manualProofFlow[captureIndex].title}
+      </h2>
+
+    </div>
+
+    {/* CTA */}
+    <div
+      className="
+        absolute
+        bottom-0
+        left-0
+        right-0
+        z-20
+        px-6
+        pb-[max(24px,env(safe-area-inset-bottom))]
+      "
+    >
+      <button
+        type="button"
+        onClick={() => {
+          manualFileInputRef.current?.click();
+        }}
+        className="
+          w-full
+          h-[58px]
+          rounded-[18px]
+          bg-primary-blue
+          text-white
+          font-semibold
+          text-base
+          active:scale-[0.98]
+          transition-transform
+        "
+      >
+        {manualProofFlow[captureIndex].button}
+      </button>
+
+      <input
+        ref={manualFileInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={handleManualPhotoUpload}
+        className="hidden"
+      />
+    </div>
+  </div>
+)}
+
+      {/* ===================================================== */}
       {/* IMAGE CAPTURE */}
       {/* ===================================================== */}
 
@@ -661,88 +1159,6 @@ export const CreateVerificationForm: React.FC<
           />
 
           <div className="absolute inset-0 bg-black/20 z-10" />
-          {cameraError && (
-            <div
-              className="
-                absolute
-                left-1/2
-                top-1/2
-                -translate-x-1/2
-                -translate-y-1/2
-                z-50
-                w-[85%]
-                max-w-[320px]
-                rounded-[28px]
-                bg-black/75
-                backdrop-blur-xl
-                border
-                border-white/10
-                px-6
-                py-6
-                text-center
-              "
-            >
-              <h3
-                className="
-                  text-white
-                  text-[22px]
-                  leading-tight
-                  font-semibold
-                "
-              >
-                Camera Access Needed
-              </h3>
-
-              <p
-                className="
-                  mt-3
-                  text-white/75
-                  text-sm
-                  leading-relaxed
-                "
-              >
-                Enable camera access in your browser settings
-                to continue recording proof.
-              </p>
-
-              <div className="mt-5 flex justify-center">
-                <img
-                  src={cameraPermissionIllustration}
-                  alt="Camera permission"
-                  className="
-                    h-[165px]
-                    w-auto
-                    object-contain
-                    pointer-events-none
-                    select-none
-                  "
-                />
-              </div>
-
-              <button
-                type="button"
-                onClick={async () => {
-                  setCameraError("");
-
-                  await startPhotoCamera();
-                }}
-                className="
-                  mt-6
-                  w-full
-                  h-[50px]
-                  rounded-[16px]
-                  bg-white
-                  text-black
-                  text-sm
-                  font-semibold
-                  active:scale-[0.98]
-                  transition-transform
-                "
-              >
-                I’ve Enabled Camera Access
-              </button>
-            </div>
-          )}
 
           <div
             className="
@@ -925,7 +1341,167 @@ export const CreateVerificationForm: React.FC<
           </div>
         </div>
       )}
+      {/* ===================================================== */}
+{/* MANUAL VIDEO */}
+{/* ===================================================== */}
 
+{step === "manual-video" && (
+  <div className="fixed inset-0 bg-white overflow-hidden">
+
+    {/* TOP BAR */}
+    <div
+      className="
+        absolute
+        top-0
+        left-0
+        right-0
+        z-20
+        flex
+        items-center
+        justify-between
+        px-5
+        pt-[max(90px,env(safe-area-inset-top))]
+      "
+    >
+      <button
+        type="button"
+        onClick={() =>
+          setStep("manual-capture")
+        }
+        className="
+          w-11
+          h-11
+          rounded-full
+          bg-black/5
+          flex
+          items-center
+          justify-center
+        "
+      >
+        <ChevronLeft className="w-5 h-5 text-neutral-900" />
+      </button>
+
+      <div
+        className="
+          px-4
+          py-2
+          rounded-full
+          bg-neutral-100
+        "
+      >
+        <span className="text-sm font-medium text-neutral-700">
+          Video Proof
+        </span>
+      </div>
+    </div>
+
+    {/* CONTENT */}
+    <div
+      className="
+        absolute
+        inset-0
+        flex
+        flex-col
+        items-center
+        justify-center
+        px-6
+      "
+    >
+
+      {/* GUIDE ILLUSTRATION */}
+      <div
+        className="
+          relative
+          w-full
+          max-w-[320px]
+          max-h-[46vh]
+        "
+      >
+        <img
+          src={manualProofGuideIllustration}
+          alt="Manual video proof"
+          className="
+            w-full
+            h-full
+            object-scale-down
+            pointer-events-none
+            select-none
+          "
+        />
+      </div>
+
+      <h2
+        className="
+          mt-5
+          text-[clamp(26px,5vw,32px)]
+          leading-[1.08]
+          font-semibold
+          text-neutral-900
+          text-center
+          max-w-[320px]
+        "
+      >
+        Record a short proof video
+      </h2>
+
+      <p
+        className="
+          mt-4
+          text-neutral-600
+          text-base
+          leading-relaxed
+          text-center
+          max-w-[300px]
+        "
+      >
+        Slowly show the exact item clearly using your phone camera app.
+      </p>
+
+    </div>
+
+    {/* CTA */}
+    <div
+      className="
+        absolute
+        bottom-0
+        left-0
+        right-0
+        z-20
+        px-6
+        pb-[max(24px,env(safe-area-inset-bottom))]
+      "
+    >
+      <button
+        type="button"
+        onClick={() => {
+          manualVideoInputRef.current?.click();
+        }}
+        className="
+          w-full
+          h-[58px]
+          rounded-[18px]
+          bg-primary-blue
+          text-white
+          font-semibold
+          text-base
+          active:scale-[0.98]
+          transition-transform
+        "
+      >
+        Add Proof Video
+      </button>
+
+      <input
+        ref={manualVideoInputRef}
+        type="file"
+        accept="video/*"
+        capture="environment"
+        onChange={handleManualVideoUpload}
+        className="hidden"
+      />
+    </div>
+  </div>
+)}
       {/* ===================================================== */}
       {/* VIDEO */}
       {/* ===================================================== */}
@@ -948,88 +1524,6 @@ export const CreateVerificationForm: React.FC<
           />
 
           <div className="absolute inset-0 bg-black/20 z-10" />
-          {cameraError && (
-            <div
-              className="
-                absolute
-                left-1/2
-                top-1/2
-                -translate-x-1/2
-                -translate-y-1/2
-                z-50
-                w-[85%]
-                max-w-[320px]
-                rounded-[28px]
-                bg-black/75
-                backdrop-blur-xl
-                border
-                border-white/10
-                px-6
-                py-6
-                text-center
-              "
-            >
-              <h3
-                className="
-                  text-white
-                  text-[22px]
-                  leading-tight
-                  font-semibold
-                "
-              >
-                Camera Access Needed
-              </h3>
-
-              <p
-                className="
-                  mt-3
-                  text-white/75
-                  text-sm
-                  leading-relaxed
-                "
-              >
-                Enable camera access in your browser settings
-                to continue recording proof.
-              </p>
-
-              <div className="mt-5 flex justify-center">
-                <img
-                  src={cameraPermissionIllustration}
-                  alt="Camera permission"
-                  className="
-                    h-[130px]
-                    w-auto
-                    object-contain
-                    pointer-events-none
-                    select-none
-                  "
-                />
-              </div>
-
-              <button
-                type="button"
-                onClick={async () => {
-                  setCameraError("");
-
-                  await startVideoCamera();
-                }}
-                className="
-                  mt-6
-                  w-full
-                  h-[50px]
-                  rounded-[16px]
-                  bg-white
-                  text-black
-                  text-sm
-                  font-semibold
-                  active:scale-[0.98]
-                  transition-transform
-                "
-              >
-                I’ve Enabled Camera Access
-              </button>
-            </div>
-          )}
 
           <div
             className="
