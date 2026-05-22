@@ -1124,7 +1124,7 @@ export const CreateVerificationForm: React.FC<
         ref={manualFileInputRef}
         type="file"
         accept="image/*"
-        capture="environment"
+        // capture="environment"
         onChange={handleManualPhotoUpload}
         className="hidden"
       />
@@ -1495,7 +1495,7 @@ export const CreateVerificationForm: React.FC<
         ref={manualVideoInputRef}
         type="file"
         accept="video/*"
-        capture="environment"
+        // capture="environment"
         onChange={handleManualVideoUpload}
         className="hidden"
       />
