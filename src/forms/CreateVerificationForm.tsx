@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { set, get, del } from "idb-keyval";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -125,6 +126,9 @@ export const CreateVerificationForm: React.FC<
   const [isManualFlow, setIsManualFlow] =
     useState(false);
 
+  const [hasHydrated, setHasHydrated] =
+    useState(false);
+
   const [showPriceField, setShowPriceField] =
     useState(false);
 
@@ -200,36 +204,47 @@ export const CreateVerificationForm: React.FC<
   }, [isLoading]);
 
   useEffect(() => {
-    localStorage.setItem(
-      "visibuy-proof-state",
-      JSON.stringify({
-        step,
-        captureIndex,
-        isManualFlow,
-      })
-    );
-  }, [step, captureIndex]);
+  if (!hasHydrated) return;
 
-  useEffect(() => {
+  localStorage.setItem(
+    "visibuy-proof-state",
+    JSON.stringify({
+      step,
+      captureIndex,
+      isManualFlow,
+    })
+  );
+}, [
+  step,
+  captureIndex,
+  isManualFlow,
+  hasHydrated,
+]);
+
+useEffect(() => {
+  const restoreState = async () => {
     const savedState =
       localStorage.getItem(
         "visibuy-proof-state"
       );
 
-    if (!savedState) return;
+    if (!savedState) {
+      setHasHydrated(true);
+      return;
+    }
 
     try {
       const parsed =
         JSON.parse(savedState);
 
       if (
-          parsed.step === "manual-capture" ||
-          parsed.step === "manual-video" ||
-          parsed.step === "details" ||
-          parsed.step === "review"
-        ) {
-          setStep(parsed.step);
-        }
+        parsed.step === "manual-capture" ||
+        parsed.step === "manual-video" ||
+        parsed.step === "details" ||
+        parsed.step === "review"
+      ) {
+        setStep(parsed.step);
+      }
 
       if (
         typeof parsed.captureIndex ===
@@ -238,19 +253,47 @@ export const CreateVerificationForm: React.FC<
         setCaptureIndex(
           parsed.captureIndex
         );
-        if (
-            typeof parsed.isManualFlow ===
-            "boolean"
-          ) {
-  setIsManualFlow(
-    parsed.isManualFlow
-  );
-}
+      }
+
+      if (
+        typeof parsed.isManualFlow ===
+        "boolean"
+      ) {
+        setIsManualFlow(
+          parsed.isManualFlow
+        );
+      }
+
+      const savedPhotos = await get(
+        "visibuy-manual-photos"
+      );
+
+      const savedVideo = await get(
+        "visibuy-manual-video"
+      );
+
+      if (savedPhotos) {
+        setValue(
+          "photos",
+          savedPhotos
+        );
+      }
+
+      if (savedVideo) {
+        setValue(
+          "video",
+          savedVideo
+        );
       }
     } catch (error) {
       console.error(error);
     }
-  }, []);
+
+    setHasHydrated(true);
+  };
+
+  restoreState();
+}, []);
 
 
 
@@ -469,13 +512,18 @@ export const CreateVerificationForm: React.FC<
     watch("photos") || [];
 
   const updatedPhotos = [
-    ...currentPhotos,
+    ...currentPhotos.slice(-4),
     file,
   ];
 
   setValue("photos", updatedPhotos, {
     shouldValidate: isSubmitted,
   });
+
+  await set(
+    "visibuy-manual-photos",
+    updatedPhotos
+  );
 
   if (captureIndex < 4) {
     setCaptureIndex((prev) => prev + 1);
@@ -496,6 +544,11 @@ export const CreateVerificationForm: React.FC<
   setValue("video", file, {
     shouldValidate: true,
   });
+
+  await set(
+    "visibuy-manual-video",
+    file
+  );
 
   setStep("details");
 };
@@ -555,6 +608,11 @@ export const CreateVerificationForm: React.FC<
         shouldValidate: true,
       });
 
+      await set(
+        "visibuy-manual-video",
+        file
+      );
+
       stopCamera();
 
       setTimeout(() => {
@@ -611,6 +669,10 @@ export const CreateVerificationForm: React.FC<
         setStep("review");
       }
     };
+  
+  if (!hasHydrated) {
+    return null;
+  }
 
   const onFormSubmit = async (
     data: CreateVerificationFormData
@@ -1804,7 +1866,13 @@ export const CreateVerificationForm: React.FC<
           >
             <button
               type="button"
-              onClick={() => setStep("video")}
+              onClick={() => {
+                if (isManualFlow) {
+                  setStep("manual-video");
+                } else {
+                  setStep("video");
+                }
+              }}
               className="
                 w-11
                 h-11
@@ -2146,7 +2214,17 @@ export const CreateVerificationForm: React.FC<
         {/* RETAKE BUTTON */}
         <button
           type="button"
-          onClick={() => {
+          onClick={async () => {
+            await del(
+                        "visibuy-manual-photos"
+                      );
+
+                      await del(
+                        "visibuy-manual-video"
+                      );
+
+                      setValue("photos", []);
+                      setValue("video", undefined);
             setCaptureIndex(0);
             setStep("capture");
 
