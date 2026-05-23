@@ -122,6 +122,9 @@ export const CreateVerificationForm: React.FC<
   const [captureIndex, setCaptureIndex] =
     useState(0);
 
+  const [isManualFlow, setIsManualFlow] =
+    useState(false);
+
   const [showPriceField, setShowPriceField] =
     useState(false);
 
@@ -195,6 +198,59 @@ export const CreateVerificationForm: React.FC<
 
     return () => clearTimeout(timer);
   }, [isLoading]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "visibuy-proof-state",
+      JSON.stringify({
+        step,
+        captureIndex,
+        isManualFlow,
+      })
+    );
+  }, [step, captureIndex]);
+
+  useEffect(() => {
+    const savedState =
+      localStorage.getItem(
+        "visibuy-proof-state"
+      );
+
+    if (!savedState) return;
+
+    try {
+      const parsed =
+        JSON.parse(savedState);
+
+      if (
+          parsed.step === "manual-capture" ||
+          parsed.step === "manual-video" ||
+          parsed.step === "details" ||
+          parsed.step === "review"
+        ) {
+          setStep(parsed.step);
+        }
+
+      if (
+        typeof parsed.captureIndex ===
+        "number"
+      ) {
+        setCaptureIndex(
+          parsed.captureIndex
+        );
+        if (
+            typeof parsed.isManualFlow ===
+            "boolean"
+          ) {
+  setIsManualFlow(
+    parsed.isManualFlow
+  );
+}
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
 
 
 
@@ -795,30 +851,51 @@ export const CreateVerificationForm: React.FC<
         "
       >
         {[
-          "Front side",
-          "Back side",
-          "Important details",
-          "Left side",
-          "Right side",
-          "Short proof video",
-        ].map((item) => (
+            {
+              label: "Front side",
+              active: true,
+            },
+            {
+              label: "Back side",
+              active: true,
+            },
+            {
+              label: "Important details",
+              active: true,
+            },
+            {
+              label: "Left side",
+              active: true,
+            },
+            {
+              label: "Right side",
+              active: true,
+            },
+            {
+              label: "Short proof video",
+              active: true,
+            },
+          ].map((item) => (
           <div
-            key={item}
-            className="
-              h-[42px]
-              px-5
-              shrink-0
-              rounded-full
-              bg-neutral-100/95
-              flex
-              items-center
-              justify-center
-              text-[13px]
-              font-medium
-              text-neutral-700
-            "
+            key={item.label}
+            className={`
+                          h-[42px]
+                          px-5
+                          shrink-0
+                          rounded-full
+                          flex
+                          items-center
+                          justify-center
+                          text-[13px]
+                          font-medium
+                          ${
+                            item.active
+                              ? "bg-primary-blue/10 text-primary-blue border border-primary-blue/20"
+                              : "bg-neutral-100/95 text-neutral-700"
+                          }
+                        `}
           >
-            {item}
+            {item.label}
           </div>
         ))}
         </div>
@@ -840,6 +917,7 @@ export const CreateVerificationForm: React.FC<
       <button
         type="button"
         onClick={() => {
+          setIsManualFlow(true);
           setStep("manual-capture");
         }}
         className="
