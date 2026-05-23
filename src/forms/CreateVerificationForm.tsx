@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { set, get, del } from "idb-keyval";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -104,7 +105,7 @@ export const CreateVerificationForm: React.FC<
       video: undefined,
     },
   });
-
+  const navigate = useNavigate();
  const [step, setStep] = useState<
   | "prep"
   | "permission"
@@ -717,6 +718,72 @@ useEffect(() => {
               pb-[max(24px,env(safe-area-inset-bottom))]
             "
           >
+            <div
+              className="
+                mb-4
+                rounded-[24px]
+                bg-white/78
+                backdrop-blur-[14px]
+                border
+                border-black/5
+                shadow-[0_8px_30px_rgba(0,0,0,0.06)]
+                px-5
+                py-4
+              "
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p
+                    className="
+                      text-[13px]
+                      font-medium
+                      text-neutral-500
+                    "
+                  >
+                    Verification Pricing
+                  </p>
+
+                  <p
+                    className="
+                      mt-1
+                      text-[17px]
+                      leading-tight
+                      font-semibold
+                      text-neutral-900
+                    "
+                  >
+                    1 verification link = 3 credits
+                  </p>
+
+                  <p
+                    className="
+                      mt-1
+                      text-sm
+                      text-neutral-500
+                    "
+                  >
+                    Packs start from ₦5,000
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => navigate("/billings")}
+                  className="
+                    shrink-0
+                    h-[38px]
+                    px-4
+                    rounded-full
+                    bg-primary-blue/10
+                    text-primary-blue
+                    text-sm
+                    font-medium
+                  "
+                >
+                  See Pricing
+                </button>
+              </div>
+            </div>
             <button
               type="button"
               onClick={async () => {
@@ -2246,6 +2313,53 @@ useEffect(() => {
         >
           Retake Proof
         </button>
+
+        <div
+          className="
+            rounded-[22px]
+            bg-neutral-100
+            border
+            border-black/[0.04]
+            px-5
+            py-4
+          "
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p
+                className="
+                  text-[13px]
+                  font-medium
+                  text-neutral-500
+                "
+              >
+                Verification Link
+              </p>
+
+              <p
+                className="
+                  mt-1
+                  text-[16px]
+                  leading-tight
+                  font-semibold
+                  text-neutral-900
+                "
+              >
+                This proof uses 3 credits
+              </p>
+
+              <p
+                className="
+                  mt-1
+                  text-sm
+                  text-neutral-500
+                "
+              >
+                Credit packs start from ₦5,000
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* GENERATE BUTTON */}
         <button
