@@ -11,7 +11,7 @@ import {
   useGetCreditPackagesQuery,
   useGetCreditHistoryQuery,
   useTopupVerificationCreditsMutation,
-} from "@/features/credits/creditApi"; // 🔁 adjust path if different
+} from "@/features/credits/creditApi";
 
 import type {
   CreditBalanceDto,
@@ -21,82 +21,237 @@ import type {
 } from "@/types/api";
 
 function BillingAndCredit() {
-  // 🔹 Fetch current balance
+  // =====================================================
+  // BALANCE
+  // =====================================================
+
   const {
     data: balanceData,
     isLoading: isBalanceLoading,
     isError: isBalanceError,
   } = useGetCreditBalanceQuery();
 
-  // 🔹 Fetch available packages
+  // =====================================================
+  // PACKAGES
+  // =====================================================
+
   const {
     data: packagesData = [],
     isLoading: isPackagesLoading,
     isError: isPackagesError,
   } = useGetCreditPackagesQuery();
 
-  // 🔹 Fetch credit / transaction history
+  // =====================================================
+  // HISTORY
+  // =====================================================
+
   const {
     data: historyData = [],
     isLoading: isHistoryLoading,
     isError: isHistoryError,
   } = useGetCreditHistoryQuery();
 
-  // 🔹 Top-up mutation
-  const [topupVerificationCredits, { isLoading: isTopupLoading }] =
-    useTopupVerificationCreditsMutation();
+  // =====================================================
+  // TOPUP
+  // =====================================================
 
-  // Handler to pass into CreditPackages
-  const handleTopup = async (payload: TopupVerificationCreditsRequest) => {
-    const res = await topupVerificationCredits(payload).unwrap();
-    // res: ApiResult<{ paymentUrl: string; reference: string }>
-    if (res.success && res.data?.paymentUrl) {
-      window.location.href = res.data.paymentUrl;
+  const [
+    topupVerificationCredits,
+    { isLoading: isTopupLoading },
+  ] = useTopupVerificationCreditsMutation();
+
+  const handleTopup = async (
+    payload: TopupVerificationCreditsRequest
+  ) => {
+    const res =
+      await topupVerificationCredits(
+        payload
+      ).unwrap();
+
+    if (
+      res.success &&
+      res.data?.paymentUrl
+    ) {
+      window.location.href =
+        res.data.paymentUrl;
     }
+
     return res;
   };
 
+  // =====================================================
+  // UI
+  // =====================================================
 
   return (
     <PageWrapper isScrollable={true}>
       <div className="flex-1 flex flex-col overflow-hidden relative">
-        {/* If you later want a blue header, you can re-enable it here */}
 
         <main className="flex-1 z-10 relative">
-          <div className="pb-12 md:pb-12 max-w-7xl mx-auto space-y-4 md:space-y-6">
-            {/* Balance Section */}
-            <section>
+          <div
+            className="
+              pb-12
+              md:pb-12
+              max-w-7xl
+              mx-auto
+              space-y-6
+            "
+          >
+
+            {/* ========================================= */}
+            {/* BALANCE */}
+            {/* ========================================= */}
+
+            <section className="space-y-2">
+
+              {/* SECTION LABEL */}
+              <div className="px-1">
+                <p
+                  className="
+                    text-[13px]
+                    font-medium
+                    uppercase
+                    tracking-wide
+                    text-neutral-400
+                  "
+                >
+                  Verification Credits
+                </p>
+              </div>
+
               <BalanceCard
-                balance={balanceData as CreditBalanceDto | undefined}
-                isLoading={isBalanceLoading}
-                isError={!!isBalanceError}
+                balance={
+                  balanceData as
+                    | CreditBalanceDto
+                    | undefined
+                }
+                isLoading={
+                  isBalanceLoading
+                }
+                isError={
+                  !!isBalanceError
+                }
+              />
+
+              {/* EXPLANATION */}
+              <div className="px-1">
+                <p
+                  className="
+                    text-sm
+                    text-neutral-500
+                    leading-relaxed
+                    max-w-[320px]
+                  "
+                >
+                  Use credits to generate
+                  verification links after
+                  proof review.
+                </p>
+              </div>
+            </section>
+
+            {/* ========================================= */}
+            {/* PACKAGES */}
+            {/* ========================================= */}
+
+            <section className="space-y-3">
+
+              {/* SECTION LABEL */}
+              <div className="px-1">
+                <p
+                  className="
+                    text-[13px]
+                    font-medium
+                    uppercase
+                    tracking-wide
+                    text-neutral-400
+                  "
+                >
+                  Credit Packages
+                </p>
+              </div>
+
+              {/* CONTEXT */}
+              <div className="px-1">
+                <p
+                  className="
+                    text-sm
+                    text-neutral-500
+                    leading-relaxed
+                    max-w-[340px]
+                  "
+                >
+                  Credits increase your
+                  verification capacity and
+                  are used when generating
+                  verification links.
+                </p>
+              </div>
+
+              <CreditPackages
+                packages={
+                  packagesData.map(
+                    (pkg: any) => ({
+                      ...pkg,
+
+                      // UI ONLY
+                      estimatedLinks:
+                        Math.floor(
+                          pkg.credits / 3
+                        ),
+                    })
+                  ) as CreditPackageDto[]
+                }
+                isLoading={
+                  isPackagesLoading
+                }
+                isError={
+                  !!isPackagesError
+                }
+                onTopup={handleTopup}
+                isTopupLoading={
+                  isTopupLoading
+                }
               />
             </section>
 
-            {/* Packages + History */}
-            <div className="space-y-4 md:space-y-6">
-              <section>
-                <CreditPackages
-                  packages={packagesData as CreditPackageDto[]}
-                  isLoading={isPackagesLoading}
-                  isError={!!isPackagesError}
-                  onTopup={handleTopup}
-                  isTopupLoading={isTopupLoading}
-                />
-              </section>
+            {/* ========================================= */}
+            {/* HISTORY */}
+            {/* ========================================= */}
 
-              <section>
-                <TransactionHistory
-                  history={historyData as CreditHistoryDto[]}
-                  isLoading={isHistoryLoading}
-                  isError={!!isHistoryError}
-                />
-              </section>
-            </div>
+            <section className="space-y-3">
+
+              {/* SECTION LABEL */}
+              <div className="px-1">
+                <p
+                  className="
+                    text-[13px]
+                    font-medium
+                    uppercase
+                    tracking-wide
+                    text-neutral-400
+                  "
+                >
+                  Verification Activity
+                </p>
+              </div>
+
+              <TransactionHistory
+                history={
+                  historyData as CreditHistoryDto[]
+                }
+                isLoading={
+                  isHistoryLoading
+                }
+                isError={
+                  !!isHistoryError
+                }
+              />
+            </section>
+
           </div>
         </main>
 
-        {/* If you want bottom nav later */}
         {/* <BottomNav /> */}
       </div>
     </PageWrapper>
