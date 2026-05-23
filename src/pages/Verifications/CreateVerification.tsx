@@ -20,6 +20,8 @@ export default function CreateVerificationPage() {
 
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [isCreditError, setIsCreditError] =
+    useState(false);
   const [verificationLink, setVerificationLink] = useState("");
   const [newVerificationId, setNewVerificationId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -186,6 +188,13 @@ export default function CreateVerificationPage() {
       }
 
       setErrorMessage(message);
+      const isCreditError =
+        message
+          .toLowerCase()
+          .includes(
+            "insufficient verification credits"
+          );
+      setIsCreditError(isCreditError);
       setShowError(true);
     } finally {
       setUploading(false);
@@ -297,10 +306,18 @@ export default function CreateVerificationPage() {
               </button>
 
               <button
-                onClick={() => setShowError(false)}
+                onClick={() => {
+                  setShowError(false);
+
+                  if (isCreditError) {
+                    navigate("/billings");
+                  }
+                }}
                 className="px-space-24 py-space-12 bg-primary-blue text-neutral-white rounded-btn-medium font-medium hover:bg-primary-blue/90 transition-standard min-h-tap-target"
               >
-                Try Again
+                {isCreditError
+                  ? "Get Credits"
+                  : "Try Again"}
               </button>
             </div>
           </div>
