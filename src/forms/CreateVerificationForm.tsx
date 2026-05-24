@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { set, get, del } from "idb-keyval";
 import { useForm } from "react-hook-form";
@@ -23,6 +22,7 @@ import cameraPermissionIllustration from "@/assets/camera-permission.png";
 import cameraPermissionIllustrationContext from "@/assets/camera-permission-context.png";
 import manualProofFallbackIllustration from "@/assets/manual-proof-fallback.png";
 import manualProofGuideIllustration from "@/assets/manual-proof-guide.png";
+import salesModalIllustration from "@/assets/sales-modal-mobile.png";
 
 interface Props {
   onSubmit: (
@@ -45,14 +45,14 @@ const imageCaptureFlow = [
     helper:
       "Tag, logo, serial number, texture, etc.",
   },
-  {
-    title: "Show the left side",
-    helper: "",
-  },
-  {
-    title: "Show the right side",
-    helper: "",
-  },
+  // {
+  //   title: "Show the left side",
+  //   helper: "",
+  // },
+  // {
+  //   title: "Show the right side",
+  //   helper: "",
+  // },
 ];
 
 const manualProofFlow = [
@@ -68,14 +68,14 @@ const manualProofFlow = [
     title: "Show important details",
     button: "+ Select Detail Photo",
   },
-  {
-    title: "Show the left side",
-    button: "+ Select Left Side Photo",
-  },
-  {
-    title: "Show the right side",
-    button: "+ Select Right Side Photo",
-  },
+  // {
+  //   title: "Show the left side",
+  //   button: "+ Select Left Side Photo",
+  // },
+  // {
+  //   title: "Show the right side",
+  //   button: "+ Select Right Side Photo",
+  // },
 ];
 
 const proofSlides = [
@@ -100,6 +100,9 @@ export const CreateVerificationForm: React.FC<
     mode: "onBlur",
     reValidateMode: "onSubmit",
     defaultValues: {
+      title: "Proof of the Exact Item",
+      description:
+        "Proof created for item",
       price: 0,
       enableEscrow: false,
       photos: [],
@@ -115,7 +118,7 @@ export const CreateVerificationForm: React.FC<
   | "manual-video"
   | "capture"
   | "video"
-  | "details"
+  // | "details"
   | "review"
 >("prep");
 
@@ -126,6 +129,9 @@ export const CreateVerificationForm: React.FC<
     useState(0);
 
   const [isManualFlow, setIsManualFlow] =
+    useState(false);
+
+  const [showSalesModal, setShowSalesModal] =
     useState(false);
 
   const [hasHydrated, setHasHydrated] =
@@ -242,7 +248,7 @@ useEffect(() => {
       if (
         parsed.step === "manual-capture" ||
         parsed.step === "manual-video" ||
-        parsed.step === "details" ||
+        // parsed.step === "details" ||
         parsed.step === "review"
       ) {
         setStep(parsed.step);
@@ -298,10 +304,63 @@ useEffect(() => {
 }, []);
 
 
+useEffect(() => {
+  const handlePopState = () => {
+    const previousStep =
+      getPreviousStep();
+
+    if (previousStep) {
+      window.history.pushState(
+        null,
+        "",
+        window.location.href
+      );
+
+      setStep(previousStep);
+
+      return;
+    }
+
+    const shouldLeave =
+      window.confirm(
+        "Leave verification setup? Your captured proof may be lost."
+      );
+
+    if (shouldLeave) {
+      navigate(-1);
+    } else {
+      window.history.pushState(
+        null,
+        "",
+        window.location.href
+      );
+    }
+  };
+
+  window.history.pushState(
+    null,
+    "",
+    window.location.href
+  );
+
+  window.addEventListener(
+    "popstate",
+    handlePopState
+  );
+
+  return () => {
+    window.removeEventListener(
+      "popstate",
+      handlePopState
+    );
+  };
+}, [step, isManualFlow, navigate]);
+
+
 
   const readiness = useMemo(() => {
     return {
-      photosReady: photos.length === 5,
+      photosReady: photos.length === 3,
       videoReady: Boolean(video),
       detailsReady: Boolean(title?.trim()),
     };
@@ -477,7 +536,7 @@ useEffect(() => {
           shouldValidate: isSubmitted,
         });
 
-        if (captureIndex < 4) {
+        if (captureIndex < 2) {
           setTimeout(() => {
             setCaptureIndex(
               (prev) => prev + 1
@@ -514,7 +573,7 @@ useEffect(() => {
     watch("photos") || [];
 
   const updatedPhotos = [
-    ...currentPhotos.slice(-4),
+    ...currentPhotos.slice(-2),
     file,
   ];
 
@@ -527,7 +586,7 @@ useEffect(() => {
     updatedPhotos
   );
 
-  if (captureIndex < 4) {
+  if (captureIndex < 2) {
     setCaptureIndex((prev) => prev + 1);
   } else {
     setStep("manual-video");
@@ -552,7 +611,7 @@ useEffect(() => {
     file
   );
 
-  setStep("details");
+  setStep("review");
 };
 
   const handleVideoCapture = async () => {
@@ -618,7 +677,7 @@ useEffect(() => {
       stopCamera();
 
       setTimeout(() => {
-        setStep("details");
+        setStep("review");
       }, 700);
     };
 
@@ -677,9 +736,51 @@ useEffect(() => {
   }
 
   const onFormSubmit = async (
-    data: CreateVerificationFormData
-  ) => {
-    await onSubmit(data);
+  data: CreateVerificationFormData
+) => {
+  await onSubmit({
+    ...data,
+    description:
+      data.description ||
+      `Proof created for ${
+        data.title || "item"
+      }`,
+  });
+};
+
+  const getPreviousStep = () => {
+    switch (step) {
+      case "permission":
+        return "prep";
+
+      case "fallback":
+        return "prep";
+
+      case "manual-capture":
+        return "fallback";
+
+      case "manual-video":
+        return "manual-capture";
+
+      case "capture":
+        return "prep";
+
+      case "video":
+        return "capture";
+
+      // case "details":
+      //   return isManualFlow
+      //     ? "manual-video"
+      //     : "video";
+
+      case "review":
+        return isManualFlow
+          ? "manual-video"
+          : "video";
+
+      default:
+        return null;
+    }
   };
 
   return (
@@ -993,14 +1094,14 @@ useEffect(() => {
               label: "Important details",
               active: true,
             },
-            {
-              label: "Left side",
-              active: true,
-            },
-            {
-              label: "Right side",
-              active: true,
-            },
+            // {
+            //   label: "Left side",
+            //   active: false,
+            // },
+            // {
+            //   label: "Right side",
+            //   active: false,
+            // },
             {
               label: "Short proof video",
               active: true,
@@ -1047,8 +1148,7 @@ useEffect(() => {
       <button
         type="button"
         onClick={() => {
-          setIsManualFlow(true);
-          setStep("manual-capture");
+          setShowSalesModal(true);
         }}
         className="
           w-full
@@ -1092,7 +1192,13 @@ useEffect(() => {
     >
       <button
         type="button"
-        onClick={() => setStep("fallback")}
+        onClick={() => {
+          if (captureIndex === 0) {
+            setStep("fallback");
+          } else {
+            setCaptureIndex((prev) => prev - 1);
+          }
+        }}
         className="
           w-11
           h-11
@@ -1115,7 +1221,7 @@ useEffect(() => {
         "
       >
         <span className="text-sm font-medium text-neutral-700">
-          {captureIndex + 1}/5
+          {captureIndex + 1}/3
         </span>
       </div>
     </div>
@@ -1415,7 +1521,7 @@ useEffect(() => {
               "
             >
               <span className="text-white text-sm font-medium">
-                {captureIndex + 1}/5
+                {captureIndex + 1}/3
               </span>
             </div>
           </div>
@@ -1917,7 +2023,7 @@ useEffect(() => {
       {/* DETAILS */}
       {/* ===================================================== */}
 
-      {step === "details" && (
+      {/* {step === "details" && (
         <div className="fixed inset-0 bg-white overflow-hidden">
           <div
             className="
@@ -2092,7 +2198,7 @@ useEffect(() => {
             </button>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* ===================================================== */}
 {/* REVIEW */}
@@ -2117,7 +2223,13 @@ useEffect(() => {
     >
       <button
         type="button"
-        onClick={() => setStep("details")}
+        onClick={() => {
+          if (isManualFlow) {
+            setStep("manual-video");
+          } else {
+            setStep("video");
+          }
+        }}
         className="
           w-11
           h-11
@@ -2230,6 +2342,87 @@ useEffect(() => {
         </div>
       )}
 
+      {/* ITEM DETAILS */}
+
+<div className="mt-10">
+  <p
+    className="
+      text-sm
+      font-medium
+      text-neutral-500
+      mb-3
+    "
+  >
+    Verification Title
+  </p>
+
+  <input
+    {...register("title")}
+    placeholder="Proof of the Exact Item"
+    className="
+      w-full
+      h-[58px]
+      px-5
+      rounded-[18px]
+      bg-neutral-100
+      border
+      border-neutral-200
+      text-neutral-900
+      placeholder:text-neutral-400
+      focus:outline-none
+      focus:ring-2
+      focus:ring-primary-blue
+      text-base
+    "
+  />
+
+  {errors.title && (
+    <p className="mt-3 text-danger text-sm">
+      {errors.title.message}
+    </p>
+  )}
+
+  <div className="mt-5">
+    {!showPriceField ? (
+      <button
+        type="button"
+        onClick={() =>
+          setShowPriceField(true)
+        }
+        className="
+          text-primary-blue
+          text-sm
+          font-medium
+        "
+      >
+        + Add price (optional)
+      </button>
+    ) : (
+      <input
+        type="number"
+        step="0.01"
+        {...register("price")}
+        placeholder="Price (₦)"
+        className="
+          w-full
+          h-[58px]
+          px-5
+          rounded-[18px]
+          bg-neutral-100
+          border
+          border-neutral-200
+          text-neutral-900
+          placeholder:text-neutral-400
+          focus:outline-none
+          focus:ring-2
+          focus:ring-primary-blue
+          text-base
+        "
+      />
+    )}
+  </div>
+</div>
+
       {/* STATUS */}
       <div className="mt-8 space-y-3">
         <div className="flex items-center justify-between">
@@ -2238,7 +2431,7 @@ useEffect(() => {
           </span>
 
           <span className="text-primary-green text-sm font-medium">
-            {photos.length}/5 ready
+            {photos.length}/3 ready
           </span>
         </div>
 
@@ -2413,6 +2606,101 @@ useEffect(() => {
           )}
         </div>
       )}
+    </div>
+  </div>
+)}
+{/* ===================================================== */}
+{/* SALES MODAL */}
+{/* ===================================================== */}
+
+{showSalesModal && (
+  <div
+    className="
+      fixed
+      inset-0
+      z-[200]
+      bg-black/60
+      backdrop-blur-[6px]
+      flex
+      items-end
+      justify-center
+      px-4
+      pb-4
+    "
+  >
+
+    {/* MODAL */}
+    <div
+      className="
+        relative
+        w-full
+        max-w-[430px]
+      "
+    >
+
+      {/* CLOSE */}
+      <button
+        type="button"
+        onClick={() => {
+        setShowSalesModal(false);
+        setIsManualFlow(true);
+        setStep("manual-capture");
+      }}
+        className="
+          absolute
+          top-4
+          right-4
+          z-20
+          w-10
+          h-10
+          rounded-full
+          bg-black/40
+          backdrop-blur-md
+          flex
+          items-center
+          justify-center
+        "
+      >
+        <X className="w-5 h-5 text-white" />
+      </button>
+
+      {/* IMAGE */}
+      <img
+        src={salesModalIllustration}
+        alt="Close more sales"
+        className="
+          w-full
+          max-h-[72vh]
+          object-contain
+          rounded-[32px]
+          shadow-2xl
+        "
+      />
+
+      {/* CTA */}
+      <button
+        type="button"
+        onClick={() => {
+          setShowSalesModal(false);
+          navigate("/billings");
+        }}
+        className="
+          mt-4
+          w-full
+          h-[58px]
+          rounded-[18px]
+          bg-primary-blue
+          text-white
+          font-semibold
+          text-base
+          active:scale-[0.98]
+          transition-transform
+          shadow-lg
+        "
+      >
+        Show Credit Packages
+      </button>
+      
     </div>
   </div>
 )}
