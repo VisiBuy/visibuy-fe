@@ -274,6 +274,19 @@ const CreditPackages = () => {
 
       try {
 
+        if (window.fbq && selectedPackage) {
+              window.fbq(
+                "track",
+                "InitiateCheckout",
+                {
+                  currency: "NGN",
+                  value:
+                    selectedPackage.amount,
+                  content_name:
+                    "Verification Credits",
+                }
+              );
+            }
         const response =
           await topupCredits({
             packageId:
@@ -349,6 +362,15 @@ const CreditPackages = () => {
       setPaymentStatus(
         "success"
       );
+
+      if (window.fbq && selectedPackage) {
+            window.fbq("track", "Purchase", {
+              currency: "NGN",
+              value: selectedPackage.amount,
+              content_name: "Verification Credits",
+              content_category: "Verification",
+            });
+          }
 
       setPaymentMessage(
         `Payment successful! Ref: ${reference}`

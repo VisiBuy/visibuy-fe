@@ -57,23 +57,23 @@ const imageCaptureFlow = [
 const manualProofFlow = [
   {
     title: "Show the front side",
-    button: "Add Front Proof",
+    button: "+ Select Front Photo",
   },
   {
     title: "Turn to the back side",
-    button: "Add Back Proof",
+    button: "+ Select Back Photo",
   },
   {
     title: "Show important details",
-    button: "Add Detail Proof",
+    button: "+ Select Detail Photo",
   },
   {
     title: "Show the left side",
-    button: "Add Left Side Proof",
+    button: "+ Select Left Side Photo",
   },
   {
     title: "Show the right side",
-    button: "Add Right Side Proof",
+    button: "+ Select Right Side Photo",
   },
 ];
 
