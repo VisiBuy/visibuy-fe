@@ -7,7 +7,7 @@ export const createVerificationSchema = z.object({
   enableEscrow: z.boolean(),
   photos: z
     .array(z.instanceof(File))
-    .length(5, "You must upload exactly 5 photos")
+    .length(3, "You must upload exactly 3 photos")
     .refine((files) => files.every((file) => file instanceof File), {
       message: "Invalid file",
     }),
