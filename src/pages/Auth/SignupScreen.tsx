@@ -1,4 +1,7 @@
-import React, { useState }  from "react";
+import React, {
+  useState,
+  useEffect,
+} from "react";
 import { Form, Input, Button, Spin, notification, Checkbox } from "antd";
 import {
   EyeInvisibleOutlined,
@@ -21,6 +24,25 @@ import { PhoneInputField } from "@/shared/components/ui/PhoneInputField";
 const SignupScreen = () => {
   const [register, { isLoading }] = useRegisterMutation();
   const navigate = useNavigate();
+  const proofIntent =
+  localStorage.getItem(
+    "visibuy-proof-intent"
+  );
+
+  const hasRecentProofIntent =
+    proofIntent &&
+    Date.now() -
+      Number(proofIntent) <
+        1000 * 60 * 60;
+  
+  useEffect(() => {
+
+    if (hasRecentProofIntent) {
+      navigate("/verifications/create");
+    }
+
+  }, [hasRecentProofIntent, navigate]);
+  
   const [form] = Form.useForm();
   const [phoneValue, setPhoneValue] = useState("+234"); // 👈 enforce +234
 
@@ -82,6 +104,11 @@ const SignupScreen = () => {
           content_name: "Visibuy Signup",
         });
       }
+
+      localStorage.setItem(
+        "visibuy-proof-intent",
+        Date.now().toString()
+      );
 
       showSuccessNotification("Visibuy Seller");
 
