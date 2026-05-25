@@ -47,7 +47,10 @@ export const ProtectedLayout: React.FC = () => {
     location.pathname === ROUTES.AUTH.EMAIL_VERIFICATION_SUCCESS;
 
   // 🔥 ADD THIS (whitelist route)
-  const allowUnverifiedPaths = ["/verifications/create"];
+  const allowUnverifiedPaths = [
+    "/verifications/create",
+    "/billings",
+  ];
   const isAllowedUnverified = allowUnverifiedPaths.includes(location.pathname);
 
   // Check KYC status and redirect if needed (only for authenticated users on non-auth pages)
