@@ -85,7 +85,7 @@ const LoginScreen = () => {
           // We'll handle redirect in a useEffect instead
         } catch (error) {
           // If KYC check fails, just go to dashboard
-          navigate("/verifications/create");
+          navigate(ROUTES.DASHBOARD);
         }
       }, 2000);
     } catch (err: any) {
@@ -105,18 +105,18 @@ const LoginScreen = () => {
 
   // Handle KYC redirect after login
   React.useEffect(() => {
-
-  if (
-    user &&
-    window.location.pathname ===
-      ROUTES.AUTH.LOGIN
-  ) {
-    navigate(
-      "/verifications/create"
-    );
-  }
-
-}, [user, navigate]);
+    if (user && kycStatus) {
+      const redirectPath = getKycRedirectPath(kycStatus);
+      if (redirectPath) {
+        navigate(redirectPath);
+      } else {
+        // If no KYC redirect needed, go to dashboard
+        if (window.location.pathname === ROUTES.AUTH.LOGIN) {
+          navigate(ROUTES.DASHBOARD);
+        }
+      }
+    }
+  }, [user, kycStatus, navigate]);
 
   const validateEmailOrPhone = (rule: any, value: string): Promise<void> => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
