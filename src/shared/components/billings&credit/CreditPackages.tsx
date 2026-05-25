@@ -495,8 +495,7 @@ const CreditPackages = () => {
                   text-gray-900
                 "
               >
-                Generate More
-                Verification Links
+                Get More Chances To Close Sales
               </h2>
 
               <p
@@ -506,10 +505,7 @@ const CreditPackages = () => {
                   mt-1
                 "
               >
-                Increase your
-                verification
-                capacity with
-                additional credits.
+                Use verification links to increase buyer confidence before payment.
               </p>
             </div>
           </div>

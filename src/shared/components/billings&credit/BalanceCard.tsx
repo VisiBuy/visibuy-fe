@@ -58,7 +58,7 @@ const BalanceCard: React.FC<
         </div>
       </div>
     );
-  };
+  }
 
   // =========================================
   // ERROR
@@ -87,8 +87,8 @@ const BalanceCard: React.FC<
               leading-relaxed
             "
           >
-            Unable to load verification
-            credits right now.
+            Unable to load your
+            verification links right now.
           </p>
         </div>
       </div>
@@ -138,7 +138,7 @@ const BalanceCard: React.FC<
           right-0
           w-96
           h-96
-          bg-gray-800
+          bg-[#6D5BFF]
           rounded-full
           blur-3xl
           opacity-20
@@ -157,9 +157,10 @@ const BalanceCard: React.FC<
               text-sm
               font-medium
               text-gray-300
+              tracking-wide
             "
           >
-            Verification Credits
+            Chances To Close Sales
           </h2>
         </div>
 
@@ -181,6 +182,7 @@ const BalanceCard: React.FC<
               flex-wrap
             "
           >
+
             <span
               className="
                 text-5xl
@@ -188,7 +190,7 @@ const BalanceCard: React.FC<
                 tracking-tighter
               "
             >
-              {formattedCredits}
+              {estimatedLinks}
             </span>
 
             <span
@@ -198,8 +200,11 @@ const BalanceCard: React.FC<
                 font-medium
               "
             >
-              available
+              verification
+              {estimatedLinks !== 1 &&
+                " links"}
             </span>
+
           </div>
 
           {/* OUTPUT CONTEXT */}
@@ -208,16 +213,64 @@ const BalanceCard: React.FC<
               text-sm
               text-gray-400
               leading-relaxed
-              max-w-[320px]
+              max-w-[340px]
             "
           >
-            Generate up to{" "}
-            <span className="text-white font-semibold">
-              {estimatedLinks}
-            </span>{" "}
-            verification links with
-            your current credits.
+            Send verification links
+            early to increase buyer
+            confidence before payment.
           </p>
+
+        </div>
+
+        {/* FOOTER */}
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            border-t
+            border-white/10
+            pt-5
+          "
+        >
+
+          <div>
+            <p
+              className="
+                text-xs
+                uppercase
+                tracking-wider
+                text-gray-500
+              "
+            >
+              Credits Available
+            </p>
+
+            <p
+              className="
+                mt-1
+                text-lg
+                font-semibold
+                text-white
+              "
+            >
+              {formattedCredits}
+            </p>
+          </div>
+
+          <div
+            className="
+              px-4
+              py-2
+              rounded-full
+              bg-white/10
+              text-sm
+              text-white/80
+            "
+          >
+            1 link = 3 credits
+          </div>
 
         </div>
 
