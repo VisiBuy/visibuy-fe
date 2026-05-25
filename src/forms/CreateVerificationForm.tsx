@@ -842,7 +842,7 @@ useEffect(() => {
                       text-neutral-500
                     "
                   >
-                    Verification Pricing
+                    Close More Buyers
                   </p>
 
                   <p
@@ -2619,13 +2619,11 @@ useEffect(() => {
       fixed
       inset-0
       z-[200]
-      bg-black/60
-      backdrop-blur-[6px]
+      bg-black/72
+      backdrop-blur-[10px]
       flex
-      items-end
+      items-center
       justify-center
-      px-4
-      pb-4
     "
   >
 

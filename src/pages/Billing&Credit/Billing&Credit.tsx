@@ -115,7 +115,7 @@ function BillingAndCredit() {
                     text-neutral-400
                   "
                 >
-                  Verification Credits
+                  Verification Links
                 </p>
               </div>
 
@@ -143,9 +143,7 @@ function BillingAndCredit() {
                     max-w-[320px]
                   "
                 >
-                  Use credits to generate
-                  verification links after
-                  proof review.
+                  Generate verification links that help buyers feel more confident before payment.
                 </p>
               </div>
             </section>
@@ -167,7 +165,7 @@ function BillingAndCredit() {
                     text-neutral-400
                   "
                 >
-                  Credit Packages
+                  Buyer Confidence Packages
                 </p>
               </div>
 
@@ -181,10 +179,7 @@ function BillingAndCredit() {
                     max-w-[340px]
                   "
                 >
-                  Credits increase your
-                  verification capacity and
-                  are used when generating
-                  verification links.
+                  Get more verification links to help increase buyer confidence and close sales faster.
                 </p>
               </div>
 
