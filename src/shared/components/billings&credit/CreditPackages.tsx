@@ -119,6 +119,17 @@ const CreditPackages = () => {
     setPaymentAttempts,
   ] = useState(0);
 
+  useEffect(() => {
+
+    if (window.fbq) {
+      window.fbq(
+        "trackCustom",
+        "ViewedPricing"
+      );
+    }
+
+  }, []);
+
   // =====================================================
   // CUSTOM AMOUNT
   // =====================================================
