@@ -2,39 +2,131 @@ import React, {
   useState,
   useEffect,
 } from "react";
-import { Form, Input, Button, Spin, notification, Checkbox } from "antd";
+
+import {
+  Form,
+  Input,
+  Button,
+  Spin,
+  notification,
+  Checkbox,
+} from "antd";
+
 import {
   EyeInvisibleOutlined,
   EyeTwoTone,
   MailOutlined,
   LoadingOutlined,
-  UserOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
   LockOutlined,
 } from "@ant-design/icons";
-import { Link, useNavigate } from "react-router-dom";
+
+import {
+  Link,
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  MessageCircle,
+} from "lucide-react";
+
 import { isValidPhoneNumber } from "react-phone-number-input";
-import Logo from "../../public/images/VisiBuy-White Colored 1.svg";
-import lock from "../../public/icons/lock.svg";
+
+import Logo from "../../public/images/VisiBuy - Colored 1.png";
+
+import HeroImage from "../../public/images/hero-image.png";
+import ProofImage from "../../public/images/proof-image.png";
+
 import { useRegisterMutation } from "@/features/auth/authApi";
+
 import { SignupFormValues } from "@/types/types";
+
 import { PhoneInputField } from "@/shared/components/ui/PhoneInputField";
 
+import {
+  useFlutterwave,
+  closePaymentModal,
+} from "flutterwave-react-v3";
+
 const SignupScreen = () => {
-  const [register, { isLoading }] = useRegisterMutation();
+
+  const [register, { isLoading }] =
+    useRegisterMutation();
+
   const navigate = useNavigate();
+
+  const [form] = Form.useForm();
+
+  const [api, contextHolder] =
+    notification.useNotification();
+
+  const [showCheckout, setShowCheckout] =
+    useState(false);
+
+  const [paymentSuccessful, setPaymentSuccessful] =
+    useState(false);
+
+  const checkoutRef =
+    React.useRef<HTMLDivElement | null>(null);
+  const flutterwaveConfig = {
+
+    public_key:
+      "FLWPUBK-c218cf9281a8c24689aca49991e091e1-X",
+
+    tx_ref:
+      `VISIBUY-${Date.now()}`,
+
+    amount: 5000,
+
+    currency: "NGN",
+
+    payment_options:
+      "banktransfer",
+
+    customer: {
+
+      email:
+        "seller-invoice@visibuy.com.ng",
+
+      phone_number:
+        "08000000000",
+
+      name:
+        "Visibuy Seller",
+
+    },
+
+    customizations: {
+
+      title:
+        "Visibuy Verification Links",
+
+      description:
+        "3 verification links",
+
+      logo:
+        "https://visibuy.com.ng/logo.png",
+
+    },
+
+  };
+  const handleFlutterPayment =
+    useFlutterwave(
+      flutterwaveConfig
+    );
+
   const proofIntent =
-  localStorage.getItem(
-    "visibuy-proof-intent"
-  );
+    localStorage.getItem(
+      "visibuy-proof-intent"
+    );
 
   const hasRecentProofIntent =
     proofIntent &&
     Date.now() -
       Number(proofIntent) <
         1000 * 60 * 60;
-  
+
   useEffect(() => {
 
     if (hasRecentProofIntent) {
@@ -42,91 +134,136 @@ const SignupScreen = () => {
     }
 
   }, [hasRecentProofIntent, navigate]);
-  
-  const [form] = Form.useForm();
-  const [phoneValue, setPhoneValue] = useState("+234"); // 👈 enforce +234
 
-  const [api, contextHolder] = notification.useNotification();
-
-  const showSuccessNotification = (name: string) => {
+  const showSuccessNotification = (
+    name: string
+  ) => {
     api.success({
       message: (
-        <span className="font-semibold text-green-900">Welcome aboard!</span>
+        <span className="font-semibold text-green-900">
+          Welcome aboard!
+        </span>
       ),
-      description: `Welcome ${name}! Your account has been created successfully. Redirecting...`,
+      description: `Welcome ${name}! Redirecting...`,
       placement: "topRight",
-      icon: <CheckCircleOutlined className="text-green-500" />,
-      className: "custom-success-notification",
-      style: {
-        background: "#f6ffed",
-        border: "1px solid #b7eb8f",
-        borderRadius: "8px",
-        boxShadow: "0 4px 12px rgba(82, 196, 26, 0.2)",
-      },
+      icon: (
+        <CheckCircleOutlined className="text-green-500" />
+      ),
       duration: 3,
     });
   };
 
-  const showErrorNotification = (errorMessage: string) => {
+  const showErrorNotification = (
+    errorMessage: string
+  ) => {
     api.error({
       message: (
-        <span className="font-semibold text-red-900">Registration Failed</span>
+        <span className="font-semibold text-red-900">
+          Registration Failed
+        </span>
       ),
       description: errorMessage,
       placement: "topRight",
-      icon: <CloseCircleOutlined className="text-red-500" />,
-      className: "custom-error-notification",
-      style: {
-        background: "#fff2f0",
-        border: "1px solid #ffccc7",
-        borderRadius: "8px",
-        boxShadow: "0 4px 12px rgba(255, 77, 79, 0.2)",
-      },
+      icon: (
+        <CloseCircleOutlined className="text-red-500" />
+      ),
       duration: 4,
     });
   };
 
-  const onFinish = async (values: SignupFormValues) => {
+  const onFinish = async (
+    values: SignupFormValues
+  ) => {
+
     try {
-      // values.phone is E.164 (e.g. +2348012345678) from PhoneInputField
+
       await register({
         name: "Visibuy Seller",
         email: values.email,
         phone: values.phone,
         password: values.password,
-    }).unwrap();
-
-      // 🔥 FIRE FB PIXEL EVENT HERE
-      if (window.fbq) {
-        window.fbq("track", "CompleteRegistration", {
-          value: 0.0,
-          currency: "USD",
-          content_name: "Visibuy Signup",
-        });
-      }
+      }).unwrap();
 
       localStorage.setItem(
         "visibuy-proof-intent",
         Date.now().toString()
       );
 
-      showSuccessNotification("Visibuy Seller");
+      showSuccessNotification(
+        "Visibuy Seller"
+      );
 
       setTimeout(() => {
         navigate("/verifications/create");
       }, 2000);
+
     } catch (err: any) {
-      let errorMsg = "Registration failed. Please try again.";
+
+      let errorMsg =
+        "Registration failed.";
+
       if (err?.data?.message) {
         errorMsg = err.data.message;
-      } else if (err?.status === 409) {
-        errorMsg = "Account already exists. Try signing in instead?";
-      } else if (err?.status >= 500) {
-        errorMsg = "Server error. Please try again later.";
       }
+
       showErrorNotification(errorMsg);
+
     }
+
   };
+
+  const handlePayment = () => {
+
+      if (window.fbq) {
+
+        window.fbq(
+          "track",
+          "InitiateCheckout",
+          {
+            currency: "NGN",
+            value: 5000,
+          }
+        );
+
+      }
+
+      handleFlutterPayment({
+
+        callback: (response) => {
+
+          console.log(response);
+
+          if (
+            response.status ===
+            "completed"
+          ) {
+
+            if (window.fbq) {
+
+              window.fbq(
+                "track",
+                "Purchase",
+                {
+                  currency: "NGN",
+                  value: 5000,
+                }
+              );
+
+            }
+
+            setPaymentSuccessful(true);
+
+          }
+
+          closePaymentModal();
+
+        },
+
+        onClose: () => {},
+
+      });
+
+    };
 
   const loadingIcon = (
     <LoadingOutlined
@@ -138,369 +275,754 @@ const SignupScreen = () => {
     />
   );
 
-  // 👇 phone change handler that enforces +234 and digits only
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let val = e.target.value;
-
-    // If user removes or changes prefix, restore it
-    if (!val.startsWith("+234")) {
-      // strip all non-digits and re-attach +234
-      const digitsOnly = val.replace(/\D/g, "");
-      val = "+234" + digitsOnly;
-    }
-
-    // Extract digits after +234 and enforce max 10 digits
-    const digitsAfterPrefix = val.replace("+234", "").replace(/\D/g, "");
-    const limitedDigits = digitsAfterPrefix.slice(0, 10);
-
-    const finalValue = "+234" + limitedDigits;
-
-    setPhoneValue(finalValue);
-    form.setFieldsValue({ phone: finalValue });
-  };
-
   return (
-    <div className="min-h-screen flex transition-all duration-300 ease-in-out">
+
+    <div className="min-h-screen bg-white">
+
       {contextHolder}
 
       {isLoading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300">
-          <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center space-y-4 transform scale-105 transition-transform duration-300">
-            <Spin indicator={loadingIcon} size="large" />
-            <p className="text-gray-700 font-semibold animate-pulse">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+          <div className="bg-white p-8 rounded-2xl shadow-2xl flex flex-col items-center space-y-4">
+
+            <Spin
+              indicator={loadingIcon}
+              size="large"
+            />
+
+            <p className="text-gray-700 font-semibold">
               Creating your account...
             </p>
+
           </div>
+
         </div>
       )}
 
-      <div className="hidden md:flex md:w-2/5 bg-[#007AFF] flex-col p-10 py-20 px-14 transition-all duration-500 ease-out fixed left-0 top-0 h-full overflow-y-auto">
-        <div className="flex items-center space-x-2 text-white transform hover:scale-105 transition-transform duration-300">
-          <img src={Logo} alt="logo" className="transition-all duration-300" draggable="false" />
-        </div>
+      {/* HERO SECTION */}
 
-        <div className="flex gap-2 mt-20 items-center animate-fade-in-up">
-          <img
-            src={lock}
-            alt="lock"
-            className="w-[51px] h-[51px] transform hover:scale-110 transition-transform duration-300"
-            draggable="false"
-          />
-          <div className="flex justify-center items-center">
-            <h4 className="text-xl text-white font-semibold animate-pulse-slow">
-              Sign Up
-            </h4>
-          </div>
-        </div>
-      </div>
+      <section className="w-full px-6 md:px-10 pt-10 pb-14">
 
-      <div className="w-full md:w-3/5 p-8 bg-white flex items-center justify-center animate-fade-in md:ml-[40%]">
-        <div className="w-full max-w-[496px] transform transition-all duration-500 ease-in-out bg-white">
-          <div className="md:hidden flex items-center space-x-2 text-[#007AFF] mb-8 justify-center animate-bounce-in">
+        <div className="max-w-[1200px] mx-auto">
+
+          {/* LOGO */}
+
+          <div className="flex justify-center mb-10">
+
             <img
               src={Logo}
               alt="logo"
-              className="h-8 transform hover:scale-110 transition-transform duration-300"
+              className="h-5 md:h-6"
             />
+
           </div>
 
-          <div className="mb-8 text-center animate-fade-in-up">
-            <h2 className="text-3xl font-semibold text-gray-900 mb-2 transform hover:scale-105 transition-transform duration-300 tracking-[1%]">
-              Stop time-wasters. Get paid.
-            </h2>
-            <p className="text-gray-600 text-sm font-[400] animate-pulse-slow">
-              Prove the exact item before payment — in under 30 seconds.
+          {/* HOOK */}
+
+          <div className="text-center max-w-[900px] mx-auto">
+
+            <h1
+              className="
+                text-[52px]
+                leading-[1]
+                md:text-[88px]
+                font-bold
+                tracking-[-4px]
+              "
+            >
+              <span className="text-black">
+                One Verification Link
+              </span>
+
+              <br />
+
+              <span className="text-black">
+                =
+              </span>
+
+              <br />
+
+              <span className="text-[#007BFF]">
+                One Successful Sale
+              </span>
+            </h1>
+
+            <p
+              className="
+                mt-8
+                text-[22px]
+                md:text-[32px]
+                leading-tight
+                font-medium
+                text-gray-800
+              "
+            >
+              Not just browsing.
+              <br />
+              Serious buyers.
             </p>
+
           </div>
-          <p className="text-xs text-gray-500 text-center mb-4">
-  No app. Works with WhatsApp.
-</p>
-<div className="mb-6">
-  <div className="flex items-center justify-between text-sm text-gray-700">
 
-    {/* Step 1 */}
-    <div className="flex items-center space-x-2">
-      <div className="w-6 h-6 flex items-center justify-center rounded-full bg-[#007BFF] text-white text-xs font-semibold">
-        1
-      </div>
-      <span>Record the exact item</span>
-    </div>
+          {/* HERO IMAGE */}
 
-    {/* Divider */}
-    <div className="flex-1 h-px bg-gray-200 mx-2"></div>
+          <div className="mt-14 flex justify-center">
 
-    {/* Step 2 */}
-    <div className="flex items-center space-x-2">
-      <div className="w-6 h-6 flex items-center justify-center rounded-full bg-[#28A745] text-white text-xs font-semibold">
-        2
-      </div>
-      <span>Get verification link</span>
-    </div>
+            <img
+              src={HeroImage}
+              alt="hero"
+              className="
+                w-full
+                max-w-[1050px]
+                rounded-[40px]
+                object-cover
+              "
+              draggable="false"
+            />
 
-    {/* Divider */}
-    <div className="flex-1 h-px bg-gray-200 mx-2"></div>
+          </div>
 
-    {/* Step 3 */}
-    <div className="flex items-center space-x-2">
-      <div className="w-6 h-6 flex items-center justify-center rounded-full bg-[#007BFF] text-white text-xs font-semibold">
-        3
-      </div>
-      <span>Send to buyer</span>
-    </div>
+          {/* PROOF SECTION */}
 
-  </div>
-</div>
+          <div className="mt-24">
 
-          <Form
-            form={form}
-            name="signup"
-            onFinish={onFinish}
-            layout="vertical"
-            size="large"
-            className="space-y-6 border border-[#E3E3E3] rounded-2xl shadow-sm p-8 hover:shadow-sm"
-            initialValues={{
-              phone: phoneValue, // 👈 default +234 in form state
-            }}
+            <div className="text-center mb-8">
+
+              <p
+                className="
+                  text-sm
+                  font-semibold
+                  tracking-[2px]
+                  uppercase
+                  text-[#007BFF]
+                "
+              >
+                Buyer Trust Changes Everything
+              </p>
+
+              <h2
+                className="
+                  mt-3
+                  text-2xl
+                  md:text-4xl
+                  font-bold
+                  tracking-[-2px]
+                  text-black
+                "
+              >
+                From hesitation to payment
+              </h2>
+
+              <p
+                className="
+                  mt-3
+                  text-base
+                  md:text-lg
+                  text-gray-600
+                "
+              >
+                Prove the exact item buyers will receive before payment.
+              </p>
+
+            </div>
+
+            <img
+              src={ProofImage}
+              alt="proof"
+              className="
+                w-full
+                max-w-[1200px]
+                mx-auto
+                rounded-[32px]
+                object-cover
+              "
+              draggable="false"
+            />
+
+          </div>
+          {/* OFFER CARD */}
+
+          <div
+            className="
+              mt-14
+              max-w-[760px]
+              mx-auto
+              bg-white
+              border
+              border-gray-200
+              rounded-[32px]
+              p-8
+              shadow-[0_10px_50px_rgba(0,0,0,0.06)]
+            "
           >
-            {/* <Form.Item
-              name="name"
-              label={
-                <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Full Name *
-                </span>
-              }
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your full name!",
-                },
-                {
-                  min: 2,
-                  message: "Name must be at least 2 characters!",
-                },
-              ]}
-            >
-              <Input
-                suffix={
-                  <UserOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
-                }
-                placeholder="Enter your full name"
-                className="rounded-lg transition-all duration-300 h-[51px] hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
-                disabled={isLoading}
-              />
-            </Form.Item> */}
 
-            <Form.Item
-              name="email"
-              label={
-                <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Email 
-                </span>
-              }
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your email!",
-                },
-                {
-                  type: "email",
-                  message: "Please enter a valid email address!",
-                },
-              ]}
-            >
-              <Input
-                suffix={
-                  <MailOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
-                }
-                placeholder="Enter your email"
-                className="rounded-lg transition-all h-[51px] duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
-                disabled={isLoading}
-              />
-            </Form.Item>
+            <div className="text-center">
 
-            {/* 🔐 Enforced +234 phone input */}
-            <Form.Item
-              name="phone"
-              label={
-                <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Phone Number
-                </span>
-              }
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your phone number!",
-                },
-                {
-                  validator(_, value) {
-                    if (!value) return Promise.resolve();
-                    if (isValidPhoneNumber(value)) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error("Please enter a valid phone number with country code.")
-                    );
-                  },
-                },
-              ]}
-            >
-              <PhoneInputField
-                defaultCountry="NG"
-                placeholder="e.g. 801 234 5678"
-                disabled={isLoading}
-                className="w-full"
-              />
-            </Form.Item>
+              <h3
+                className="
+                  text-4xl
+                  md:text-5xl
+                  font-bold
+                  tracking-[-2px]
+                  text-black
+                "
+              >
+                3 verification links
+                <br />
+                for ₦5,000
+              </h3>
 
-            <Form.Item
-              name="password"
-              label={
-                <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Password 
-                </span>
-              }
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your password!",
-                },
-                {
-                  min: 8,
-                  message: "Password must be at least 8 characters!",
-                },
-              ]}
-            >
-              <Input.Password
-                prefix={
-                  <LockOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
-                }
-                placeholder="Enter your password"
-                autoComplete="new-password"
-                iconRender={(visible) =>
-                  visible ? (
-                    <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" />
-                  ) : (
-                    <EyeInvisibleOutlined className="transition-colors duration-300 hover:text-[#007AFF]" />
-                  )
-                }
-                className="rounded-lg transition-all h-[51px] duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
-                disabled={isLoading}
-              />
-            </Form.Item>
+              <p
+                className="
+                  mt-4
+                  text-xl
+                  text-gray-700
+                  font-medium
+                "
+              >
+                3 more chances to close
+                serious buyers.
+              </p>
 
-            {/* <Form.Item
-              name="confirmPassword"
-              label={
-                <span className="text-gray-700 font-medium transition-colors duration-300">
-                  Confirm Password *
-                </span>
-              }
-              dependencies={["password"]}
-              rules={[
-                {
-                  required: true,
-                  message: "Please confirm your password!",
-                },
-                ({ getFieldValue }) => ({
-                  validator(_, value) {
-                    if (!value || getFieldValue("password") === value) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(new Error("Passwords do not match!"));
-                  },
-                }),
-              ]}
-            >
-              <Input.Password
-                prefix={
-                  <LockOutlined className="text-gray-400 transition-colors duration-300 hover:text-[#007AFF]" />
-                }
-                placeholder="Confirm your password"
-                autoComplete="new-password"
-                iconRender={(visible) =>
-                  visible ? (
-                    <EyeTwoTone className="transition-colors duration-300 hover:text-[#007AFF]" />
-                  ) : (
-                    <EyeInvisibleOutlined className="transition-colors duration-300 hover:text-[#007AFF]" />
-                  )
-                }
-                className="rounded-lg transition-all h-[51px] duration-300 hover:border-[#007AFF] focus:border-[#007AFF] focus:shadow-lg"
-                disabled={isLoading}
-              />
-            </Form.Item> */}
+            </div>
 
-            <Form.Item
-              name="consent"
-              valuePropName="checked"
-              rules={[
-                {
-                  required: true,
-                  type: "boolean",
-                  message: "You must agree to the terms and privacy policy.",
-                },
-              ]}
+            {/* CTA */}
+
+            <Button
+              type="primary"
+              onClick={() => {
+
+                setShowCheckout(true);
+
+                setTimeout(() => {
+
+                  checkoutRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+
+                }, 100);
+
+              }}
+              className="
+                mt-8
+                h-[64px]
+                rounded-2xl
+                w-full
+                bg-[#007BFF]
+                border-[#007BFF]
+                hover:!bg-blue-600
+                hover:!border-blue-600
+                text-[22px]
+                font-semibold
+                shadow-lg
+              "
             >
-              <Checkbox>
-                I agree to the{" "}
-                <Link
-                  to="https://visibuy.com.ng/terms"
-                  className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300"
+              Try It On Your Next Buyer
+            </Button>
+
+            <p
+              className="
+                mt-4
+                text-center
+                text-sm
+                text-gray-500
+              "
+            >
+              Prove the exact item before payment.
+            </p>
+
+          </div>
+
+          {/* TRUST STACK */}
+
+          <div
+            className="
+              mt-10
+              flex
+              flex-col
+              md:flex-row
+              items-center
+              justify-center
+              gap-6
+              text-sm
+              text-gray-600
+            "
+          >
+
+            <div>
+              ✓ Works with WhatsApp
+            </div>
+
+            <div>
+              ✓ Prove the exact item before payment
+            </div>
+
+            <div>
+              ✓ Generate links in under 30 seconds
+            </div>
+
+          </div>
+
+          {/* CHECKOUT */}
+
+          {showCheckout && !paymentSuccessful && (
+
+            <div
+              ref={checkoutRef}
+              className="
+                mt-16
+                max-w-[560px]
+                mx-auto
+                bg-white
+                border
+                border-gray-200
+                rounded-[28px]
+                p-8
+                shadow-[0_10px_50px_rgba(0,0,0,0.08)]
+                animate-fade-in
+              "
+            >
+
+              <div className="text-center">
+
+                <h3
+                  className="
+                    text-4xl
+                    font-bold
+                    tracking-[-2px]
+                    text-black
+                  "
                 >
-                  Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link
-                  to="https://visibuy.com.ng/privacy"
-                  className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300"
-                >
-                  Privacy Policy
-                </Link>
-                .
-              </Checkbox>
-            </Form.Item>
+                  Start Closing More Serious Buyers
+                </h3>
 
-            <Form.Item>
+                <p
+                  className="
+                    mt-4
+                    text-lg
+                    text-gray-600
+                    leading-relaxed
+                  "
+                >
+                  Generate verification links buyers
+                  trust before payment.
+                </p>
+                <div
+                  className="
+                    mt-8
+                    bg-[#F8FAFF]
+                    border
+                    border-[#DCE8FF]
+                    rounded-[24px]
+                    p-6
+                  "
+                >
+
+                  <div
+                    className="
+                      flex
+                      items-center
+                      justify-between
+                    "
+                  >
+
+                    <div>
+
+                      <p
+                        className="
+                          text-xl
+                          font-bold
+                          text-black
+                        "
+                      >
+                        3 Verification Links
+                      </p>
+
+                      <p
+                        className="
+                          mt-1
+                          text-sm
+                          text-gray-500
+                        "
+                      >
+                        3 more chances to close
+                        serious buyers.
+                      </p>
+
+                    </div>
+
+                    <div
+                      className="
+                        text-3xl
+                        font-bold
+                        tracking-[-1px]
+                        text-[#007BFF]
+                      "
+                    >
+                      ₦5,000
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div
+                  className="
+                    mt-5
+                    flex
+                    items-center
+                    justify-center
+                    gap-2
+                    text-sm
+                    text-gray-500
+                  "
+                >
+
+                  <LockOutlined />
+
+                  <span>
+                    Secure payment powered by Flutterwave
+                  </span>
+
+                </div>
+
+              </div>
+
               <Button
                 type="primary"
-                htmlType="submit"
-                loading={isLoading}
-                block
-                className="h-12 rounded-lg bg-[#28A745] border-[#28A745] hover:bg-green-600 hover:border-green-600 text-base font-[400] transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                disabled={isLoading}
-                icon={isLoading ? <LoadingOutlined spin /> : null}
+                onClick={handlePayment}
+                className="
+                  mt-8
+                  h-[58px]
+                  rounded-xl
+                  w-full
+                  bg-[#28A745]
+                  border-[#28A745]
+                  hover:!bg-green-600
+                  hover:!border-green-600
+                  text-lg
+                  font-semibold
+                "
               >
-                {isLoading ? "Creating..." : "Create verification link →"}
+                Continue to Secure Payment
               </Button>
-               <p className="text-sm text-gray-500 text-center mt-3">
-                  Free to start.
-                </p>
-            </Form.Item>
-          </Form>
+              <p
+                className="
+                  mt-4
+                  text-center
+                  text-sm
+                  text-gray-500
+                "
+              >
+                Instant access after payment.
+              </p>
+            </div>
 
-          <div className="text-center text-sm space-y-3 animate-fade-in-up mt-6">
-            <div>
-              <span className="text-gray-600 transition-colors duration-300">
-                Already have an account?{" "}
-                <Link
-                  to="/login"
-                  className="text-[#007AFF] hover:text-blue-700 font-medium transition-colors duration-300 transform hover:scale-105 inline-block"
+          )}
+
+          {/* SIGNUP FORM */}
+
+          {paymentSuccessful && (
+
+            <div
+              className="
+                mt-16
+                max-w-[560px]
+                mx-auto
+                animate-fade-in
+              "
+            >
+
+              <div className="text-center mb-8">
+
+                <h2
+                  className="
+                    text-4xl
+                    font-bold
+                    tracking-[-2px]
+                    text-black
+                  "
                 >
-                  Sign in
-                </Link>
-              </span>
-            </div>
-          </div>
+                  Create your account
+                </h2>
 
-          <div className="mt-6 text-center">
-            <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg border border-gray-200">
-              <LockOutlined className="mr-1" />
-              Password must be at least 8 characters long.
+                <p
+                  className="
+                    mt-3
+                    text-gray-600
+                  "
+                >
+                  Access your verification links
+                  and start sending them to buyers.
+                </p>
+
+              </div>
+
+              <Form
+                form={form}
+                name="signup"
+                onFinish={onFinish}
+                layout="vertical"
+                size="large"
+                className="
+                  border
+                  border-gray-200
+                  rounded-[28px]
+                  p-8
+                  shadow-sm
+                  bg-white
+                "
+              >
+
+                {/* EMAIL */}
+
+                <Form.Item
+                  name="email"
+                  label="Email"
+                  rules={[
+                    {
+                      required: true,
+                      message:
+                        "Please input your email!",
+                    },
+                    {
+                      type: "email",
+                      message:
+                        "Please enter a valid email!",
+                    },
+                  ]}
+                >
+
+                  <Input
+                    suffix={
+                      <MailOutlined />
+                    }
+                    placeholder="Enter your email"
+                    className="h-[56px] rounded-xl"
+                  />
+
+                </Form.Item>
+
+                {/* PHONE */}
+
+                <Form.Item
+                  name="phone"
+                  label="Phone Number"
+                  rules={[
+                    {
+                      required: true,
+                      message:
+                        "Please input your phone number!",
+                    },
+                    {
+                      validator(_, value) {
+
+                        if (!value)
+                          return Promise.resolve();
+
+                        if (
+                          isValidPhoneNumber(value)
+                        ) {
+                          return Promise.resolve();
+                        }
+
+                        return Promise.reject(
+                          new Error(
+                            "Invalid phone number."
+                          )
+                        );
+
+                      },
+                    },
+                  ]}
+                >
+
+                  <PhoneInputField
+                    defaultCountry="NG"
+                    placeholder="e.g. 801 234 5678"
+                    className="w-full"
+                  />
+
+                </Form.Item>
+
+                {/* PASSWORD */}
+
+                <Form.Item
+                  name="password"
+                  label="Password"
+                  rules={[
+                    {
+                      required: true,
+                      message:
+                        "Please input your password!",
+                    },
+                    {
+                      min: 8,
+                      message:
+                        "Password must be at least 8 characters!",
+                    },
+                  ]}
+                >
+
+                  <Input.Password
+                    prefix={
+                      <LockOutlined />
+                    }
+                    placeholder="Enter your password"
+                    autoComplete="new-password"
+                    iconRender={(visible) =>
+                      visible ? (
+                        <EyeTwoTone />
+                      ) : (
+                        <EyeInvisibleOutlined />
+                      )
+                    }
+                    className="h-[56px] rounded-xl"
+                  />
+
+                </Form.Item>
+
+                {/* TERMS */}
+
+                <Form.Item
+                  name="consent"
+                  valuePropName="checked"
+                  rules={[
+                    {
+                      required: true,
+                      type: "boolean",
+                      message:
+                        "You must agree to continue.",
+                    },
+                  ]}
+                >
+
+                  <Checkbox>
+
+                    I agree to the{" "}
+
+                    <Link
+                      to="https://visibuy.com.ng/terms"
+                      className="text-[#007AFF]"
+                    >
+                      Terms
+                    </Link>
+
+                    {" "}and{" "}
+
+                    <Link
+                      to="https://visibuy.com.ng/privacy"
+                      className="text-[#007AFF]"
+                    >
+                      Privacy Policy
+                    </Link>
+
+                  </Checkbox>
+
+                </Form.Item>
+
+                {/* SUBMIT */}
+
+                <Form.Item className="mb-0">
+
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    loading={isLoading}
+                    block
+                    className="
+                      h-[58px]
+                      rounded-xl
+                      bg-[#007BFF]
+                      border-[#007BFF]
+                      hover:!bg-blue-600
+                      hover:!border-blue-600
+                      text-lg
+                      font-semibold
+                    "
+                  >
+                    Access My Verification Links
+                  </Button>
+
+                </Form.Item>
+
+              </Form>
+
+              {/* LOGIN */}
+
+              <div className="mt-8 text-center">
+
+                <span className="text-gray-600">
+                  Already have an account?{" "}
+
+                  <Link
+                    to="/login"
+                    className="
+                      text-[#007BFF]
+                      font-medium
+                    "
+                  >
+                    Sign in
+                  </Link>
+
+                </span>
+
+              </div>
+
             </div>
-          </div>
+
+          )}
+
         </div>
-      </div>
+
+      </section>
+      <a
+        href="https://wa.me/2348061924490?text=Hi%20Visibuy,%20I%20need%20help%20with%20verification%20links."
+        target="_blank"
+        rel="noopener noreferrer"
+        className="
+          fixed
+          bottom-5
+          right-5
+          z-50
+          flex
+          items-center
+          gap-3
+          bg-[#25D366]
+          hover:bg-[#20ba5a]
+          text-white
+          px-5
+          py-4
+          rounded-full
+          shadow-2xl
+          transition-all
+          duration-300
+          hover:scale-[1.03]
+        "
+      >
+
+        <MessageCircle
+          className="w-5 h-5"
+        />
+
+        <span
+          className="
+            text-sm
+            font-semibold
+            hidden
+            md:block
+          "
+        >
+          Need help?
+        </span>
+
+      </a>
     </div>
+
   );
+
 };
 
 export default SignupScreen;
