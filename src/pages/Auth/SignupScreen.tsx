@@ -35,8 +35,8 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 
 import Logo from "../../public/images/VisiBuy - Colored 1.png";
 
-import HeroImage from "../../public/images/hero-image.png";
-import ProofImage from "../../public/images/proof-image.png";
+import HeroImage from "../../public/images/hero-image.webp";
+import ProofImage from "../../public/images/proof-image.webp";
 
 import { useRegisterMutation } from "@/features/auth/authApi";
 
@@ -312,6 +312,7 @@ const SignupScreen = () => {
 
             <img
               src={Logo}
+              loading="lazy"
               alt="logo"
               className="h-5 md:h-6"
             />
@@ -371,6 +372,7 @@ const SignupScreen = () => {
 
             <img
               src={HeroImage}
+              loading="lazy"
               alt="hero"
               className="
                 w-full
@@ -429,6 +431,7 @@ const SignupScreen = () => {
 
             <img
               src={ProofImage}
+              loading="lazy"
               alt="proof"
               className="
                 w-full
