@@ -36,7 +36,6 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import Logo from "../../public/images/VisiBuy - Colored 1.png";
 
 import HeroImage from "../../public/images/hero-image.png";
-import ProofImage from "../../public/images/proof-image.webp";
 
 import { useRegisterMutation } from "@/features/auth/authApi";
 
