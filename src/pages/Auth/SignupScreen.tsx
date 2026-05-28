@@ -35,7 +35,7 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 
 import Logo from "../../public/images/VisiBuy - Colored 1.png";
 
-import HeroImage from "../../public/images/hero-image.webp";
+import HeroImage from "../../public/images/hero-image.png";
 import ProofImage from "../../public/images/proof-image.webp";
 
 import { useRegisterMutation } from "@/features/auth/authApi";
@@ -100,10 +100,10 @@ const SignupScreen = () => {
     customizations: {
 
       title:
-        "Visibuy Verification Links",
+        "Visibuy Product Verification",
 
       description:
-        "3 verification links",
+        "3 Product Verification",
 
       logo:
         "https://visibuy.com.ng/logo.png",
@@ -323,46 +323,44 @@ const SignupScreen = () => {
 
           <div className="text-center max-w-[900px] mx-auto">
 
-            <h1
+           <h1
               className="
-                text-[52px]
+                text-[44px]
                 leading-[1]
-                md:text-[88px]
+                md:text-[82px]
                 font-bold
                 tracking-[-4px]
+                text-center
               "
             >
               <span className="text-black">
-                One Verification Link
+                Turn ‘Is this the exact one?’
               </span>
 
               <br />
 
               <span className="text-black">
-                =
+                into{" "}
               </span>
 
-              <br />
-
-              <span className="text-[#007BFF]">
-                One Successful Sale
+              <span className="text-red-500">
+                payment.
               </span>
             </h1>
 
             <p
               className="
-                mt-8
-                text-[22px]
-                md:text-[32px]
+                mt-6
+                text-[20px]
+                md:text-[30px]
                 leading-tight
                 font-medium
-                text-gray-800
+                text-gray-700
               "
             >
-              Not just browsing.
-              <br />
-              Serious buyers.
+              Stop losing buyers right before payment.
             </p>
+
 
           </div>
 
@@ -385,65 +383,6 @@ const SignupScreen = () => {
 
           </div>
 
-          {/* PROOF SECTION */}
-
-          <div className="mt-24">
-
-            <div className="text-center mb-8">
-
-              <p
-                className="
-                  text-sm
-                  font-semibold
-                  tracking-[2px]
-                  uppercase
-                  text-[#007BFF]
-                "
-              >
-                Buyer Trust Changes Everything
-              </p>
-
-              <h2
-                className="
-                  mt-3
-                  text-2xl
-                  md:text-4xl
-                  font-bold
-                  tracking-[-2px]
-                  text-black
-                "
-              >
-                From hesitation to payment
-              </h2>
-
-              <p
-                className="
-                  mt-3
-                  text-base
-                  md:text-lg
-                  text-gray-600
-                "
-              >
-                Prove the exact item buyers will receive before payment.
-              </p>
-
-            </div>
-
-            <img
-              src={ProofImage}
-              loading="lazy"
-              alt="proof"
-              className="
-                w-full
-                max-w-[1200px]
-                mx-auto
-                rounded-[32px]
-                object-cover
-              "
-              draggable="false"
-            />
-
-          </div>
           {/* OFFER CARD */}
 
           <div
@@ -471,7 +410,7 @@ const SignupScreen = () => {
                   text-black
                 "
               >
-                3 verification links
+                3 Product Verifications
                 <br />
                 for ₦5,000
               </h3>
@@ -484,8 +423,7 @@ const SignupScreen = () => {
                   font-medium
                 "
               >
-                3 more chances to close
-                serious buyers.
+                Help buyers feel confident enough to pay.
               </p>
 
             </div>
@@ -522,7 +460,7 @@ const SignupScreen = () => {
                 shadow-lg
               "
             >
-              Try It On Your Next Buyer
+              Close Your Next Sale
             </Button>
 
             <p
@@ -555,7 +493,7 @@ const SignupScreen = () => {
           >
 
             <div>
-              ✓ Works with WhatsApp
+              ✓ Reduce buyer hesitation
             </div>
 
             <div>
@@ -563,7 +501,7 @@ const SignupScreen = () => {
             </div>
 
             <div>
-              ✓ Generate links in under 30 seconds
+              ✓ Help buyers feel safer paying
             </div>
 
           </div>
@@ -598,7 +536,7 @@ const SignupScreen = () => {
                     text-black
                   "
                 >
-                  Start Closing More Serious Buyers
+                  Stop Losing Buyers Before Payment
                 </h3>
 
                 <p
@@ -609,8 +547,7 @@ const SignupScreen = () => {
                     leading-relaxed
                   "
                 >
-                  Generate verification links buyers
-                  trust before payment.
+                  Show buyers the exact item before asking for payment.
                 </p>
                 <div
                   className="
@@ -640,7 +577,7 @@ const SignupScreen = () => {
                           text-black
                         "
                       >
-                        3 Verification Links
+                        3 Product Verification
                       </p>
 
                       <p
@@ -650,8 +587,7 @@ const SignupScreen = () => {
                           text-gray-500
                         "
                       >
-                        3 more chances to close
-                        serious buyers.
+                        Help buyers feel confident enough to pay.
                       </p>
 
                     </div>
@@ -757,8 +693,7 @@ const SignupScreen = () => {
                     text-gray-600
                   "
                 >
-                  Access your verification links
-                  and start sending them to buyers.
+                  Start sending product verifications buyers feel safer paying after seeing.
                 </p>
 
               </div>
