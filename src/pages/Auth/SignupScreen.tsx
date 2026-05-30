@@ -625,6 +625,31 @@ const SignupScreen = () => {
                   </span>
 
                 </div>
+                <div
+  className="
+    mt-6
+    bg-gray-50
+    border
+    border-gray-200
+    rounded-2xl
+    p-5
+  "
+>
+  <h4 className="font-semibold text-black mb-3">
+    What happens after payment?
+  </h4>
+
+  <div className="space-y-2 text-sm text-gray-700">
+    <div>✓ Create your Visibuy account</div>
+    <div>✓ Get 3 product verification credits instantly</div>
+    <div>✓ Create your first product verification</div>
+    <div>✓ Start sending verification links to buyers</div>
+  </div>
+
+  <p className="mt-4 text-xs text-gray-500">
+    No subscription. One-time payment.
+  </p>
+</div>
 
               </div>
 
