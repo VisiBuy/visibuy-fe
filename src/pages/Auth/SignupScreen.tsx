@@ -43,11 +43,6 @@ import { SignupFormValues } from "@/types/types";
 
 import { PhoneInputField } from "@/shared/components/ui/PhoneInputField";
 
-import {
-  useFlutterwave,
-  closePaymentModal,
-} from "flutterwave-react-v3";
-
 const SignupScreen = () => {
 
   const [register, { isLoading }] =
@@ -66,54 +61,14 @@ const SignupScreen = () => {
   const [paymentSuccessful, setPaymentSuccessful] =
     useState(false);
 
+  const [showBankDetails, setShowBankDetails] =
+    useState(false);
+
   const checkoutRef =
     React.useRef<HTMLDivElement | null>(null);
-  const flutterwaveConfig = {
 
-    public_key:
-      "FLWPUBK-c218cf9281a8c24689aca49991e091e1-X",
-
-    tx_ref:
-      `VISIBUY-${Date.now()}`,
-
-    amount: 5000,
-
-    currency: "NGN",
-
-    payment_options:
-      "banktransfer",
-
-    customer: {
-
-      email:
-        "seller-invoice@visibuy.com.ng",
-
-      phone_number:
-        "08000000000",
-
-      name:
-        "Visibuy Seller",
-
-    },
-
-    customizations: {
-
-      title:
-        "Visibuy Product Verification",
-
-      description:
-        "3 Product Verification",
-
-      logo:
-        "https://visibuy.com.ng/logo.png",
-
-    },
-
-  };
-  const handleFlutterPayment =
-    useFlutterwave(
-      flutterwaveConfig
-    );
+  const bankDetailsRef =
+    React.useRef<HTMLDivElement | null>(null);
 
   const proofIntent =
     localStorage.getItem(
@@ -133,6 +88,33 @@ const SignupScreen = () => {
     }
 
   }, [hasRecentProofIntent, navigate]);
+
+  useEffect(() => {
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const paid =
+    params.get("paid");
+
+  if (paid === "true") {
+
+    setPaymentSuccessful(true);
+
+    window.fbq?.(
+      "track",
+      "Purchase",
+      {
+        value: 5000,
+        currency: "NGN",
+      }
+    );
+
+  }
+
+}, []);
 
   const showSuccessNotification = (
     name: string
@@ -168,6 +150,19 @@ const SignupScreen = () => {
       ),
       duration: 4,
     });
+  };
+
+  const showCopiedNotification = (
+    label: string
+  ) => {
+
+    api.success({
+      message: "Copied",
+      description: `${label} copied successfully.`,
+      placement: "topRight",
+      duration: 2,
+    });
+
   };
 
   const onFinish = async (
@@ -210,59 +205,6 @@ const SignupScreen = () => {
     }
 
   };
-
-  const handlePayment = () => {
-
-      if (window.fbq) {
-
-        window.fbq(
-          "track",
-          "InitiateCheckout",
-          {
-            currency: "NGN",
-            value: 5000,
-          }
-        );
-
-      }
-
-      handleFlutterPayment({
-
-        callback: (response) => {
-
-          console.log(response);
-
-          if (
-            response.status ===
-            "completed"
-          ) {
-
-            if (window.fbq) {
-
-              window.fbq(
-                "track",
-                "Purchase",
-                {
-                  currency: "NGN",
-                  value: 5000,
-                }
-              );
-
-            }
-
-            setPaymentSuccessful(true);
-
-          }
-
-          closePaymentModal();
-
-        },
-
-        onClose: () => {},
-
-      });
-
-    };
 
   const loadingIcon = (
     <LoadingOutlined
@@ -655,7 +597,29 @@ const SignupScreen = () => {
 
               <Button
                 type="primary"
-                onClick={handlePayment}
+                onClick={() => {
+
+                  window.fbq?.(
+                    "track",
+                    "InitiateCheckout",
+                    {
+                      currency: "NGN",
+                      value: 5000,
+                    }
+                  );
+
+
+                  setShowBankDetails(true);
+                  setTimeout(() => {
+
+                    bankDetailsRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+
+                  }, 100);
+
+                }}
                 className="
                   mt-8
                   h-[58px]
@@ -671,6 +635,204 @@ const SignupScreen = () => {
               >
                 Continue to Secure Payment
               </Button>
+              {showBankDetails && (
+
+                <div
+                  ref={bankDetailsRef}
+                  className="
+                    mt-6
+                    bg-[#F8FAFF]
+                    border
+                    border-[#DCE8FF]
+                    rounded-[24px]
+                    p-6
+                  "
+                >
+
+                  <h4
+                    className="
+                      text-lg
+                      font-semibold
+                      text-black
+                    "
+                  >
+                    Bank Transfer powered by Flutterwave
+                  </h4>
+
+                  <p
+                    className="
+                      mt-2
+                      text-sm
+                      text-gray-600
+                    "
+                  >
+                    Complete your payment using the
+                    Flutterwave account details below.
+                  </p>
+
+                  <div className="mt-6 space-y-4">
+
+                    <div
+                      className="
+                        flex
+                        items-center
+                        justify-between
+                        bg-white
+                        border
+                        rounded-xl
+                        p-4
+                      "
+                    >
+                      <div>
+                        <p className="text-xs text-gray-500">
+                          BANK_NAME
+                        </p>
+
+                        <p className="font-semibold">
+                          Wema Bank PLC
+                        </p>
+                      </div>
+
+                      <Button
+                        size="small"
+                        onClick={() => {
+
+                          navigator.clipboard.writeText(
+                            "Wema Bank PLC"
+                          );
+
+                          showCopiedNotification(
+                            "Wema Bank PLC"
+                          );
+
+                        }}
+                      >
+                        Copy
+                      </Button>
+                    </div>
+
+                    <div
+                      className="
+                        flex
+                        items-center
+                        justify-between
+                        bg-white
+                        border
+                        rounded-xl
+                        p-4
+                      "
+                    >
+                      <div>
+                        <p className="text-xs text-gray-500">
+                          ACCOUNT_NAME
+                        </p>
+
+                        <p className="font-semibold">
+                          Flutterwave/Visibuy Technology Limited
+                        </p>
+                      </div>
+
+                      <Button
+                        size="small"
+                        onClick={() => {
+
+                        navigator.clipboard.writeText(
+                          "Flutterwave/Visibuy Technology Limited"
+                        );
+
+                        showCopiedNotification(
+                          "Flutterwave/Visibuy Technology Limited"
+                        );
+
+                      }}
+                      >
+                        Copy
+                      </Button>
+                    </div>
+
+                    <div
+                      className="
+                        flex
+                        items-center
+                        justify-between
+                        bg-white
+                        border
+                        rounded-xl
+                        p-4
+                      "
+                    >
+                      <div>
+                        <p className="text-xs text-gray-500">
+                          ACCOUNT_NUMBER
+                        </p>
+
+                        <p className="font-semibold text-lg">
+                          9462006308
+                        </p>
+                      </div>
+
+                      <Button
+                        size="small"
+                        onClick={() => {
+
+                          navigator.clipboard.writeText(
+                            "9462006308"
+                          );
+
+                          showCopiedNotification(
+                            "9462006308"
+                          );
+
+                        }}
+                      >
+                        Copy
+                      </Button>
+                    </div>
+
+                </div>
+                <Button
+                  type="primary"
+                  className="
+                    mt-5
+                    w-full
+                    h-[56px]
+                    rounded-xl
+                    bg-[#25D366]
+                    border-[#25D366]
+                    hover:!bg-[#20ba5a]
+                    hover:!border-[#20ba5a]
+                    text-base
+                    font-semibold
+                  "
+                  onClick={() => {
+
+                    window.fbq?.(
+                      "trackCustom",
+                      "TransferIntent"
+                    );
+
+                    const message =
+                      encodeURIComponent(
+                `Hi Visibuy,
+
+                I have completed payment for 3 Product Verifications.
+
+                Please verify my payment and activate my credits.`
+                      );
+
+                    window.open(
+                      `https://wa.me/2348061924490?text=${message}`,
+                      "_blank"
+                    );
+
+                  }}
+                >
+                  I've Completed My Transfer
+                </Button>
+
+                </div>
+
+              )}
               <p
                 className="
                   mt-4
