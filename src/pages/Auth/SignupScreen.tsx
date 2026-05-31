@@ -107,7 +107,7 @@ const SignupScreen = () => {
       "track",
       "Purchase",
       {
-        value: 5000,
+        value: 1500,
         currency: "NGN",
       }
     );
@@ -275,13 +275,13 @@ const SignupScreen = () => {
               "
             >
               <span className="text-black">
-                Turn ‘Is this the exact one?’
+                Prove the exact item
               </span>
 
               <br />
 
               <span className="text-black">
-                into{" "}
+                before{" "}
               </span>
 
               <span className="text-red-500">
@@ -353,7 +353,7 @@ const SignupScreen = () => {
               >
                 Close Your Next Sale
                 <br />
-                for ₦5,000
+                starting at ₦1,500
               </h3>
 
               <p
@@ -541,7 +541,7 @@ const SignupScreen = () => {
                         text-[#007BFF]
                       "
                     >
-                      ₦5,000
+                      ₦1,500
                     </div>
 
                   </div>
@@ -604,7 +604,7 @@ const SignupScreen = () => {
                     "InitiateCheckout",
                     {
                       currency: "NGN",
-                      value: 5000,
+                      value: 1500,
                     }
                   );
 
