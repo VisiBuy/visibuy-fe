@@ -351,7 +351,7 @@ const SignupScreen = () => {
                   text-black
                 "
               >
-                3 Product Verifications
+                Close Your Next Sale
                 <br />
                 for ₦5,000
               </h3>
@@ -518,7 +518,7 @@ const SignupScreen = () => {
                           text-black
                         "
                       >
-                        3 Product Verification
+                        Close Your Next Sale
                       </p>
 
                       <p
