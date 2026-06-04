@@ -35,7 +35,7 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 
 import Logo from "../../public/images/VisiBuy - Colored 1.png";
 
-import HeroImage from "../../public/images/hero-image-main.png";
+import HeroImage from "../../public/images/hero-image-main.jpeg";
 
 import { useRegisterMutation } from "@/features/auth/authApi";
 
@@ -299,7 +299,7 @@ const SignupScreen = () => {
                 text-gray-700
               "
             >
-              Stop losing buyers right before payment.
+              See what your buyer sees before they pay.
             </p>
 
 
