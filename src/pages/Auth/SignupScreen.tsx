@@ -10,6 +10,7 @@ import {
   Spin,
   notification,
   Checkbox,
+  Carousel,
 } from "antd";
 
 import {
@@ -35,7 +36,9 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 
 import Logo from "../../public/images/VisiBuy - Colored 1.png";
 
-import HeroImage from "../../public/images/hero-image-main.jpeg";
+import PhoneVerification from "../../public/images/PhoneVerification.png";
+import SneakerVerification from "../../public/images/SneakerVerification.png";
+import HerbVerification from "../../public/images/HerbVerification.png";
 
 import { useRegisterMutation } from "@/features/auth/authApi";
 
@@ -63,6 +66,8 @@ const SignupScreen = () => {
 
   const [showBankDetails, setShowBankDetails] =
     useState(false);
+
+  const [price, setPrice] = useState(1500);
 
   const checkoutRef =
     React.useRef<HTMLDivElement | null>(null);
@@ -96,6 +101,12 @@ const SignupScreen = () => {
       window.location.search
     );
 
+  const urlPrice = params.get("price");
+
+  if (urlPrice) {
+    setPrice(Number(urlPrice));
+  }
+
   const paid =
     params.get("paid");
 
@@ -107,7 +118,7 @@ const SignupScreen = () => {
       "track",
       "Purchase",
       {
-        value: 1500,
+        value: Number(urlPrice || 1500),
         currency: "NGN",
       }
     );
@@ -115,6 +126,8 @@ const SignupScreen = () => {
   }
 
 }, []);
+
+const formattedPrice = `₦${price.toLocaleString()}`;
 
   const showSuccessNotification = (
     name: string
@@ -275,17 +288,13 @@ const SignupScreen = () => {
               "
             >
               <span className="text-black">
-                Prove the exact item
+                Turn "How Much?"
               </span>
 
               <br />
 
-              <span className="text-black">
-                before{" "}
-              </span>
-
-              <span className="text-red-500">
-                payment.
+              <span className="text-[#007BFF]">
+                Into Sales
               </span>
             </h1>
 
@@ -299,7 +308,9 @@ const SignupScreen = () => {
                 text-gray-700
               "
             >
-              See what your buyer sees before they pay.
+              Buyers ask questions.
+              <br />
+              Then disappear before payment.
             </p>
 
 
@@ -307,20 +318,52 @@ const SignupScreen = () => {
 
           {/* HERO IMAGE */}
 
-          <div className="mt-14 flex justify-center">
+          <div className="mt-14 max-w-[700px] lg:max-w-[800px] mx-auto">
 
-            <img
-              src={HeroImage}
-              loading="lazy"
-              alt="hero"
-              className="
-                w-full
-                max-w-[1050px]
-                rounded-[40px]
-                object-cover
-              "
-              draggable="false"
-            />
+            <Carousel
+              autoplay
+              dots
+              className="mt-14"
+            >
+              <div>
+                <img
+                  src={PhoneVerification}
+                  alt="Phone Verification"
+                  className="
+                    w-full
+                    max-w-[1050px]
+                    mx-auto
+                    rounded-[40px]
+                  "
+                />
+              </div>
+
+              <div>
+                <img
+                  src={SneakerVerification}
+                  alt="Sneaker Verification"
+                  className="
+                    w-full
+                    max-w-[1050px]
+                    mx-auto
+                    rounded-[40px]
+                  "
+                />
+              </div>
+
+              <div>
+                <img
+                  src={HerbVerification}
+                  alt="Herb Verification"
+                  className="
+                    w-full
+                    max-w-[1050px]
+                    mx-auto
+                    rounded-[40px]
+                  "
+                />
+              </div>
+            </Carousel>
 
           </div>
 
@@ -353,7 +396,7 @@ const SignupScreen = () => {
               >
                 Close Your Next Sale
                 <br />
-                starting at ₦1,500
+                Get Started For {formattedPrice}
               </h3>
 
               <p
@@ -364,7 +407,7 @@ const SignupScreen = () => {
                   font-medium
                 "
               >
-                Help buyers feel confident enough to pay.
+                Prove the exact item before asking for payment.
               </p>
 
             </div>
@@ -434,15 +477,15 @@ const SignupScreen = () => {
           >
 
             <div>
-              ✓ Reduce buyer hesitation
+              ✓ Turn buyer interest into payment
             </div>
 
             <div>
-              ✓ Prove the exact item before payment
+              ✓ Share proof of the exact item
             </div>
 
             <div>
-              ✓ Help buyers feel safer paying
+              ✓ Stop repeating photos and videos
             </div>
 
           </div>
@@ -488,7 +531,7 @@ const SignupScreen = () => {
                     leading-relaxed
                   "
                 >
-                  Show buyers the exact item before asking for payment.
+                  Prove the exact item before asking for payment.
                 </p>
                 <div
                   className="
@@ -541,7 +584,7 @@ const SignupScreen = () => {
                         text-[#007BFF]
                       "
                     >
-                      ₦1,500
+                      {formattedPrice}
                     </div>
 
                   </div>
@@ -604,7 +647,7 @@ const SignupScreen = () => {
                     "InitiateCheckout",
                     {
                       currency: "NGN",
-                      value: 1500,
+                      value: price,
                     }
                   );
 
@@ -815,7 +858,7 @@ const SignupScreen = () => {
                       encodeURIComponent(
                 `Hi Visibuy,
 
-                I have completed payment for 3 Product Verifications.
+                I have completed payment of ${formattedPrice}.
 
                 Please verify my payment and activate my credits.`
                       );
