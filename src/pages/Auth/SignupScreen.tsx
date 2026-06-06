@@ -128,6 +128,7 @@ const SignupScreen = () => {
 }, []);
 
 const formattedPrice = `₦${price.toLocaleString()}`;
+const creditCount = price >= 5000 ? 3 : 1;
 
   const showSuccessNotification = (
     name: string
@@ -520,121 +521,31 @@ const formattedPrice = `₦${price.toLocaleString()}`;
                     text-black
                   "
                 >
-                  Stop Losing Buyers Before Payment
+                  Get {creditCount} Verification Credit{creditCount > 1 ? "s" : ""}
                 </h3>
 
-                <p
-                  className="
-                    mt-4
-                    text-lg
-                    text-gray-600
-                    leading-relaxed
-                  "
-                >
-                  Prove the exact item before asking for payment.
-                </p>
                 <div
                   className="
-                    mt-8
-                    bg-[#F8FAFF]
-                    border
-                    border-[#DCE8FF]
-                    rounded-[24px]
-                    p-6
+                    mt-6
+                    text-5xl
+                    font-bold
+                    text-[#007BFF]
                   "
                 >
-
-                  <div
-                    className="
-                      flex
-                      items-center
-                      justify-between
-                    "
-                  >
-
-                    <div>
-
-                      <p
-                        className="
-                          text-xl
-                          font-bold
-                          text-black
-                        "
-                      >
-                        Close Your Next Sale
-                      </p>
-
-                      <p
-                        className="
-                          mt-1
-                          text-sm
-                          text-gray-500
-                        "
-                      >
-                        Help buyers feel confident enough to pay.
-                      </p>
-
-                    </div>
-
-                    <div
-                      className="
-                        text-3xl
-                        font-bold
-                        tracking-[-1px]
-                        text-[#007BFF]
-                      "
-                    >
-                      {formattedPrice}
-                    </div>
-
-                  </div>
-
+                  {formattedPrice}
                 </div>
 
                 <div
                   className="
-                    mt-5
-                    flex
-                    items-center
-                    justify-center
-                    gap-2
-                    text-sm
-                    text-gray-500
+                    mt-6
+                    space-y-3
+                    text-gray-700
                   "
                 >
-
-                  <LockOutlined />
-
-                  <span>
-                    Secure payment powered by Flutterwave
-                  </span>
-
+                  <p>✓ Share proof of the exact item</p>
+                  <p>✓ Send to buyers on WhatsApp</p>
+                  <p>✓ Help buyers pay with confidence</p>
                 </div>
-                <div
-  className="
-    mt-6
-    bg-gray-50
-    border
-    border-gray-200
-    rounded-2xl
-    p-5
-  "
->
-  <h4 className="font-semibold text-black mb-3">
-    What happens after payment?
-  </h4>
-
-  <div className="space-y-2 text-sm text-gray-700">
-    <div>✓ Create your Visibuy account</div>
-    <div>✓ Get 3 product verification credits instantly</div>
-    <div>✓ Create your first product verification</div>
-    <div>✓ Start sending verification links to buyers</div>
-  </div>
-
-  <p className="mt-4 text-xs text-gray-500">
-    No subscription. One-time payment.
-  </p>
-</div>
 
               </div>
 
@@ -676,7 +587,7 @@ const formattedPrice = `₦${price.toLocaleString()}`;
                   font-semibold
                 "
               >
-                Continue to Secure Payment
+                Pay {formattedPrice}
               </Button>
               {showBankDetails && (
 
@@ -699,7 +610,7 @@ const formattedPrice = `₦${price.toLocaleString()}`;
                       text-black
                     "
                   >
-                    Bank Transfer powered by Flutterwave
+                    Payment Details
                   </h4>
 
                   <p
@@ -709,8 +620,7 @@ const formattedPrice = `₦${price.toLocaleString()}`;
                       text-gray-600
                     "
                   >
-                    Complete your payment using the
-                    Flutterwave account details below.
+                    Transfer {formattedPrice} to activate your {creditCount} verification credit{creditCount > 1 ? "s" : ""}.
                   </p>
 
                   <div className="mt-6 space-y-4">
@@ -860,7 +770,7 @@ const formattedPrice = `₦${price.toLocaleString()}`;
 
                 I have completed payment of ${formattedPrice}.
 
-                Please verify my payment and activate my credits.`
+                Please verify my payment and activate my ${creditCount} verification credit${creditCount > 1 ? "s" : ""}.`
                       );
 
                     window.open(
