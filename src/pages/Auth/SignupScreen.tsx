@@ -36,9 +36,9 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 
 import Logo from "../../public/images/VisiBuy - Colored 1.png";
 
-import PhoneVerification from "../../public/images/PhoneVerification.png";
-import SneakerVerification from "../../public/images/SneakerVerification.png";
-import HerbVerification from "../../public/images/HerbVerification.png";
+import PhoneVerification from "../../public/images/PhoneVerification.webp";
+import SneakerVerification from "../../public/images/SneakerVerification.webp";
+import HerbVerification from "../../public/images/HerbVerification.webp";
 
 import { useRegisterMutation } from "@/features/auth/authApi";
 
