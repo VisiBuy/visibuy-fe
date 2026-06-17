@@ -735,17 +735,38 @@ useEffect(() => {
     return null;
   }
 
-  const onFormSubmit = async (
+  const createDefaultPhoto = async () => {
+    const response = await fetch(
+      proofPlaceIllustration
+    );
+
+    const blob = await response.blob();
+
+    return new File(
+      [blob],
+      "default-proof.jpg",
+      {
+        type: "image/jpeg",
+      }
+    );
+  };
+const onFormSubmit = async (
   data: CreateVerificationFormData
 ) => {
+
+  const defaultPhoto =
+    await createDefaultPhoto();
+
   await onSubmit({
     ...data,
+    photos: [defaultPhoto],
     description:
       data.description ||
       `Proof created for ${
         data.title || "item"
       }`,
   });
+
 };
 
   const getPreviousStep = () => {
@@ -766,7 +787,7 @@ useEffect(() => {
         return "prep";
 
       case "video":
-        return "capture";
+        return "prep";
 
       // case "details":
       //   return isManualFlow
@@ -898,12 +919,12 @@ useEffect(() => {
                 if (!hasSeenPermissionContext) {
                   setStep("permission");
                 } else {
-                  setStep("capture");
+                  setStep("video");
 
                   setTimeout(async () => {
-                    await startPhotoCamera();
+                    await startVideoCamera();
                   }, 50);
-}
+                  }
               }}
               className="
                 w-full
@@ -964,10 +985,10 @@ useEffect(() => {
               onClick={async () => {
 
 
-                setStep("capture");
+                setStep("video");
 
                 setTimeout(async () => {
-                  await startPhotoCamera();
+                  await startVideoCamera();
                 }, 50);
               }}
               className="
@@ -2283,7 +2304,7 @@ useEffect(() => {
       </div>
 
       {/* PHOTOS */}
-      <div className="grid grid-cols-2 gap-4 mt-10">
+      {/* <div className="grid grid-cols-2 gap-4 mt-10">
         {photos.map((photo, index) => (
           <div
             key={index}
@@ -2301,7 +2322,7 @@ useEffect(() => {
             />
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* VIDEO */}
       {video && (
@@ -2425,7 +2446,7 @@ useEffect(() => {
 
       {/* STATUS */}
       <div className="mt-8 space-y-3">
-        <div className="flex items-center justify-between">
+        {/* <div className="flex items-center justify-between">
           <span className="text-neutral-600 text-sm">
             Photos
           </span>
@@ -2433,7 +2454,7 @@ useEffect(() => {
           <span className="text-primary-green text-sm font-medium">
             {photos.length}/3 ready
           </span>
-        </div>
+        </div> */}
 
         <div className="flex items-center justify-between">
           <span className="text-neutral-600 text-sm">
@@ -2487,10 +2508,10 @@ useEffect(() => {
                       setValue("photos", []);
                       setValue("video", undefined);
             setCaptureIndex(0);
-            setStep("capture");
+            setStep("video");
 
             setTimeout(() => {
-              startPhotoCamera();
+              startVideoCamera();
             }, 300);
           }}
           className="
