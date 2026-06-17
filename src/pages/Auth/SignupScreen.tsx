@@ -278,7 +278,9 @@ const creditCount = price >= 5000 ? 3 : 1;
 
           <div className="text-center max-w-[900px] mx-auto">
 
-           <h1
+           
+
+            <h1
               className="
                 text-[44px]
                 leading-[1]
@@ -289,7 +291,7 @@ const creditCount = price >= 5000 ? 3 : 1;
               "
             >
               <span className="text-black">
-                Turn "How Much?"
+                Turn Buyer Chats
               </span>
 
               <br />
@@ -309,12 +311,26 @@ const creditCount = price >= 5000 ? 3 : 1;
                 text-gray-700
               "
             >
-              Buyers ask questions.
+              Buyers show interest.
               <br />
               Then disappear before payment.
             </p>
-
-
+            <div
+              className="
+                mt-6
+                inline-block
+                bg-[#F8FAFF]
+                border
+                border-[#DCE8FF]
+                rounded-full
+                px-5
+                py-3
+              "
+            >
+              <p className="text-sm md:text-base text-gray-700 font-medium">
+                Best for sellers already receiving buyer inquiries or buyer chats.
+              </p>
+            </div>
           </div>
 
           {/* HERO IMAGE */}
@@ -478,15 +494,15 @@ const creditCount = price >= 5000 ? 3 : 1;
           >
 
             <div>
-              ✓ Turn buyer interest into payment
+              ✓ Help buyers feel confident paying
             </div>
 
             <div>
-              ✓ Share proof of the exact item
+              ✓ Share proof before requesting payment
             </div>
 
             <div>
-              ✓ Stop repeating photos and videos
+              ✓ Turn more buyer chats into sales
             </div>
 
           </div>
@@ -521,7 +537,7 @@ const creditCount = price >= 5000 ? 3 : 1;
                     text-black
                   "
                 >
-                  Get {creditCount} Verification Credit{creditCount > 1 ? "s" : ""}
+                  Create & Share {creditCount} Product Verification{creditCount > 1 ? "s" : ""}
                 </h3>
 
                 <div
